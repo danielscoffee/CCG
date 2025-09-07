@@ -16,12 +16,13 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
   if (iCardIndex < 0 || iCardIndex > pstDeck->iHandCount)
     return;
 
-  if (gstPlayer.iEnergy <= 0) {
+  pstCard = &pstDeck->aHand[iCardIndex - 1];
+
+  if (gstPlayer.iEnergy <= 0 || pstCard->iCost > gstPlayer.iEnergy ) {
     vPrintLine("Sem energia!", INSERT_NEW_LINE);
     return;
   }
-
-  pstCard = &pstDeck->aHand[iCardIndex - 1];
+  
   if (strcmp(pstCard->szName, "Strike") == 0) {
     int iTarget = 0;
     vTraceVarArgsFn("Player %s utilizou Strike", gstPlayer.szPlayerName);
@@ -77,6 +78,6 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
   vSleepSeconds(1);
   vDiscardCard(pstDeck, (iCardIndex - 1));
 
-  gstPlayer.iEnergy--;
+  gstPlayer.iEnergy -= pstCard->iCost;
   vTraceVarArgsFn("Energia restante=%d (comprou 1 carta apos jogar)", gstPlayer.iEnergy);
 }
