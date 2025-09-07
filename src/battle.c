@@ -15,18 +15,19 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
 
   if (iCardIndex < 0 || iCardIndex > pstDeck->iHandCount)
     return;
+
   if (gstPlayer.iEnergy <= 0) {
     vPrintLine("Sem energia!", INSERT_NEW_LINE);
     return;
   }
 
   pstCard = &pstDeck->aHand[iCardIndex - 1];
-
   if (strcmp(pstCard->szName, "Strike") == 0) {
-    int iTarget;
-    iTarget = 0;
+    int iTarget = 0;
     vTraceVarArgsFn("Player %s utilizou Strike", gstPlayer.szPlayerName);
+    
     while (iTarget < iMonsterCount && paMonsters[iTarget].iHP <= 0) iTarget++;
+
     if (iTarget < iMonsterCount) {
       if (paMonsters[iTarget].iBlock > 0) {
         paMonsters[iTarget].iBlock -= pstCard->iValue;

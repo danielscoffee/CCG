@@ -1,1 +1,1 @@
-make _WIN32=1 D:/cardgame/bin/card_game
+make _WIN32=1 bin/card_game

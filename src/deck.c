@@ -22,11 +22,12 @@ void vInitBasicDeck(PSTRUCT_DECK pstDeck)
   for (i = 0; i < 8; i++)
     pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_STRIKE, "Strike", 1, 6);
   for (i = 0; i < 6; i++)
-    pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_DEFEND, "Defend", 1, 5);
+    pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_DEFEND, "Defend", 2, 5);
   for (i = 0; i < 4; i++)
     pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_HEAL, "Heal", 1, 4);
-  pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_FIREBALL, "Fireball", 1, 4);
-  pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_FIREBALL, "Fireball", 1, 4);
+  for (i = 0; i < 2; i++)
+    pstDeck->aDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_FIREBALL, "Fireball", 1, 4);
+  
 
   vShuffle(pstDeck->aDraw, pstDeck->iDrawCount);
   vTraceVarArgsFn("Deck inicial embaralhado com %d cartas.", pstDeck->iDrawCount);

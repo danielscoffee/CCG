@@ -18,8 +18,7 @@ static void vPrintShopHeader(void) {
 
 void vOpenShop(PSTRUCT_DECK pstDeck)
 {
-  int bLoop;
-  bLoop = TRUE;
+  int bLoop = TRUE;
 
   while (bLoop) {
     int iCh;
@@ -27,24 +26,25 @@ void vOpenShop(PSTRUCT_DECK pstDeck)
     vPrintLine("\nEscolha uma opcao: ", NO_NEW_LINE);
     iCh = iPortableGetchar();
 
-    if (iCh == 'q') {
-      bLoop = FALSE;
-      break;
-    } else if (iCh == '1') {
+    if (iCh == 'q') break;
+    
+    if (iCh == '1') {
       char szWhich[_MAX_PATH];
-      int iOk;
-      vPrintLine("\nDigite o nome exato da carta para upgrade (ex.: Strike, Defend, Heal, Fireball):", INSERT_NEW_LINE);
-      vPrintLine("> ", NO_NEW_LINE);
-      vReadCardName(szWhich, sizeof(szWhich));
-
+      
       if (gstPlayer.iGold < SHOP_PRICE_UPGRADE) {
         vPrintLine("\nOuro insuficiente!", INSERT_NEW_LINE);
         vSleepSeconds(1);
         continue;
       }
 
-      iOk = iUpgradeFirstCardByName(pstDeck, szWhich, /*+dano/bloq/heal*/ 2, /*delta custo*/ 0);
-      if (iOk) {
+      do {
+        vClearTerminal();
+        vPrintLine("\nDigite o nome exato da carta para upgrade (ex.: Strike, Defend, Heal, Fireball):", INSERT_NEW_LINE);
+        vPrintLine("> ", NO_NEW_LINE);
+        vReadCardName(szWhich, sizeof(szWhich));
+      } while ( bStrIsEmpty(szWhich) );
+
+      if ( iUpgradeFirstCardByName(pstDeck, szWhich, 2, 0) ) {
         gstPlayer.iGold -= SHOP_PRICE_UPGRADE;
         vTraceVarArgsFn("Shop: upgrade em '%s' aplicado. Ouro restante=%d", szWhich, gstPlayer.iGold);
         vPrintLine("Upgrade aplicado com sucesso!", INSERT_NEW_LINE);
@@ -59,7 +59,6 @@ void vOpenShop(PSTRUCT_DECK pstDeck)
         vSleepSeconds(1);
         continue;
       }
-      /* Poison: custo 1, stacks=3 */
       stPoison = stMakeCard(CARD_POISON, "Poison", 1, 3);
       vAddCardToDiscard(pstDeck, stPoison);
       gstPlayer.iGold -= SHOP_PRICE_POISON;

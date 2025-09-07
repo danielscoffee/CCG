@@ -15,7 +15,7 @@ endif
 
 PREFIX = 
 ifdef _WIN32
-	PREFIX = D:/cardgame/
+# 	PREFIX = D:/cardgame/
 # 	CC = D:/msys64/mingw64/bin/gcc.exe
 endif
 

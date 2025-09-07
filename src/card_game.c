@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   vTraceVarArgsFn("Init OK -- Starting main loop...");
 
   vInitBasicDeck(&stDeck);
-  iDrawMultipleCard(MAX_HAND, &stDeck);
+  iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
   vInitPlayer(&stDeck);
   vInitMonstersForLevel(aMonsters, iLevel, &iMonsterCount);
   
@@ -102,14 +102,15 @@ int main(int argc, char *argv[]) {
       vInitMonstersForLevel(aMonsters, iLevel, &iMonsterCount);
 
       /* reset de mão/energia para novo nível */
-      iDrawMultipleCard(MAX_HAND, &stDeck);
+      iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
       gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
+      gstPlayer.iBlock = 0;
       vFlushInput();
-      continue; /* redesenha no próximo loop */
+      continue;
     }
 
     /* próximo turno no mesmo nível */
-    iDrawMultipleCard(MAX_HAND, &stDeck);
+    iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
   }
 

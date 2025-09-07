@@ -197,17 +197,13 @@ void vReadPlayerName(char *pszName, int iNameSz){
   return;
 }
 void vReadCardName(char *pszName, int iNameSz){
-  do {
-    vClearTerminal();
 
-    memset(pszName, 0, iNameSz);
-    if (fgets(pszName, iNameSz, stdin)) {
-      if (strchr(pszName, '\n') == NULL)
-        vFlushInput();
-    }
-  } while ( bStrIsEmpty(pszName) );
-  
-  strtok(pszName, "\n");
+  memset(pszName, 0, iNameSz);
+  if (fgets(pszName, iNameSz, stdin)) {
+    if (strchr(pszName, '\n') == NULL)
+      vFlushInput();
+  }  
+  if ( !bStrIsEmpty(pszName) ) strtok(pszName, "\n");
 
   return;
 }

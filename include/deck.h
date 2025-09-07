@@ -4,8 +4,9 @@
 #ifndef DECK_H
   #define DECK_H
 
-  #define MAX_DECK 20
+  #define MAX_DECK 50
   #define MAX_HAND 10
+  #define INIT_HAND_CARDS 6
 
   #define CARD_STRIKE   0
   #define CARD_DEFEND   1
