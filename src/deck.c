@@ -11,36 +11,34 @@ char *pszCardTypeDesc[] ={
   NULL
 };
 
-void vLogDeck(PSTRUCT_DECK pstDeck){
+void vLogCardList(STRUCT_CARD astCardList[], int iListCt){
   int ii;
+  if ( iListCt <= 0 )
+    return ;
 
+  for (ii = 0; ii < iListCt; ii++){
+    vTraceVarArgsFn(
+  "\t|-> Card=%s EnergyCost=%d Value=%d",
+      pszCardTypeDesc[astCardList[ii].iType],
+      astCardList[ii].iCost,
+      astCardList[ii].iValue
+    );
+  }
+}
+
+void vLogDeck(PSTRUCT_DECK pstDeck, int iTraceLevel){
   vTraceVarArgsFn("%d cartas na pilha de compra:", pstDeck->iDrawCount);
-  for (ii = 0; ii < pstDeck->iDrawCount; ii++){
-    vTraceVarArgsFn(
-  "\t|-> Card=%s EnergyCost=%d Value=%d",
-      pszCardTypeDesc[pstDeck->aDraw[ii].iType],
-      pstDeck->aDraw[ii].iCost,
-      pstDeck->aDraw[ii].iValue
-    );
-  }
+  if ( iTraceLevel & TRACE_DRAW_PILE )
+    vLogCardList(pstDeck->aDraw, pstDeck->iDrawCount);
+
   vTraceVarArgsFn("%d cartas na mão do jogador:", pstDeck->iHandCount);
-  for (ii = 0; ii < pstDeck->iHandCount; ii++){
-    vTraceVarArgsFn(
-  "\t|-> Card=%s EnergyCost=%d Value=%d",
-      pszCardTypeDesc[pstDeck->aHand[ii].iType],
-      pstDeck->aHand[ii].iCost,
-      pstDeck->aHand[ii].iValue
-    );
-  }
-  vTraceVarArgsFn("%d cartas na pilha de discard:", pstDeck->iDiscardCount);
-  for (ii = 0; ii < pstDeck->iDiscardCount; ii++){
-    vTraceVarArgsFn(
-  "\t|-> Card=%s EnergyCost=%d Value=%d",
-      pszCardTypeDesc[pstDeck->aDiscard[ii].iType],
-      pstDeck->aDiscard[ii].iCost,
-      pstDeck->aDiscard[ii].iValue
-    );
-  }
+  if ( iTraceLevel & TRACE_HAND )
+    vLogCardList(pstDeck->aDraw, pstDeck->iHandCount);
+
+  vTraceVarArgsFn("%d cartas na pilha de descarte:", pstDeck->iDiscardCount);
+  if ( iTraceLevel & TRACE_DISCARD_PILE )
+    vLogCardList(pstDeck->aDiscard, pstDeck->iDiscardCount);
+
 }
 
 void vInitBasicDeck(PSTRUCT_DECK pstDeck)
@@ -63,6 +61,7 @@ void vInitBasicDeck(PSTRUCT_DECK pstDeck)
 
   vShuffle(pstDeck->aDraw, pstDeck->iDrawCount);
   vTraceVarArgsFn("Deck inicial embaralhado com %d cartas.", pstDeck->iDrawCount);
+  vLogDeck(pstDeck, TRACE_DECK_ALL);
 }
 
 /* descartar uma carta específica da mão (índice 0..iHandCount-1) */
@@ -74,6 +73,7 @@ void vDiscardCard(PSTRUCT_DECK pstDeck, int iIndex)
   for (i = iIndex; i < pstDeck->iHandCount - 1; i++)
     pstDeck->aHand[i] = pstDeck->aHand[i + 1];
   pstDeck->iHandCount--;
+
 }
 
 void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard)

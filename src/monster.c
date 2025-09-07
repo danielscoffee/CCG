@@ -86,7 +86,7 @@ void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount) {
           paMonsters[ii].stDebuff->iRounds
         );
         vPrintLine(szLine, INSERT_NEW_LINE);
-        Sleep(500);
+        vSleepSeconds(1);
         if (paMonsters[ii].iHP <= 0) continue;
       }
 

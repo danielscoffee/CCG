@@ -11,7 +11,6 @@
       - PENALTIES ATTACK STATUS - DIVIDES ATK CARD VALUES BY MODIFIER
     - PARALYZE (?)
       - INCREASES CARD ENERGY COST / ROLL A DICE(???)
-    
 
 - Card System
   - Types - Defined by
@@ -67,10 +66,10 @@
      - Monster Debuff (?)
      - Gold Reward - Increased by fixed amount  + Dungeon lvl modifier
 
-     
  - Battle System
    - Turn
      - Player  - Plays Card by type - Rest: Energy cap
      - Monster - Plays one of possible own actions by rand sort
      - TODO: Player monster selection
      - Turn skip system - Skips the turn or X (same side) turns Sequentially 
+     

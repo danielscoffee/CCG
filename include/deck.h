@@ -45,7 +45,12 @@
   void vDiscardCard(PSTRUCT_DECK pstDeck, int iCardIx);
   void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard);
   void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck);
-  void vLogDeck(PSTRUCT_DECK pstDeck);
+  void vLogDeck(PSTRUCT_DECK pstDeck, int iTraceLevel);
   STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue);
+  
+  #define TRACE_DRAW_PILE    0x01
+  #define TRACE_HAND         0x02
+  #define TRACE_DISCARD_PILE 0x04
+  #define TRACE_DECK_ALL     TRACE_DRAW_PILE | TRACE_HAND | TRACE_DISCARD_PILE
 
 #endif

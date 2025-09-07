@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <input.h>
 #include <sys_interface.h>
 
 #ifdef _WIN32
@@ -99,7 +100,7 @@ void vKillBombProcess(int iPid) {
 
 void vWaitChild() {
 #ifdef _WIN32
-  Sleep(100);
+  vSleepSeconds(100);
 #else
   wait(NULL);
 #endif

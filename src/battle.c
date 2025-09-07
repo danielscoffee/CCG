@@ -78,7 +78,7 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
         paMonsters[iTarget].stDebuff->iDamage = iPoisonHitDamage;
         paMonsters[iTarget].stDebuff->iRounds = iPoisonRounds;
         vPrintLine("Voce aplicou Veneno!", INSERT_NEW_LINE);
-        Sleep(250);
+        vSleepSeconds(1);
       }
   }
 
