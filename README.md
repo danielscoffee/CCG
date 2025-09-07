@@ -14,6 +14,7 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 - Estrutura modular (`src/` + `include/`)
 - Makefile estruturado
 - Portabilidade Win32 e Linux
+- Rotina de debug simples e robusta (modulo trace -> log/card_game.log)
 
 ---
 
