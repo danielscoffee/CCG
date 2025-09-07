@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <string.h>
+#include <shop.h>
+#include <terminal_utils.h>
+#include <input.h>
+#include <trace.h>
+
+static void vPrintShopHeader(void) {
+  char sz[128];
+  vClearTerminal();
+  vPrintHighlitedLine("===== SHOP =====", INSERT_NEW_LINE);
+  snprintf(sz, sizeof(sz), "Ouro disponivel: %d", gstPlayer.iGold);
+  vPrintLine(sz, INSERT_NEW_LINE);
+  vPrintLine("1) Upgrade de uma carta (+2 valor, -0 custo) [20 ouro]", INSERT_NEW_LINE);
+  vPrintLine("2) Comprar carta nova: Poison (custo:1, aplica 3 veneno) [15 ouro]", INSERT_NEW_LINE);
+  vPrintLine("q) Sair", INSERT_NEW_LINE);
+}
+
+void vOpenShop(PSTRUCT_DECK pstDeck)
+{
+  int bLoop;
+  bLoop = TRUE;
+
+  while (bLoop) {
+    int iCh;
+    vPrintShopHeader();
+    vPrintLine("\nEscolha uma opcao: ", NO_NEW_LINE);
+    iCh = iPortableGetchar();
+
+    if (iCh == 'q') {
+      bLoop = FALSE;
+      break;
+    } else if (iCh == '1') {
+      char szWhich[_MAX_PATH];
+      int iOk;
+      vPrintLine("\nDigite o nome exato da carta para upgrade (ex.: Strike, Defend, Heal, Fireball):", INSERT_NEW_LINE);
+      vPrintLine("> ", NO_NEW_LINE);
+      vReadCardName(szWhich, sizeof(szWhich));
+
+      if (gstPlayer.iGold < SHOP_PRICE_UPGRADE) {
+        vPrintLine("\nOuro insuficiente!", INSERT_NEW_LINE);
+        vSleepSeconds(1);
+        continue;
+      }
+
+      iOk = iUpgradeFirstCardByName(pstDeck, szWhich, /*+dano/bloq/heal*/ 2, /*delta custo*/ 0);
+      if (iOk) {
+        gstPlayer.iGold -= SHOP_PRICE_UPGRADE;
+        vTraceVarArgsFn("Shop: upgrade em '%s' aplicado. Ouro restante=%d", szWhich, gstPlayer.iGold);
+        vPrintLine("Upgrade aplicado com sucesso!", INSERT_NEW_LINE);
+      } else {
+        vPrintLine("Carta nao encontrada em mao/draw/discard.", INSERT_NEW_LINE);
+      }
+      vSleepSeconds(1);
+    } else if (iCh == '2') {
+      STRUCT_CARD stPoison;
+      if (gstPlayer.iGold < SHOP_PRICE_POISON) {
+        vPrintLine("\nOuro insuficiente!", INSERT_NEW_LINE);
+        vSleepSeconds(1);
+        continue;
+      }
+      /* Poison: custo 1, stacks=3 */
+      stPoison = stMakeCard(CARD_POISON, "Poison", 1, 3);
+      vAddCardToDiscard(pstDeck, stPoison);
+      gstPlayer.iGold -= SHOP_PRICE_POISON;
+      vTraceVarArgsFn("Shop: comprou Poison. Ouro restante=%d", gstPlayer.iGold);
+      vPrintLine("Poison adicionada ao descarte!", INSERT_NEW_LINE);
+      vSleepSeconds(1);
+    } else {
+      vPrintLine("\nOpcao invalida.", INSERT_NEW_LINE);
+      vSleepSeconds(1);
+    }
+  }
+}
