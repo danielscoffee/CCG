@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <monster.h>
+#include <debuff.h>
 #include <player.h>
 #include <input.h>
 #include <terminal_utils.h>
@@ -11,11 +12,12 @@ void vInitMonsters(PSTRUCT_MONSTER paMonsters, int iCount) {
   int i;
   for (i = 0; i < iCount; i++) {
     snprintf(paMonsters[i].szName, sizeof(paMonsters[i].szName),"Monstro%02d", i+1);
-    paMonsters[i].iHP          = 20 + (i * 5);
-    paMonsters[i].iBlock       = 0;
-    paMonsters[i].iAttack      = 3 + i;
-    paMonsters[i].iDebuff      = 0;
-    paMonsters[i].iDebuffCycCt = 0;
+    paMonsters[i].iHP               = 20 + (i * 5);
+    paMonsters[i].iBlock            = 0;
+    paMonsters[i].iAttack           = 3 + i;
+    paMonsters[i].stDebuff->iType   = 0;
+    paMonsters[i].stDebuff->iDamage = 0;
+    paMonsters[i].stDebuff->iRounds = 0;
   }
   vTraceVarArgsFn("Iniciados %d monstros.", iCount);
 }
@@ -47,12 +49,12 @@ void vShowMonsters(PSTRUCT_MONSTER paMonsters, int iCount) {
           "ATK: %d",
             paMonsters[i].iAttack);
       vPrintColored(szLine, TERMINAL_COLOR_BMAGENTA);
-      if ( paMonsters[i].iDebuffCycCt > 0 ){
+      if ( paMonsters[i].stDebuff->iRounds > 0 ){
         vPrintLine(" | ", NO_NEW_LINE);
         snprintf(szLine, sizeof(szLine),
-      " Poison/TurnosRestantes=%d/%d",
-          paMonsters[i].iDebuff,
-          paMonsters[i].iDebuffCycCt
+      "Veneno/Turnos=%d/%d",
+          paMonsters[i].stDebuff->iDamage,
+          paMonsters[i].stDebuff->iRounds
         );
         vPrintColored(szLine, TERMINAL_COLOR_GREEN);
       }
@@ -73,17 +75,18 @@ void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount) {
   for (ii = 0; ii < iMonsterCount; ii++) {
     int iChoice;
     if (paMonsters[ii].iHP <= 0) continue; /* monstro morto não age */
-       if (paMonsters[ii].iDebuffCycCt > 0) {
-        paMonsters[ii].iHP -= paMonsters[ii].iDebuff;
-        paMonsters[ii].iDebuffCycCt--; /* decai 1 por turno */
+       if (paMonsters[ii].stDebuff->iRounds > 0) {
+        paMonsters[ii].iHP -= paMonsters[ii].stDebuff->iDamage; /* aplica dano debuff no monstro */
+        paMonsters[ii].stDebuff->iRounds--; /* decai 1 por turno */
         if (paMonsters[ii].iHP < 0) paMonsters[ii].iHP = 0;
         snprintf(szLine, sizeof(szLine),
       "%s sofre %d de veneno (restam %d stacks).",
           paMonsters[ii].szName, 
-          paMonsters[ii].iDebuff,
-          paMonsters[ii].iDebuffCycCt
+          paMonsters[ii].stDebuff->iDamage,
+          paMonsters[ii].stDebuff->iRounds
         );
         vPrintLine(szLine, INSERT_NEW_LINE);
+        Sleep(500);
         if (paMonsters[ii].iHP <= 0) continue;
       }
 
@@ -165,8 +168,9 @@ void vInitMonstersForLevel(PSTRUCT_MONSTER paMonsters, int iLevel, int *piOutCou
     iAtkBase = 3 + i + (iLevel - 1);
     paMonsters[i].iAttack      = iAtkBase;
     paMonsters[i].iBlock       = 0;
-    paMonsters[i].iDebuff      = 0;
-    paMonsters[i].iDebuffCycCt = 0;
+    paMonsters[i].stDebuff->iType   = 0;
+    paMonsters[i].stDebuff->iRounds = 0;
+    paMonsters[i].stDebuff->iDamage   = 0;
   }
   vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
 }

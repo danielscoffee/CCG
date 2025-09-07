@@ -1,10 +1,13 @@
+#include <debuff.h>
+
 #ifndef MONSTER_H
   #define MONSTER_H
 
   #define MAX_MONSTERS             6
-  #define MONSTER_INITAL_HP_MAX   50
-  #define MONSTER_HP_SCALING_RATE 0.05
+  #define MONSTER_INITAL_HP_MAX    50
+  #define MONSTER_HP_SCALING_RATE  0.05
   #define MONSTER_HEAL_VALUE       5
+  #define MONSTER_MAX_DEBUFFS      10
 
   extern int giMaxMonsterHP;
 
@@ -13,8 +16,8 @@
     int iHP;
     int iAttack;
     int iBlock;
-    int iDebuff; 
-    int iDebuffCycCt;  
+    int iDebuffCt;
+    STRUCT_DEBUFF stDebuff[MONSTER_MAX_DEBUFFS]; 
   } STRUCT_MONSTER, *PSTRUCT_MONSTER;
 
   void vInitMonsters(PSTRUCT_MONSTER paMonsters, int iCount);
