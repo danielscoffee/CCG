@@ -110,7 +110,6 @@ OBJS = \
 	$(OBJ_DIR)/shop.o \
 	$(OBJ_DIR)/trace.o 
 
-
 all: clean directories $(BIN_DIR)/$(CARD_GAME_EXEC)
 
 clean:
@@ -124,7 +123,6 @@ $(BIN_DIR)/$(CARD_GAME_EXEC): directories $(OBJS)
 
 $(OBJ_DIR)/%.o: $(SRC_PATH)/%.c
 	$(CC) -c $(CCOPT) $(DEBUG_ADD_FLAGS) $(INC_DIR) $< -o $@
-
 
 distclean: clean
 
