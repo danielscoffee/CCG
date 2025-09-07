@@ -1,5 +1,6 @@
 #include <deck.h>
 #include <string.h>  
+#include <stdlib.h>  
 #include <terminal_utils.h>
 
 char *pszCardTypeDesc[] ={
