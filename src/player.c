@@ -14,6 +14,7 @@ void vInitPlayer(PSTRUCT_DECK pstGameDeck)
 }
 
 void vShowPlayer() {
+  int ii;
   char szLine[1024];
   // gstPlayer.iGold
   // gstPlayer.iDebuff
@@ -34,12 +35,14 @@ void vShowPlayer() {
            " Energia=[%d/%d]",
            gstPlayer.iEnergy, PLAYER_ENERGY_MAX);
   vPrintColored(szLine, TERMINAL_COLOR_YELLOW);
- 
-  if ( gstPlayer.iDebuffCycCt > 0 ){
-    snprintf(szLine, sizeof(szLine),
-            " Dano de Veneno(por turno)=%d  Turnos restantes=%d",
-            gstPlayer.iDebuff, gstPlayer.iDebuffCycCt);
-    vPrintColored(szLine, TERMINAL_COLOR_GREEN);
+
+  for (ii = 0; ii < gstPlayer.iDebuffCt; ii++) {
+    if (gstPlayer.stDebuff[ii].iType == DEBUFF_TYPE_POISON) {
+      snprintf(szLine, sizeof(szLine),
+              " Dano de Veneno(por turno)=%d  Turnos restantes=%d",
+              gstPlayer.stDebuff[ii].iDamage, gstPlayer.stDebuff[ii].iRounds);
+      vPrintColored(szLine, TERMINAL_COLOR_GREEN);
+    }
   }
   snprintf(szLine, sizeof(szLine),
            " Gold=[%d]\n\n",

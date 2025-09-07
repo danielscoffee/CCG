@@ -70,8 +70,15 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
       iTarget = 0;
       while (iTarget < iMonsterCount && paMonsters[iTarget].iHP <= 0) iTarget++;
       if (iTarget < iMonsterCount) {
-        paMonsters[iTarget].iDebuff += pstCard->iValue;
-        vPrintLine("Voce aplica Veneno!", INSERT_NEW_LINE);
+        //Aplicar veneno
+        int iPoisonHitDamage = 5;
+        int iPoisonRounds =    5;
+
+        paMonsters[iTarget].stDebuff->iType = DEBUFF_TYPE_POISON;
+        paMonsters[iTarget].stDebuff->iDamage = iPoisonHitDamage;
+        paMonsters[iTarget].stDebuff->iRounds = iPoisonRounds;
+        vPrintLine("Voce aplicou Veneno!", INSERT_NEW_LINE);
+        Sleep(250);
       }
   }
 
