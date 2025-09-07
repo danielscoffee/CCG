@@ -3,35 +3,35 @@
 #include <sys_interface.h>
 
 #ifdef _WIN32
-  #include <stdint.h> /** Para intptr_t */
-  #include <stdlib.h>
-  #include <winsock2.h>
-  #include <windows.h>
+#include <stdint.h> /** Para intptr_t */
+#include <stdlib.h>
+#include <windows.h>
+#include <winsock2.h>
 #else
-  #include <libgen.h>
-  #include <signal.h>
-  #include <sys/types.h>
-  #include <sys/wait.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
+#include <libgen.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 #ifdef _WIN32
-  /** Wrapper para CreateThread */
-  DWORD WINAPI ThreadWrapper(LPVOID pArg) {
-    void (**args)(int) = (void (**)(int))pArg;
-    void (*func)(int) = args[0];
-    int param = (int)(intptr_t)args[1];
-    func(param);
-    free(pArg);
-    return 0;
-  }
+/** Wrapper para CreateThread */
+DWORD WINAPI ThreadWrapper(LPVOID pArg) {
+  void (**args)(int) = (void (**)(int))pArg;
+  void (*func)(int) = args[0];
+  int param = (int)(intptr_t)args[1];
+  func(param);
+  free(pArg);
+  return 0;
+}
 
-  /** Wrapper para SetConsoleCtrlHandler */
-  static int WINAPI CtrlHandler(DWORD dwCtrlType) {
-    (void)dwCtrlType;
-    return TRUE; /** Apenas consome o evento */
-  }
+/** Wrapper para SetConsoleCtrlHandler */
+static int WINAPI CtrlHandler(DWORD dwCtrlType) {
+  (void)dwCtrlType;
+  return TRUE; /** Apenas consome o evento */
+}
 #endif
 
 void vSendSig2Process(int iPID, int iSigType) {
@@ -76,7 +76,6 @@ int vSpawnTimerProcess(void (*vTimerFunc)(int), int iParentPID) {
     vTimerFunc(iParentPID);
     _exit(0);
   }
-  giBombPid = pid;
   return pid;
 #endif
 }
@@ -92,7 +91,6 @@ void vKillBombProcess(int iPid) {
 #else
   if (iPid > 0) {
     kill(iPid, SIGKILL);
-    giBombPid = -1;
   }
 #endif
 }
@@ -105,29 +103,28 @@ void vWaitChild() {
 #endif
 }
 #ifdef _WIN32
-  // Return 0 if error
-  int iDIR_MkDir(char *szDir) { 
-    return CreateDirectory(szDir, NULL); 
-  }
-  int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName, char *szExt) {
-    char szDrive[_MAX_DRIVE];
-    char szDir[_MAX_DIR];
-    _splitpath(szFilename, szDrive, szDir, szName, szExt);
-    strcpy(szPath, szDrive);
-    strcat(szPath, szDir);
+// Return 0 if error
+int iDIR_MkDir(char *szDir) { return CreateDirectory(szDir, NULL); }
+int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName,
+                       char *szExt) {
+  char szDrive[_MAX_DRIVE];
+  char szDir[_MAX_DIR];
+  _splitpath(szFilename, szDrive, szDir, szName, szExt);
+  strcpy(szPath, szDrive);
+  strcat(szPath, szDir);
+  return 0;
+}
+int iDIR_IsDir(char *szDir) {
+  HANDLE hArquivo;
+  WIN32_FIND_DATA wfdArquivo;
+  hArquivo = FindFirstFile(szDir, &wfdArquivo);
+  if (hArquivo == INVALID_HANDLE_VALUE)
     return 0;
-  }
-  int iDIR_IsDir(char *szDir) {
-    HANDLE hArquivo;
-    WIN32_FIND_DATA wfdArquivo;
-    hArquivo = FindFirstFile(szDir, &wfdArquivo);
-    if (hArquivo == INVALID_HANDLE_VALUE)
-      return 0;
-    FindClose(hArquivo);
-    if (wfdArquivo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-      return 1;
-    return 0;
-  }
+  FindClose(hArquivo);
+  if (wfdArquivo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    return 1;
+  return 0;
+}
 #else /** LINUX */
 /*
  * Is directory: 1
