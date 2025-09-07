@@ -34,15 +34,18 @@ int main(int argc, char *argv[]) {
   iLevel = 1;
 
   gkpszProgramName = NULL;
+  
   iDIR_SplitFilename(argv[0], szPath, szName, szExt);
   if (!bStrIsEmpty(szName)) {
     gkpszProgramName = (char *)malloc(strlen(szName)+1);
     memset(gkpszProgramName, 0, strlen(szName)+1);
     strcpy(gkpszProgramName, szName);
   }
-
+  
   vInitLogs();
   vShowInitDialog();
+
+  if ( argc > 1 ) vTraceVarArgsFn("excess of cmdline prms argc=%d", argc);
 
   vTraceVarArgsFn("Init OK -- Starting main loop...");
 
