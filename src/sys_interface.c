@@ -62,41 +62,6 @@ void vSetSigUsrHandler(void (*vActCallBack)(int)) {
 #endif
 }
 
-int vSpawnTimerProcess(void (*vTimerFunc)(int), int iParentPID) {
-#ifdef _WIN32
-  void **pArgs = malloc(2 * sizeof(void *));
-  pArgs[0] = (void *)vTimerFunc;
-  pArgs[1] = (void *)(intptr_t)iParentPID;
-  CreateThread(NULL, 0, ThreadWrapper, pArgs, 0, NULL);
-  return 1; /** ID fake */
-#else
-  int pid = fork();
-  if (pid == 0) {
-    if (iParentPID == 0)
-      iParentPID = getppid();
-    vTimerFunc(iParentPID);
-    _exit(0);
-  }
-  giBombPid = pid;
-  return pid;
-#endif
-}
-
-/**
- * @brief Encerra processo/thread da bomba
- */
-void vKillBombProcess(int iPid) {
-#ifdef _WIN32
-  (void)iPid; /** Ignorado no Windows */
-  if (1) {
-  }
-#else
-  if (iPid > 0) {
-    kill(iPid, SIGKILL);
-    giBombPid = -1;
-  }
-#endif
-}
 
 void vWaitChild() {
 #ifdef _WIN32
