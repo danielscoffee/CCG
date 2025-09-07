@@ -33,18 +33,19 @@
     int iHandCount;
   }STRUCT_DECK, *PSTRUCT_DECK;
 
-  void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck);
   int iDrawMultipleCard(int iCardCt, PSTRUCT_DECK pstDeck);
   int iDrawCard(PSTRUCT_DECK pstDeck);
+  int  iUpgradeFirstCardByName(PSTRUCT_DECK pstDeck, const char *kpszName, int iDeltaValue, int iDeltaCost);
   void vSwapCards(PSTRUCT_CARD pstA, PSTRUCT_CARD pstB);
   void vShuffle(PSTRUCT_CARD paCards, int iCount);
   void vInitBasicDeck(PSTRUCT_DECK pstDeck);
   void vDiscardHand(PSTRUCT_DECK pstDeck);
   void vShowDeck(PSTRUCT_DECK pstDeck);
   void vSortHandByName(PSTRUCT_DECK pstDeck);
-  STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue);
   void vDiscardCard(PSTRUCT_DECK pstDeck, int iCardIx);
   void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard);
-  int  iUpgradeFirstCardByName(PSTRUCT_DECK pstDeck, const char *kpszName, int iDeltaValue, int iDeltaCost);
+  void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck);
+  void vLogDeck(PSTRUCT_DECK pstDeck);
+  STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue);
 
 #endif

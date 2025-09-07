@@ -3,13 +3,45 @@
 #include <terminal_utils.h>
 
 char *pszCardTypeDesc[] ={
-  "Dano",
-  "Defesa",
-  "Cura",
-  "Magia",
-  "Veneno", /* <<< NOVO */
+  "Strike",
+  "Block",
+  "Heal",
+  "Spell",
+  "Veneno",
   NULL
 };
+
+void vLogDeck(PSTRUCT_DECK pstDeck){
+  int ii;
+
+  vTraceVarArgsFn("%d cartas na pilha de compra:", pstDeck->iDrawCount);
+  for (ii = 0; ii < pstDeck->iDrawCount; ii++){
+    vTraceVarArgsFn(
+  "\t|-> Card=%s EnergyCost=%d Value=%d",
+      pszCardTypeDesc[pstDeck->aDraw[ii].iType],
+      pstDeck->aDraw[ii].iCost,
+      pstDeck->aDraw[ii].iValue
+    );
+  }
+  vTraceVarArgsFn("%d cartas na mão do jogador:", pstDeck->iHandCount);
+  for (ii = 0; ii < pstDeck->iHandCount; ii++){
+    vTraceVarArgsFn(
+  "\t|-> Card=%s EnergyCost=%d Value=%d",
+      pszCardTypeDesc[pstDeck->aHand[ii].iType],
+      pstDeck->aHand[ii].iCost,
+      pstDeck->aHand[ii].iValue
+    );
+  }
+  vTraceVarArgsFn("%d cartas na pilha de discard:", pstDeck->iDiscardCount);
+  for (ii = 0; ii < pstDeck->iDiscardCount; ii++){
+    vTraceVarArgsFn(
+  "\t|-> Card=%s EnergyCost=%d Value=%d",
+      pszCardTypeDesc[pstDeck->aDiscard[ii].iType],
+      pstDeck->aDiscard[ii].iCost,
+      pstDeck->aDiscard[ii].iValue
+    );
+  }
+}
 
 void vInitBasicDeck(PSTRUCT_DECK pstDeck)
 {

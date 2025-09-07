@@ -29,6 +29,11 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 ```
 
 ---
+## Conceitos e mecânicas 
+- Checar doc/game_concepts.md (em ingles) para futuras implementações e discussões correntes.
+- Orientação/idéias sobre novos pull requests podem ser encontradas aqui 
+---
+
 
 ## 🛠️ Como compilar
 Requisitos: GCC ou Clang + Make
