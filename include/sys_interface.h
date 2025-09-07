@@ -11,23 +11,24 @@
     #include <windows.h>
 
     /* Definições ausentes no MinGW */
-    #ifndef _MAX_DRIVE
-      #define _MAX_DRIVE 3
-    #endif
-    #ifndef _MAX_DIR
-      #define _MAX_DIR 256
-    #endif
-    #ifndef _MAX_FNAME
-      #define _MAX_FNAME 256
-    #endif
-    #ifndef _MAX_EXT
-      #define _MAX_EXT 256
-    #endif
-    #ifndef _MAX_PATH
-      #define _MAX_PATH 256
-    #endif
   #endif
-  
+
+  #ifndef _MAX_DRIVE
+    #define _MAX_DRIVE 3
+  #endif
+  #ifndef _MAX_DIR
+    #define _MAX_DIR 256
+  #endif
+  #ifndef _MAX_FNAME
+    #define _MAX_FNAME 256
+  #endif
+  #ifndef _MAX_EXT
+    #define _MAX_EXT 256
+  #endif
+  #ifndef _MAX_PATH
+    #define _MAX_PATH 256
+  #endif
+
   #define TRUE  1
   #define FALSE 0
 
