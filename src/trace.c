@@ -18,10 +18,12 @@
 #else
   #include <windows.h>
   #include <process.h>
-  struct timeval {
-    long tv_sec;
-    long tv_usec;
-  };
+  #ifndef timeval
+    struct timeval {
+      long tv_sec;
+      long tv_usec;
+    };
+  #endif
 #endif
 
 char szRootPathFromBin[_MAX_PATH];
