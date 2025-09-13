@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/repiazza/CCG/compare/v1.0.0...v1.0.1) (2025-09-13)
+
+### Bug Fixes
+
+* **actions:** changed step position and CHANGELOG is up-to-date ([5ea138d](https://github.com/repiazza/CCG/commit/5ea138dab57f67fb2c877e1a64821e648f8afdbc))
+
 ## [1.0.0](https://github.com/repiazza/CCG/compare/v0.0.1...v1.0.0) (2025-09-13)
 
 ### ⚠ BREAKING CHANGES
