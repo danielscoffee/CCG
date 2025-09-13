@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/danielscoffee/CCG/compare/v1.0.1...v1.0.2) (2025-09-13)
+
+### Bug Fixes
+
+* **actions:** removed condition for running create release ([8e9e4fe](https://github.com/danielscoffee/CCG/commit/8e9e4fe77c18edb678db744ec8324275d295084b))
+* **actions:** removed create release step ([3bd42bb](https://github.com/danielscoffee/CCG/commit/3bd42bbc2ca8ab04905de35f6631172a8ccb613b))
+
 ## [1.0.1](https://github.com/danielscoffee/CCG/compare/v1.0.0...v1.0.1) (2025-09-13)
 
 ### Bug Fixes
