@@ -7,7 +7,13 @@
 #include <sys_interface.h>
 
 #ifdef LINUX
-  #include <sys/time.h>
+  #ifdef __has_include
+    #if __has_include(<time.h>)
+      #include <time.h>
+    #elif __has_include(<sys/time.h>)
+      #include <sys/time.h>
+    #endif
+  #endif
   #include <sys/types.h>
 #else
   #include <windows.h>
