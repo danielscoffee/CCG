@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/danielscoffee/CCG/compare/v1.0.0...v1.0.1) (2025-09-13)
+
+### Bug Fixes
+
+* **actions:** removed hardcoded env-vars at semver step ([8e7f149](https://github.com/danielscoffee/CCG/commit/8e7f149ce968a308230614eccf98910c7001caed))
+
 ## 1.0.0 (2025-09-13)
 
 ### ⚠ BREAKING CHANGES
