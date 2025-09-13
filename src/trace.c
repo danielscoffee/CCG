@@ -22,6 +22,7 @@
 
 char szRootPathFromBin[_MAX_PATH];
 char gszTraceFile[2048];
+char gszTraceFileDialog[2048];
 int giDebugLevel = 0;
 char gszConfFile[_MAX_PATH];
 
@@ -83,6 +84,21 @@ void vTraceMsg(char *szMsg) {
   pfLog = NULL;
 } /* vTraceMsg */
 
+void _vTraceMsgDialog(char *szMsg, ...) {
+  FILE *pfLog;
+  va_list args;
+
+  va_start(args, szMsg);
+  if ((pfLog = fopen(gszTraceFileDialog, "a+")) == NULL){
+    return;
+  }
+  vfprintf(pfLog, szMsg, args);
+
+  va_end(args);
+  fclose(pfLog);
+  pfLog = NULL;
+} /* vTraceMsg */
+
 void vTracePid(char *szMsg, int iMsgLen) {
   char *pszMyMsg = NULL;
   int iNewMsgLen = iMsgLen + 16;
@@ -119,6 +135,7 @@ void _vTraceVarArgsFn(char *pszModuleName, const int kiLine, const char *kpszFun
   char szPath[_MAX_PATH + _MAX_PATH + 8];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
+  char szFullTitle[_MAX_PATH];
   char szDbg[2048];
   struct tm *st_tm_Now;
   struct timeval tv;
@@ -143,13 +160,15 @@ void _vTraceVarArgsFn(char *pszModuleName, const int kiLine, const char *kpszFun
   va_start(args, kpszFmt);
 
   iDIR_SplitFilename(pszModuleName, szPath, szName, szExt);
-  snprintf(szDbg, sizeof(szDbg), "[%02d/%02d/%02d %02d:%02d:%02d.%03ld]<%s%s:%d>(%s) - ",
+  sprintf(szFullTitle, "<%.9s%s:%d>", szName, szExt, kiLine);
+  snprintf(szDbg, sizeof(szDbg), "[%02d/%02d/%02d %02d:%02d:%02d.%03ld]%-16.16s(%-12.12s): ",
            (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1,
            (int)st_tm_Now->tm_year - 100, (int)st_tm_Now->tm_hour,
            (int)st_tm_Now->tm_min, (int)st_tm_Now->tm_sec,
-           (long)tv.tv_usec / 1000, szName, szExt, kiLine, kpszFunctionName);
+           (long)tv.tv_usec / 1000, szFullTitle, kpszFunctionName);
 
   strcat(szDbg, kpszFmt);
+  
   strcat(szDbg, "\n");
   vfprintf(pfLog, szDbg, args);
 
@@ -201,10 +220,13 @@ void _vTraceVarArgs(const char *kpszModuleName, const int kiLine, const char *kp
 void vSetLogFileTitle(void) {
   memset(gszTraceFile, 0, sizeof(gszTraceFile));
   sprintf(gszTraceFile, "%s.log", gkpszProgramName);
+  memset(gszTraceFileDialog, 0, sizeof(gszTraceFileDialog));
+  sprintf(gszTraceFileDialog, "%s_dialog.log", gkpszProgramName);
 } /* vSetLogFile */
 
 void vInitLogs(void) {
   char szPath[_MAX_PATH + 8];
+  char szPath2[_MAX_PATH + 8];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
   
@@ -225,6 +247,8 @@ void vInitLogs(void) {
       exit(EXIT_FAILURE);
     }
   }
-
+;
   sprintf(gszTraceFile, "%s/%s%s",szPath,szName,szExt);
+  iDIR_SplitFilename(gszTraceFileDialog, szPath2, szName, szExt);
+  sprintf(gszTraceFileDialog, "%s/%s%s",szPath,szName,szExt);
 } /* vInitLogs */

@@ -50,13 +50,15 @@ int main(int argc, char *argv[]) {
 
   if ( argc > 1 ) vTraceVarArgsFn("excess of cmdline prms argc=%d", argc);
 
-  vTraceVarArgsFn("Init OK -- Starting main loop...");
+  vTraceVarArgsFn("Init OK ==== ***  main LOOP *** =====");
+  vTraceVarArgsFn("             ***            *** =====");
 
   vInitBasicDeck(&stDeck);
   iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
   vInitPlayer(&stDeck);
   vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
   vInitDialog();
+  
   while (bRunning) {
     vClearTerminal();
 
@@ -66,6 +68,7 @@ int main(int argc, char *argv[]) {
     vShowDeck(&stDeck);
     vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
     vShowMonsters(astMonsters, iMonsterCount);
+    vTraceDialog(FALSE);
 
     while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(astMonsters, iMonsterCount)) {
       if ( iDoPlayerTurn(&bRunning, &stDeck, astMonsters, iMonsterCount) )
@@ -110,6 +113,8 @@ int main(int argc, char *argv[]) {
     vLogDeck(&stDeck, TRACE_DECK_ALL);
   }
   
+  vTraceVarArgsFn("             ***                   *** =====");
+  vTraceVarArgsFn("             ***   End Main LOOP   *** =====");
   vFreeDialog();
   vFreeProgramName();
   return 0;

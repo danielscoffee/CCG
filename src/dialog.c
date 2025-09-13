@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <trace.h>
 #include <sys_interface.h>
 
 #ifdef LINUX
@@ -86,5 +87,22 @@ void vFreeDialog(){
     pWrk = pWrk->pstNext;
     free(pLast->pszMsg);
     free(pLast);
+  }
+}
+
+void vTraceDialog(int bLogDT){
+  char szDbg[1024];
+  PSTRUCT_DIALOG pWrk;
+
+  if ( bStrIsEmpty(gstDialog.pszMsg) )
+    return ;
+
+  for (pWrk = &gstDialog; pWrk!= NULL; pWrk = pWrk->pstNext){
+    if ( bLogDT )
+      sprintf(szDbg, "%s - %s", pWrk->szDT, pWrk->pszMsg);
+    else
+      sprintf(szDbg, "%s", pWrk->pszMsg);
+
+    vTraceMsgDialog(szDbg);
   }
 }

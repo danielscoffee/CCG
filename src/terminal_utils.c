@@ -1,4 +1,5 @@
 #include <stdio.h>  
+#include <stdlib.h>  
 #include <terminal_utils.h>
 #include <input.h>
 #include <dialog.h>
@@ -22,17 +23,40 @@ char *pszTerminalColors[] ={
 };
 
 void vPrintLine(char *pszLine, int bNewLine) {
-  iAddMsgToDialog(pszLine, strlen(pszLine));
   printf("%s", pszLine);
   if ( bNewLine )
     printf("\n");
+    
+  if ( bNewLine ) {
+    char *pszWrkMsg;
+    pszWrkMsg = (char *) malloc(strlen(pszLine) + 8);
+    memset(pszWrkMsg,0,strlen(pszLine)+8);
+    strcat(pszWrkMsg, pszLine);
+    strcat(pszWrkMsg, "\n");
+    iAddMsgToDialog(pszWrkMsg, strlen(pszWrkMsg));
+    free(pszWrkMsg);
+    return;
+  }
+  
+  iAddMsgToDialog(pszLine, strlen(pszLine));
 }
 
 void vPrintHighlitedLine(char *pszLine, int bNewLine) {
-  iAddMsgToDialog(pszLine, strlen(pszLine));
   printf("\x1b[7m%s\x1b[0m", pszLine);
   if ( bNewLine )
     printf("\n");
+    
+  if ( bNewLine ) {
+    char *pszWrkMsg;
+    pszWrkMsg = (char *) malloc(strlen(pszLine) + 8);
+    memset(pszWrkMsg,0,strlen(pszLine)+8);
+    strcat(pszWrkMsg, pszLine);
+    strcat(pszWrkMsg, "\n");
+    iAddMsgToDialog(pszWrkMsg, strlen(pszWrkMsg));
+    free(pszWrkMsg);
+    return;
+  }
+  iAddMsgToDialog(pszLine, strlen(pszLine));
 }
 
 void vSetCursorPosition(int iRow, int iCol) {

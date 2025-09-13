@@ -46,6 +46,7 @@
   #define vTraceVarArgsFn(FORMAT, ...) _vTraceVarArgsFn(__FILE__, __LINE__, __func__, FORMAT, ##__VA_ARGS__)
   #define vTraceBegin() vTraceVarArgs("%s - begin", __func__)
   #define vTraceEnd() vTraceVarArgs("%s - end", __func__)
+  #define vTraceMsgDialog(FORMAT, ...) _vTraceMsgDialog(FORMAT, ##__VA_ARGS__)
 
 /******************************************************************************
  *                                                                            *
@@ -68,6 +69,7 @@
 
   void vSetLogFileTitle(void);
   void vTraceMsg( char *szMsg );
+  void _vTraceMsgDialog( char *szMsg, ... );
   void vTracePid( char *szMsg, int iMsgLen );
   void vTraceMsgNoNL( char *szMsg );
   void vInitLogs( void );

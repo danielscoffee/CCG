@@ -67,9 +67,10 @@ void vShowPlayer(int bTrace) {
   );
   vPrintColored(szLine, TERMINAL_COLOR_BYELLOW);
   strcat(szDbg, szLine);
-  if (bTrace)
+  if (bTrace){
+    strtok(szDbg, "\n");
     vTraceVarArgsFn("%s", szDbg);
-  
+  }  
   for (ii = 0; ii < gstPlayer.iDebuffCt; ii++) {
     if (gstPlayer.stDebuff[ii].iType == DEBUFF_TYPE_POISON) {
       snprintf(szLine, sizeof(szLine),
