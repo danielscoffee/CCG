@@ -44,6 +44,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       for ( ; ii <= iTarget; ii++ ) {
         char szLine[1024];
         if ( iTarget < iMonsterCt ) ii = iTarget;
+        if ( pstCard->iTarget == CARD_TARGET_MULTIPLE && ii == iTarget ) break;
         if ( pastMonsters[ii].iHP <= 0 ) continue;
 
         if ( pstCard->iType == CARD_POISON ) {
