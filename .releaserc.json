@@ -29,12 +29,12 @@
           {
             "path": "dist/card_game-linux-amd64",
             "name": "card_game-linux-amd64",
-            "label": "🐧 Linux Binary (x64)"
+            "label": "Linux Binary (x64)"
           },
           {
             "path": "dist/card_game-windows-amd64.exe",
             "name": "card_game-windows-amd64.exe",
-            "label": "🪟 Windows Binary (x64)"
+            "label": "Windows Binary (x64)"
           }
         ]
       }
