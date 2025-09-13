@@ -1,6 +1,7 @@
 {
   "branches": ["main"],
   "repositoryUrl": "https://github.com/danielscoffee/CCG",
+  "tagFormat": "v${version}",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -24,7 +25,6 @@
         "failComment": false,
         "releasedLabels": false,
         "releaseName": "CCG v${nextRelease.version}",
-        "releaseBody": "## 🎮 CCG - Console Card Game Release v${nextRelease.version}\n\n${nextRelease.notes}\n\n### 📦 Downloads\n- 🐧 **Linux**: card_game-linux-amd64\n- 🪟 **Windows**: card_game-windows-amd64.exe\n\n### 🚀 Installation\n1. Download the binary for your platform\n2. Make it executable (Linux: `chmod +x card_game-linux-amd64`)\n3. Run: `./card_game-linux-amd64` (Linux) or `card_game-windows-amd64.exe` (Windows)",
         "assets": [
           {
             "path": "dist/card_game-linux-amd64",
