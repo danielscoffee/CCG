@@ -2,5 +2,6 @@
   #define CARD_GAME_H
 
   extern char *gkpszProgramName;
+  extern int giLevel;
 
 #endif

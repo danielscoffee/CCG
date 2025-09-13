@@ -160,7 +160,8 @@ void vFlushInput() {
  * @param pszBuf - string a ser convertida
  */
 void vToLower(char *pszBuf) {
-  for (char *p = pszBuf; *p; ++p)
+  char *p;
+  for (p = pszBuf; *p; ++p)
     if (*p >= 'A' && *p <= 'Z')
       *p += 32; /* 'A'(65)+32 = 'a'(97) */
 }
@@ -211,11 +212,6 @@ void vReadCardName(char *pszName, int iNameSz){
 int iReadOptions() {
   return fgetc(stdin);
 }
-/**
- * @brief Captura input do usuário caractere a caractere, com redesenho contínuo
- * @return char* - ponteiro para a string digitada (precisa ser liberado com
- * free)
- */
 /**
  * @brief Captura input do usuário caractere a caractere, com redesenho contínuo
  * @return char* - ponteiro para a string digitada (precisa ser liberado com

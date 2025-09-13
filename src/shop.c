@@ -59,7 +59,7 @@ void vOpenShop(PSTRUCT_DECK pstDeck)
         vSleepSeconds(1);
         continue;
       }
-      stPoison = stMakeCard(CARD_POISON, "Poison", 1, 3);
+      stPoison = stMakeCard(CARD_POISON, "Poison", 1, 3, CARD_TARGET_SINGLE);
       vAddCardToDiscard(pstDeck, stPoison);
       gstPlayer.iGold -= SHOP_PRICE_POISON;
       vTraceVarArgsFn("Shop: comprou Poison. Ouro restante=%d", gstPlayer.iGold);

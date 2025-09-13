@@ -9,63 +9,85 @@
 
 int giMaxMonsterHP = MONSTER_INITAL_HP_MAX;
 
-void vInitMonsters(PSTRUCT_MONSTER paMonsters, int iCount) {
-  int i;
-  for (i = 0; i < iCount; i++) {
-    snprintf(paMonsters[i].szName, sizeof(paMonsters[i].szName),"Monstro%02d", i+1);
-    paMonsters[i].iHP               = 20 + (i * 5);
-    paMonsters[i].iBlock            = 0;
-    paMonsters[i].iAttack           = 3 + i;
-    paMonsters[i].stDebuff->iType   = 0;
-    paMonsters[i].stDebuff->iDamage = 0;
-    paMonsters[i].stDebuff->iRounds = 0;
+void vInitMonsters(PSTRUCT_MONSTER pastMonster, int iCount) {
+  int ii;
+  
+  for (ii = 0; ii < iCount; ii++) {
+    snprintf(pastMonster[ii].szName, sizeof(pastMonster[ii].szName),"Monstro%02d", ii+1);
+    pastMonster[ii].iHP               = 20 + (ii * 5);
+    pastMonster[ii].iBlock            = 0;
+    pastMonster[ii].iAttack           = 3 + ii;
+    pastMonster[ii].astDebuff->iType   = 0;
+    pastMonster[ii].astDebuff->iDamage = 0;
+    pastMonster[ii].astDebuff->iRounds = 0;
+    pastMonster[ii].iDebuffCt = 0;
   }
   vTraceVarArgsFn("Iniciados %d monstros.", iCount);
 }
 
-void vShowMonsters(PSTRUCT_MONSTER paMonsters, int iCount) {
-  int i;
+void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
+  int ii;
+  PSTRUCT_DEBUFF pstWrkDbf;
+
+  if ( (pstWrkDbf = pstDebuff) == NULL ) return;
+
+  for ( ii = 0; ii < iDebuffCt; ii++){
+    if ( pstWrkDbf->iType == DEBUFF_TYPE_POISON && pstWrkDbf->iRounds > 0 ){
+      char szLine[1024];
+      memset(szLine, 0, sizeof(szLine));
+      vPrintLine(" | ", NO_NEW_LINE);
+      snprintf(szLine, sizeof(szLine),
+    "Veneno/Turnos=%d/%d",
+        pstWrkDbf->iDamage,
+        pstWrkDbf->iRounds
+      );
+      vPrintColored(szLine, TERMINAL_COLOR_BGREEN);
+      pstWrkDbf += sizeof(STRUCT_DEBUFF);
+    }
+  }
+
+}
+
+void vShowMonsters(PSTRUCT_MONSTER pastMonster, int iCount) {
+  int ii;
   char szLine[1024];
 
-  for (i = 0; i < iCount; i++) {
-    if (paMonsters[i].iHP > 0) {
+  for (ii = 0; ii < iCount; ii++) {
+    if (pastMonster[ii].iHP > 0) {
       memset(szLine, 0, sizeof(szLine));
       snprintf(szLine, sizeof(szLine),
-               "  [%d] %s ",
-               i+1, paMonsters[i].szName);
+    "  [%d] %s ",
+        ii+1,
+        pastMonster[ii].szName
+      );
       vPrintColored(szLine, TERMINAL_COLOR_BBLUE);
       vPrintLine(" (", NO_NEW_LINE);
       snprintf(szLine, sizeof(szLine),
-          "HP: %d/%d",
-            paMonsters[i].iHP, giMaxMonsterHP);
+    "HP: %d/%d",
+        pastMonster[ii].iHP,
+        giMaxMonsterHP
+      );
       vPrintColored(szLine, TERMINAL_COLOR_BRED);
       
       vPrintLine(" | ", NO_NEW_LINE);
       snprintf(szLine, sizeof(szLine),
-          "BLOCK: %d",
-            paMonsters[i].iBlock);
+    "BLOCK: %d",
+        pastMonster[ii].iBlock
+      );
       vPrintColored(szLine, TERMINAL_COLOR_BCYAN);
       vPrintLine(" | ", NO_NEW_LINE);
       snprintf(szLine, sizeof(szLine),
-          "ATK: %d",
-            paMonsters[i].iAttack);
+    "ATK: %d",
+        pastMonster[ii].iAttack
+      );
       vPrintColored(szLine, TERMINAL_COLOR_BMAGENTA);
-      if ( paMonsters[i].stDebuff->iRounds > 0 ){
-        vPrintLine(" | ", NO_NEW_LINE);
-        snprintf(szLine, sizeof(szLine),
-      "Veneno/Turnos=%d/%d",
-          paMonsters[i].stDebuff->iDamage,
-          paMonsters[i].stDebuff->iRounds
-        );
-        vPrintColored(szLine, TERMINAL_COLOR_GREEN);
-      }
+      vShowDebuffList(&pastMonster[ii].astDebuff[0], pastMonster[ii].iDebuffCt);
       vPrintLine(")", INSERT_NEW_LINE);
- 
     }
   }
 }
 
-void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount) {
+void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
   int ii;
   char szLine[128];
   time_t lTime;
@@ -75,30 +97,21 @@ void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount) {
 
   for (ii = 0; ii < iMonsterCount; ii++) {
     int iChoice;
-    if (paMonsters[ii].iHP <= 0) continue; /* monstro morto não age */
-       if (paMonsters[ii].stDebuff->iRounds > 0) {
-        paMonsters[ii].iHP -= paMonsters[ii].stDebuff->iDamage; /* aplica dano debuff no monstro */
-        paMonsters[ii].stDebuff->iRounds--; /* decai 1 por turno */
-        if (paMonsters[ii].iHP < 0) paMonsters[ii].iHP = 0;
-        snprintf(szLine, sizeof(szLine),
-      "%s sofre %d de veneno (restam %d stacks).",
-          paMonsters[ii].szName, 
-          paMonsters[ii].stDebuff->iDamage,
-          paMonsters[ii].stDebuff->iRounds
-        );
-        vPrintLine(szLine, INSERT_NEW_LINE);
-        vSleepSeconds(1);
-        if (paMonsters[ii].iHP <= 0) continue;
-      }
+    int jj;
+    PSTRUCT_DEBUFF pstDebuff;
+
+    if (pastMonster[ii].iHP <= 0) continue; /* monstro morto não age */
 
     iChoice = rand() % 3; /* 0 = attack, 1 = defend, 2 = heal */
 
+    vPrintLine("", INSERT_NEW_LINE);
+    
     if (iChoice == 0) {
-      int iDamage = paMonsters[ii].iAttack;
+      int iDamage = pastMonster[ii].iAttack;
       if (gstPlayer.iBlock > 0) {
         gstPlayer.iBlock -= iDamage;
         if (gstPlayer.iBlock < 0) {
-          gstPlayer.iHP -= (gstPlayer.iBlock);
+          gstPlayer.iHP -= (gstPlayer.iBlock)*-1;
           gstPlayer.iBlock = 0;
         }
       } else {
@@ -106,46 +119,89 @@ void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount) {
       }
       snprintf(szLine, sizeof(szLine),
     "%s ataca causando %d de dano!",
-        paMonsters[ii].szName,
+        pastMonster[ii].szName,
         iDamage
       );
       vPrintLine(szLine, INSERT_NEW_LINE);
     } else if (iChoice == 1) {
-      paMonsters[ii].iBlock += 3;
+      pastMonster[ii].iBlock += 3;
       snprintf(szLine, sizeof(szLine),
     "%s se defende e ganha 3 de bloqueio (total=%d).",
-        paMonsters[ii].szName,
-        paMonsters[ii].iBlock
+        pastMonster[ii].szName,
+        pastMonster[ii].iBlock
       );
       vPrintLine(szLine, INSERT_NEW_LINE);
     } else {
-      paMonsters[ii].iHP += MONSTER_HEAL_VALUE;
-      if (paMonsters[ii].iHP > giMaxMonsterHP)
-        paMonsters[ii].iHP = giMaxMonsterHP;
+      pastMonster[ii].iHP += MONSTER_HEAL_VALUE;
+      if (pastMonster[ii].iHP > giMaxMonsterHP)
+        pastMonster[ii].iHP = giMaxMonsterHP;
       
       snprintf(szLine, sizeof(szLine),
     "%s se cura em %d (HP=%d).",
-        paMonsters[ii].szName, 
+        pastMonster[ii].szName, 
         MONSTER_HEAL_VALUE, 
-        paMonsters[ii].iHP
+        pastMonster[ii].iHP
       );
       vPrintLine(szLine, INSERT_NEW_LINE);
     }
+    for ( jj = 0; jj < pastMonster[ii].iDebuffCt; jj++ ){
+      pstDebuff = &pastMonster[ii].astDebuff[jj];
+      if (pstDebuff->iType == DEBUFF_TYPE_POISON && pstDebuff->iRounds > 0){
+        pastMonster[ii].iHP -= pstDebuff->iDamage;
+        pstDebuff->iRounds--;
+        snprintf(szLine, sizeof(szLine),
+      "%s recebe %d de dano do veneno.",
+          pastMonster[ii].szName,
+          pstDebuff->iDamage
+        );
+        vPrintLine(szLine, INSERT_NEW_LINE);
+      }
+    }
+    if ( pastMonster[ii].iDebuffCt )
+      vClearDebuff(&pastMonster[ii].astDebuff[0], pastMonster[ii].iDebuffCt);
+    
     vSleepSeconds(2);
   }
+}
+
+int iGetFirstAliveMonster(PSTRUCT_MONSTER pastMonster, int iCount){
+  int ii;
+  if ( !iAnyMonsterAlive(pastMonster, iCount) ) return -1;
+  
+  for (ii = 0; ii < iCount; ii++)
+    if (iIsMonsterAlive(&pastMonster[ii]))
+      return ii;
+
+  return -1;
 }
 
 int iIsMonsterAlive(PSTRUCT_MONSTER pstMonster) {
   return pstMonster->iHP > 0;
 }
 
-int iAnyMonsterAlive(PSTRUCT_MONSTER paMonsters, int iCount) {
-  int i;
-  for (i = 0; i < iCount; i++) {
-    if (iIsMonsterAlive(&paMonsters[i])) return 1;
+int iAnyMonsterAlive(PSTRUCT_MONSTER pastMonster, int iCount) {
+  int ii;
+
+  for (ii = 0; ii < iCount; ii++){
+    if (iIsMonsterAlive(&pastMonster[ii]))
+      return 1;
   }
+  
   return 0;
 }
+
+int iAliveMonsterQty(PSTRUCT_MONSTER pastMonster, int iCount) {
+  int ii;
+  int iCt = 0;
+
+  for (ii = 0; ii < iCount; ii++){
+    if (iIsMonsterAlive(&pastMonster[ii]))
+      iCt++;
+  }
+  
+  return iCt;
+}
+
 int iMonsterCountForLevel(int iLevel) {
   int iCount;
   iCount = 2 + (iLevel - 1); /* cresce 1 por nível, começa em 2 */
@@ -153,26 +209,43 @@ int iMonsterCountForLevel(int iLevel) {
   return iCount;
 }
 
-void vInitMonstersForLevel(PSTRUCT_MONSTER paMonsters, int iLevel, int *piOutCount) {
-  int i;
+void vInitMonstersForLevel(PSTRUCT_MONSTER pastMonster, int iLevel, int *piOutCount) {
+  int ii;
   int iCount;
   int iAtkBase;
 
   iCount = iMonsterCountForLevel(iLevel);
   *piOutCount = iCount;
 
-  for (i = 0; i < iCount; i++) {
-    snprintf(paMonsters[i].szName, sizeof(paMonsters[i].szName), "Monstro %d-%d", iLevel, i + 1);
+  for (ii = 0; ii < iCount; ii++) {
+    snprintf(
+      pastMonster[ii].szName, sizeof(pastMonster[ii].szName), 
+    "Monstro %d-%d", 
+      iLevel,
+      ii + 1
+    );
     giMaxMonsterHP = (iLevel-1) *MONSTER_HP_SCALING_RATE * MONSTER_INITAL_HP_MAX;
     giMaxMonsterHP += MONSTER_INITAL_HP_MAX;
-    paMonsters[i].iHP = giMaxMonsterHP;
-    iAtkBase = 3 + i + (iLevel - 1);
-    paMonsters[i].iAttack      = iAtkBase;
-    paMonsters[i].iBlock       = 0;
-    paMonsters[i].stDebuff->iType   = 0;
-    paMonsters[i].stDebuff->iRounds = 0;
-    paMonsters[i].stDebuff->iDamage   = 0;
+    pastMonster[ii].iHP = giMaxMonsterHP;
+    iAtkBase = 3 + ii + (iLevel - 1);
+    pastMonster[ii].iAttack            = iAtkBase;
+    pastMonster[ii].iBlock             = 0;
+    pastMonster[ii].iDebuffCt          = 0;
+    memset(&pastMonster[ii].astDebuff, 0, sizeof(STRUCT_DEBUFF)*10);
   }
   vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
 }
 
+void vClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
+  int ii;
+  PSTRUCT_DEBUFF pWrkDebuff = pstDebuff;
+
+  for (ii = 0; ii < iDebuffCt; ii++){
+    if ( pWrkDebuff->iRounds <= 0 && (pWrkDebuff+sizeof(STRUCT_DEBUFF))->iRounds ){
+      memcpy(pWrkDebuff, pWrkDebuff+sizeof(STRUCT_DEBUFF), sizeof(STRUCT_DEBUFF));
+      memset(pWrkDebuff+sizeof(STRUCT_DEBUFF), 0, sizeof(STRUCT_DEBUFF));
+    }
+    pWrkDebuff = pWrkDebuff+sizeof(STRUCT_DEBUFF);
+  }
+ 
+}

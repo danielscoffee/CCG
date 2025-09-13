@@ -11,13 +11,13 @@
 
   extern int giMaxMonsterHP;
 
-  typedef struct {
+  typedef struct STRUCT_MONSTER {
     char szName[64];
     int iHP;
     int iAttack;
     int iBlock;
     int iDebuffCt;
-    STRUCT_DEBUFF stDebuff[MONSTER_MAX_DEBUFFS]; 
+    STRUCT_DEBUFF astDebuff[MONSTER_MAX_DEBUFFS]; 
   } STRUCT_MONSTER, *PSTRUCT_MONSTER;
 
   void vInitMonsters(PSTRUCT_MONSTER paMonsters, int iCount);
@@ -27,5 +27,8 @@
   int  iAnyMonsterAlive(PSTRUCT_MONSTER paMonsters, int iCount);
   int  iMonsterCountForLevel(int iLevel);
   void vInitMonstersForLevel(PSTRUCT_MONSTER paMonsters, int iLevel, int *piOutCount);
-
+  int iGetFirstAliveMonster(PSTRUCT_MONSTER pastMonster, int iCount);
+  int iAliveMonsterQty(PSTRUCT_MONSTER pastMonster, int iCount);
+  void vClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt);
+  
 #endif

@@ -27,7 +27,7 @@
 #endif
 
 char szRootPathFromBin[_MAX_PATH];
-char gszTraceFile[_MAX_PATH + _MAX_PATH];
+char gszTraceFile[2048];
 int giDebugLevel = 0;
 char gszConfFile[_MAX_PATH];
 
@@ -210,7 +210,7 @@ void vSetLogFileTitle(void) {
 } /* vSetLogFile */
 
 void vInitLogs(void) {
-  char szPath[_MAX_PATH + _MAX_PATH + 8];
+  char szPath[_MAX_PATH + 8];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
   

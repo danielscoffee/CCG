@@ -9,9 +9,12 @@
 #include <monster.h>
 #include <player.h>
 #include <battle.h>
+#include <dialog.h>
 #include <shop.h>
 
 char *gkpszProgramName;
+int gbLogLevel = 1;
+int giLevel;
 
 STRUCT_PLAYER gstPlayer;
 
@@ -21,17 +24,17 @@ void vFreeProgramName(){
 }
 
 int main(int argc, char *argv[]) {
+  STRUCT_MONSTER astMonsters[MAX_MONSTERS];
   STRUCT_DECK stDeck;
-  int bRunning;
   char szPath[_MAX_PATH];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
-  STRUCT_MONSTER aMonsters[MAX_MONSTERS];
-  int iLevel;
+  int bLog = gbLogLevel;
+  int bRunning;
   int iMonsterCount;
 
   bRunning = TRUE;
-  iLevel = 1;
+  giLevel = 1;
 
   gkpszProgramName = NULL;
   
@@ -52,41 +55,28 @@ int main(int argc, char *argv[]) {
   vInitBasicDeck(&stDeck);
   iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
   vInitPlayer(&stDeck);
-  vInitMonstersForLevel(aMonsters, iLevel, &iMonsterCount);
-  
+  vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
+  vInitDialog();
   while (bRunning) {
     vClearTerminal();
 
     vSortHandByName(&stDeck);
-    vShowPlayer();
+    vShowPlayer(bLog);
     vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
     vShowDeck(&stDeck);
     vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
-    vShowMonsters(aMonsters, iMonsterCount);
+    vShowMonsters(astMonsters, iMonsterCount);
 
-    while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(aMonsters, iMonsterCount)) {
-      int iCh, iIdx;
-      vPrintLine("\nEscolha carta (1..9), 'e' encerra turno, 'q' sai:", INSERT_NEW_LINE);
-      iCh = iPortableGetchar();
-      if (iCh == 'q') { bRunning = FALSE; break; }
-      if (iCh == 'e') { break; }
-      if (iCh >= '0' && iCh <= '9') {
-        iIdx = iCh - '0';
-        vPlayCard(iIdx, &stDeck, aMonsters, iMonsterCount);
-        vClearTerminal();
-        vSortHandByName(&stDeck);
-        vShowPlayer();
-        vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
-        vShowDeck(&stDeck);
-        vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
-        vShowMonsters(aMonsters, iMonsterCount);
-      }
+    while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(astMonsters, iMonsterCount)) {
+      if ( iDoPlayerTurn(&bRunning, &stDeck, astMonsters, iMonsterCount) )
+        break;
     }
 
     /* fim de turno do jogador */
     vDiscardHand(&stDeck);
-    vDoEnemyActions(aMonsters, iMonsterCount);
+    vDoEnemyActions(astMonsters, iMonsterCount);
 
+    vLogDeck(&stDeck, TRACE_DECK_ALL);
     /* checa derrota */
     if (gstPlayer.iHP <= 0) {
       vPrintLine("\n*** Derrota! ***", INSERT_NEW_LINE);
@@ -94,15 +84,15 @@ int main(int argc, char *argv[]) {
     }
 
     /* checa vitória do nível */
-    if (!iAnyMonsterAlive(aMonsters, iMonsterCount)) {
+    if (!iAnyMonsterAlive(astMonsters, iMonsterCount)) {
       char szMsg[128];
-      snprintf(szMsg, sizeof(szMsg), "\n*** Nivel %d completo! ***", iLevel);
+      snprintf(szMsg, sizeof(szMsg), "\n*** Nivel %d completo! ***", giLevel);
       vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
       
       vOpenShop(&stDeck);
 
-      iLevel++;
-      vInitMonstersForLevel(aMonsters, iLevel, &iMonsterCount);
+      giLevel++;
+      vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
 
       /* reset de mão/energia para novo nível */
       iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
@@ -115,8 +105,11 @@ int main(int argc, char *argv[]) {
     /* próximo turno no mesmo nível */
     iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
+    
+    vLogDeck(&stDeck, TRACE_DECK_ALL);
   }
-
+  
+  vFreeDialog();
   vFreeProgramName();
   return 0;
 }

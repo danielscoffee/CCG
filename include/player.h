@@ -1,5 +1,17 @@
+/**
+ * player.h 
+ * 
+ * Header include for player.c 
+ * Prototypes and defines pragma_once "ansi like".
+ * 
+ * Written by Renato Fermi<repiazza@gmail.com> in September 2025
+ * Maintained by Gustavo <> since September 2025
+ * 
+ */
+
 #include <deck.h>
 #include <debuff.h>
+#include <monster.h>
 
 #ifndef PLAYER_H
   #define PLAYER_H
@@ -11,18 +23,19 @@
   #define PLAYER_MAX_DEBUFFS  10
 
   typedef struct STRUCT_PLAYER{
-    int iHP;
-    int iBlock;
-    int iEnergy;
-    int iGold;
-    int iDebuffCt;
-    STRUCT_DEBUFF stDebuff[PLAYER_MAX_DEBUFFS];
+    int  iHP;
+    int  iBlock;
+    int  iEnergy;
+    int  iGold;
+    int  iDebuffCt;
     char szPlayerName[PLAYER_NAME_SIZE];
-    PSTRUCT_DECK pstPlayerCards;
+    STRUCT_DEBUFF stDebuff[PLAYER_MAX_DEBUFFS];
+    PSTRUCT_DECK  pstPlayerCards;
   }STRUCT_PLAYER, *PSTRUCT_PLAYER;
   
   extern STRUCT_PLAYER gstPlayer;
 
   void vInitPlayer(PSTRUCT_DECK pstGameDeck);
-  void vShowPlayer();
+  void vShowPlayer(int bTrace);
+  int  iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster, int iMonsterCt);
 #endif
