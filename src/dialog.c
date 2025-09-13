@@ -19,12 +19,6 @@
   #include <windows.h>
   #include <process.h>
   #include <time.h>
-  #ifndef timeval
-    struct timeval {
-      long tv_sec;
-      long tv_usec;
-    };
-  #endif
 #endif
 
 typedef struct STRUCT_DIALOG{
