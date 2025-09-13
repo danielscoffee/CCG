@@ -91,12 +91,6 @@ jobs:
           npm install -g @semantic-release/github
           npm install -g conventional-changelog-conventionalcommits
 
-      - name: Run semantic release
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
-
       - name: Download Linux binary
         uses: actions/download-artifact@v4
         with:
@@ -108,3 +102,9 @@ jobs:
         with:
           name: card_game-windows-amd64
           path: dist/
+
+      - name: Run semantic release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: semantic-release
