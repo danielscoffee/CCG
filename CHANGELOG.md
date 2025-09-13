@@ -1,3 +1,9 @@
+## [0.0.1](https://github.com/repiazza/CCG/compare/v0.0.0...v0.0.1) (2025-09-13)
+
+### Bug Fixes
+
+* **semver:** removed create-release step and fixed minor errors ([08d9867](https://github.com/repiazza/CCG/commit/08d9867a4958b1dc5af303b56276b1438b86c42e))
+
 ## [1.0.1](https://github.com/danielscoffee/CCG/compare/v1.0.0...v1.0.1) (2025-09-13)
 
 ### Bug Fixes
