@@ -12,6 +12,7 @@
 #include <shop.h>
 
 char *gkpszProgramName;
+int gbLogLevel = 1;
 
 STRUCT_PLAYER gstPlayer;
 
@@ -21,12 +22,13 @@ void vFreeProgramName(){
 }
 
 int main(int argc, char *argv[]) {
+  STRUCT_MONSTER aMonsters[MAX_MONSTERS];
   STRUCT_DECK stDeck;
-  int bRunning;
   char szPath[_MAX_PATH];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
-  STRUCT_MONSTER aMonsters[MAX_MONSTERS];
+  int bLog = gbLogLevel;
+  int bRunning;
   int iLevel;
   int iMonsterCount;
 
@@ -58,7 +60,7 @@ int main(int argc, char *argv[]) {
     vClearTerminal();
 
     vSortHandByName(&stDeck);
-    vShowPlayer();
+    vShowPlayer(bLog);
     vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
     vShowDeck(&stDeck);
     vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
@@ -75,11 +77,12 @@ int main(int argc, char *argv[]) {
         vPlayCard(iIdx, &stDeck, aMonsters, iMonsterCount);
         vClearTerminal();
         vSortHandByName(&stDeck);
-        vShowPlayer();
+        vShowPlayer(bLog);
         vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
         vShowDeck(&stDeck);
         vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
         vShowMonsters(aMonsters, iMonsterCount);
+        vLogDeck(&stDeck, TRACE_DECK_ALL);
       }
     }
 
@@ -87,6 +90,7 @@ int main(int argc, char *argv[]) {
     vDiscardHand(&stDeck);
     vDoEnemyActions(aMonsters, iMonsterCount);
 
+    vLogDeck(&stDeck, TRACE_DECK_ALL);
     /* checa derrota */
     if (gstPlayer.iHP <= 0) {
       vPrintLine("\n*** Derrota! ***", INSERT_NEW_LINE);
@@ -115,6 +119,8 @@ int main(int argc, char *argv[]) {
     /* próximo turno no mesmo nível */
     iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
+    
+    vLogDeck(&stDeck, TRACE_DECK_ALL);
   }
 
   vFreeProgramName();

@@ -8,26 +8,40 @@
   #define MAX_HAND 10
   #define INIT_HAND_CARDS 6
 
+  #define CARD_TYPE_OFFENSIVE  0
+  #define CARD_TYPE_DEFFENSIVE 1
+  #define CARD_TYPE_DEBUFF     2
+  #define CARD_TYPE_SUPPORT    3
+  #define CARD_TARGET_SINGLE   1
+  #define CARD_TARGET_MULTIPLE 2
   #define CARD_STRIKE   0
   #define CARD_DEFEND   1
   #define CARD_HEAL     2
   #define CARD_FIREBALL 3
   #define CARD_POISON   4
   #define CARD_NULL    -1
-  
-  #define CARD_POISON_CYCS 3
 
+  #define DEBUFF_POISON_CYCS 3
+
+  #define TARGET_ALL 99
+
+  #define TRACE_DRAW_PILE    0x01
+  #define TRACE_HAND         0x02
+  #define TRACE_DISCARD_PILE 0x04
+  #define TRACE_DECK_ALL     TRACE_DRAW_PILE | TRACE_HAND | TRACE_DISCARD_PILE
+  
   typedef struct STRUCT_CARD{
     int iType;
+    int iTarget;
     int iCost;
     int iValue;
     char szName[16];
   }STRUCT_CARD, *PSTRUCT_CARD;
 
   typedef struct STRUCT_DECK{
-    STRUCT_CARD aDraw[MAX_DECK];
-    STRUCT_CARD aDiscard[MAX_DECK];
-    STRUCT_CARD aHand[MAX_HAND];
+    STRUCT_CARD astDraw[MAX_DECK];
+    STRUCT_CARD astDiscard[MAX_DECK];
+    STRUCT_CARD astHand[MAX_HAND];
     int iDrawCount;
     int iDiscardCount;
     int iHandCount;
@@ -46,11 +60,6 @@
   void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard);
   void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck);
   void vLogDeck(PSTRUCT_DECK pstDeck, int iTraceLevel);
-  STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue);
+  STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue, int iTarget);
   
-  #define TRACE_DRAW_PILE    0x01
-  #define TRACE_HAND         0x02
-  #define TRACE_DISCARD_PILE 0x04
-  #define TRACE_DECK_ALL     TRACE_DRAW_PILE | TRACE_HAND | TRACE_DISCARD_PILE
-
 #endif

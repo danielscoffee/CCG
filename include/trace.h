@@ -53,7 +53,7 @@
  *                                                                            *
  ******************************************************************************/
 
-  extern char gszTraceFile[_MAX_PATH+_MAX_PATH];
+  extern char gszTraceFile[2048];
   extern int giDebugLevel;
   extern char gszConfFile[_MAX_PATH];
   extern char *szTokenName[];

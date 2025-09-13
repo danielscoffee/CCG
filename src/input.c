@@ -216,11 +216,6 @@ int iReadOptions() {
  * @return char* - ponteiro para a string digitada (precisa ser liberado com
  * free)
  */
-/**
- * @brief Captura input do usuário caractere a caractere, com redesenho contínuo
- * @return char* - ponteiro para a string digitada (precisa ser liberado com
- * free)
- */
 char *cCatchInput() {
   char *pszBuffer = (char *)malloc(256);
   int iBufferLen = 0;

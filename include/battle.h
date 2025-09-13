@@ -1,4 +1,3 @@
-
 #include <deck.h>
 #include <monster.h>
 
