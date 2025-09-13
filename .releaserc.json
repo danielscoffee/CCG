@@ -1,6 +1,7 @@
 {
   "branches": ["main"],
   "repositoryUrl": "https://github.com/danielscoffee/CCG",
+  "tagFormat": "v${version}",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -22,7 +23,20 @@
       {
         "successComment": false,
         "failComment": false,
-        "releasedLabels": false
+        "releasedLabels": false,
+        "releaseName": "CCG v${nextRelease.version}",
+        "assets": [
+          {
+            "path": "dist/card_game-linux-amd64",
+            "name": "card_game-linux-amd64",
+            "label": "🐧 Linux Binary (x64)"
+          },
+          {
+            "path": "dist/card_game-windows-amd64.exe", 
+            "name": "card_game-windows-amd64.exe",
+            "label": "🪟 Windows Binary (x64)"
+          }
+        ]
       }
     ]
   ],
