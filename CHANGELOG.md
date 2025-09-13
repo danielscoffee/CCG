@@ -1,3 +1,9 @@
+## [0.0.1](https://github.com/danielscoffee/CCG/compare/v0.0.0...v0.0.1) (2025-09-13)
+
+### Bug Fixes
+
+* testc ([7d6562e](https://github.com/danielscoffee/CCG/commit/7d6562e4fb4c85a1d930a5cdd5163d3330a944e1))
+
 ## 1.0.0 (2025-09-13)
 
 ### ⚠ BREAKING CHANGES
