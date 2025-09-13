@@ -108,6 +108,7 @@ OBJS = \
 	$(OBJ_DIR)/player.o \
 	$(OBJ_DIR)/battle.o \
 	$(OBJ_DIR)/shop.o \
+	$(OBJ_DIR)/dialog.o \
 	$(OBJ_DIR)/trace.o 
 
 all: clean directories $(BIN_DIR)/$(CARD_GAME_EXEC)

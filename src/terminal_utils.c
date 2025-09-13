@@ -1,6 +1,8 @@
 #include <stdio.h>  
 #include <terminal_utils.h>
 #include <input.h>
+#include <dialog.h>
+#include <string.h>
 
 char *pszTerminalColors[] ={
   "\033",
@@ -20,12 +22,14 @@ char *pszTerminalColors[] ={
 };
 
 void vPrintLine(char *pszLine, int bNewLine) {
+  iAddMsgToDialog(pszLine, strlen(pszLine));
   printf("%s", pszLine);
   if ( bNewLine )
     printf("\n");
 }
 
 void vPrintHighlitedLine(char *pszLine, int bNewLine) {
+  iAddMsgToDialog(pszLine, strlen(pszLine));
   printf("\x1b[7m%s\x1b[0m", pszLine);
   if ( bNewLine )
     printf("\n");
@@ -59,6 +63,7 @@ void vGotoInputTextPosition() {
 }
 
 void vPrintColored(const char *pszText, int iColor) {
+  iAddMsgToDialog((char*)pszText, strlen((char*)pszText));
   printf("\033[%dm%s\033[0m", iColor, pszText);
 }
 

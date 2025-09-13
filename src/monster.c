@@ -104,12 +104,14 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
 
     iChoice = rand() % 3; /* 0 = attack, 1 = defend, 2 = heal */
 
+    vPrintLine("", INSERT_NEW_LINE);
+    
     if (iChoice == 0) {
       int iDamage = pastMonster[ii].iAttack;
       if (gstPlayer.iBlock > 0) {
         gstPlayer.iBlock -= iDamage;
         if (gstPlayer.iBlock < 0) {
-          gstPlayer.iHP -= (gstPlayer.iBlock);
+          gstPlayer.iHP -= (gstPlayer.iBlock)*-1;
           gstPlayer.iBlock = 0;
         }
       } else {
@@ -152,9 +154,12 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
           pastMonster[ii].szName,
           pstDebuff->iDamage
         );
-      vPrintLine(szLine, INSERT_NEW_LINE);
+        vPrintLine(szLine, INSERT_NEW_LINE);
       }
     }
+    if ( pastMonster[ii].iDebuffCt )
+      vClearDebuff(&pastMonster[ii].astDebuff[0], pastMonster[ii].iDebuffCt);
+    
     vSleepSeconds(2);
   }
 }
@@ -231,3 +236,16 @@ void vInitMonstersForLevel(PSTRUCT_MONSTER pastMonster, int iLevel, int *piOutCo
   vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
 }
 
+void vClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
+  int ii;
+  PSTRUCT_DEBUFF pWrkDebuff = pstDebuff;
+
+  for (ii = 0; ii < iDebuffCt; ii++){
+    if ( pWrkDebuff->iRounds <= 0 && (pWrkDebuff+sizeof(STRUCT_DEBUFF))->iRounds ){
+      memcpy(pWrkDebuff, pWrkDebuff+sizeof(STRUCT_DEBUFF), sizeof(STRUCT_DEBUFF));
+      memset(pWrkDebuff+sizeof(STRUCT_DEBUFF), 0, sizeof(STRUCT_DEBUFF));
+    }
+    pWrkDebuff = pWrkDebuff+sizeof(STRUCT_DEBUFF);
+  }
+ 
+}

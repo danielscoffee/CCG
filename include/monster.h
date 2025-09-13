@@ -29,5 +29,6 @@
   void vInitMonstersForLevel(PSTRUCT_MONSTER paMonsters, int iLevel, int *piOutCount);
   int iGetFirstAliveMonster(PSTRUCT_MONSTER pastMonster, int iCount);
   int iAliveMonsterQty(PSTRUCT_MONSTER pastMonster, int iCount);
-
+  void vClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt);
+  
 #endif

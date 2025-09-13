@@ -32,7 +32,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         iTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
       }
       else if ( pstCard->iTarget != CARD_TARGET_MULTIPLE && iMonsterCt > 1 ){
-        if ( (iTarget = iSelectMonsterFromList(iMonsterCt)) < 0 )
+        if ( (iTarget = iSelectMonsterFromList(iMonsterCt)) < 0 || iTarget > iMonsterCt )
           return -1;
           
         iTarget--;
@@ -47,9 +47,9 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         if ( pastMonsters[ii].iHP <= 0 ) continue;
 
         if ( pstCard->iType == CARD_POISON ) {
-          pastMonsters[ii].astDebuff[pastMonsters->iDebuffCt].iType   = DEBUFF_TYPE_POISON;
-          pastMonsters[ii].astDebuff[pastMonsters->iDebuffCt].iDamage = pstCard->iValue;
-          pastMonsters[ii].astDebuff[pastMonsters->iDebuffCt].iRounds = DEBUFF_POISON_CYCS;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iType   = DEBUFF_TYPE_POISON;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iDamage = pstCard->iValue;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iRounds = DEBUFF_POISON_CYCS;
           pastMonsters[ii].iDebuffCt++;
           vPrintLine("Voce aplicou Veneno!", INSERT_NEW_LINE);
         }
@@ -89,7 +89,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
   return 0;
 }
 
-void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters, int iMonsterCount)
+void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCount)
 {
   PSTRUCT_CARD pstCard;
 
@@ -103,7 +103,9 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER paMonsters,
     return;
   }
   
-  iHandlePlayerActionByCard(pstCard, paMonsters, iMonsterCount);
+  if ( iHandlePlayerActionByCard(pstCard, pastMonsters, iMonsterCount) < 0 ) 
+    return;
+  
   vSleepSeconds(2);
   gstPlayer.iEnergy -= pstCard->iCost;
   vDiscardCard(pstDeck, (iCardIndex - 1));

@@ -11,6 +11,7 @@
 
 #include <deck.h>
 #include <debuff.h>
+#include <monster.h>
 
 #ifndef PLAYER_H
   #define PLAYER_H
@@ -36,4 +37,5 @@
 
   void vInitPlayer(PSTRUCT_DECK pstGameDeck);
   void vShowPlayer(int bTrace);
+  int  iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster, int iMonsterCt);
 #endif

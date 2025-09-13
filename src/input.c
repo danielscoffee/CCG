@@ -160,7 +160,8 @@ void vFlushInput() {
  * @param pszBuf - string a ser convertida
  */
 void vToLower(char *pszBuf) {
-  for (char *p = pszBuf; *p; ++p)
+  char *p;
+  for (p = pszBuf; *p; ++p)
     if (*p >= 'A' && *p <= 'Z')
       *p += 32; /* 'A'(65)+32 = 'a'(97) */
 }

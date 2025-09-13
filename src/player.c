@@ -9,7 +9,10 @@
  */
 #include <player.h>
 #include <deck.h>
+#include <battle.h>
 #include <input.h>
+#include <string.h>
+#include <monster.h>
 #include <terminal_utils.h>
 
 void vInitPlayer(PSTRUCT_DECK pstGameDeck)
@@ -77,4 +80,26 @@ void vShowPlayer(int bTrace) {
       vPrintColored(szLine, TERMINAL_COLOR_GREEN);
     }
   }
+}
+
+int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster, int iMonsterCt){
+  int iCh, iIdx;
+  if ( !bRunning ) return 1;
+  vPrintLine("\nEscolha carta (1..9), 'e' encerra turno, 'q' sai:", INSERT_NEW_LINE);
+  iCh = iPortableGetchar();
+  if (iCh == 'q') { bRunning = FALSE; return 1; }
+  if (iCh == 'e') { return 1; }
+  if (iCh >= '0' && iCh <= '9') {
+    iIdx = iCh - '0';
+    vPlayCard(iIdx, pstDeck, pastMonster, iMonsterCt);
+    vClearTerminal();
+    vSortHandByName(pstDeck);
+    vShowPlayer(TRUE);
+    vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
+    vShowDeck(pstDeck);
+    vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
+    vShowMonsters(pastMonster, iMonsterCt);
+    vLogDeck(pstDeck, TRACE_DECK_ALL);
+  }
+  return 0;
 }
