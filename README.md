@@ -12,10 +12,11 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 - Mercado / loja para compra de cartas
 - Módulo de **batalha** entre jogadores
 - Interface via **terminal**
-- Estrutura modular (`src/` + `include/`)
+- Estrutura modular (`src/` + `include/` + ... )
 - Makefile estruturado
-- Portabilidade Win32 e Linux
+- Portabilidade Win32, Linux e Android
 - Rotina de debug simples e robusta (modulo trace -> log/card_game.log)
+- Rotina de historico de dialogo    (modulo trace -> log/card_game_dialog.log)
 
 ---
 
@@ -63,7 +64,7 @@ Onde:
  * => d - Debug flags de gdb
  * => (apenas mk_win32 ou mk_linux) - monta apenas os arquivos alterados desde a ultima compilacao
 # Executar
-./ccg
+./bin/card_game
 ```
 
 Limpar artefatos:
