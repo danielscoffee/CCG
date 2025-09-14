@@ -25,10 +25,22 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 ├── include/          # Cabeçalhos (.h)
 ├── src/              # Implementações (.c)
 ├── scripts/          # scripts de compilação para prod/debug/fake (.sh)
+├── doc/              # documentacoes (.md)
 ├── Makefile          # Build simplificado
 ├── .gitignore
 └── README.md
 ```
+## 📂 Diretorios temporários
+
+```
+├── obj/              # Arquivos objetos da compilacao (.o)
+├── log/              # Registros da execucao (.log)
+├── bin/              # Local onde o executavel sera gerado
+├── Makefile          # Build simplificado
+├── .gitignore
+└── README.md
+```
+
 
 ---
 
