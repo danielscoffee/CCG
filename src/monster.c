@@ -9,6 +9,38 @@
 
 int giMaxMonsterHP = MONSTER_INITAL_HP_MAX;
 
+void vTraceMonster(PSTRUCT_MONSTER pstMonster){
+  int jj;
+  char szLine[1024];
+
+  snprintf(szLine, sizeof(szLine),
+"%s - HP:%d/Blk:%d/Atk:%d", 
+    pstMonster->szName,
+    pstMonster->iHP,
+    pstMonster->iBlock,
+    pstMonster->iAttack
+  );
+  vTraceVarArgsFn("M [%s]", szLine);
+
+  for ( jj = 0; jj < pstMonster->iDebuffCt; jj++ ){
+    snprintf(szLine, sizeof(szLine),
+  "Tipo:%d Dmg:%d Cycles:%d", 
+      pstMonster->astDebuff[jj].iType,
+      pstMonster->astDebuff[jj].iDamage,
+      pstMonster->astDebuff[jj].iRounds
+    );
+    vTraceVarArgsFn("---|>Dbff%d [%s]", jj, szLine);
+  }
+
+}
+
+void vTraceMonsters(PSTRUCT_MONSTER pastMonster, int iMonsterCt){
+  int ii;
+  for (ii = 0; ii < iMonsterCt; ii++) {
+    vTraceMonster(&pastMonster[ii]);
+  }
+}
+
 void vInitMonsters(PSTRUCT_MONSTER pastMonster, int iCount) {
   int ii;
   
@@ -31,7 +63,7 @@ void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
 
   if ( (pstWrkDbf = pstDebuff) == NULL ) return;
 
-  for ( ii = 0; ii < iDebuffCt; ii++){
+  for ( ii = 0; ii < iDebuffCt; ii++ ){
     if ( pstWrkDbf->iType == DEBUFF_TYPE_POISON && pstWrkDbf->iRounds > 0 ){
       char szLine[1024];
       memset(szLine, 0, sizeof(szLine));
@@ -42,8 +74,8 @@ void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
         pstWrkDbf->iRounds
       );
       vPrintColored(szLine, TERMINAL_COLOR_BGREEN);
-      pstWrkDbf += sizeof(STRUCT_DEBUFF);
     }
+    pstWrkDbf++;
   }
 
 }
@@ -157,8 +189,14 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
         vPrintLine(szLine, INSERT_NEW_LINE);
       }
     }
-    if ( pastMonster[ii].iDebuffCt )
-      vClearDebuff(&pastMonster[ii].astDebuff[0], pastMonster[ii].iDebuffCt);
+    if ( pastMonster[ii].iDebuffCt ){
+      // int iDbf = 0;
+      vTraceMonster(&pastMonster[ii]);
+      iClearDebuff(&pastMonster[ii].astDebuff[0], pastMonster[ii].iDebuffCt);
+      // pastMonster[ii].iDebuffCt -= iDbf;
+      if ( pastMonster[ii].iDebuffCt < 0 ) pastMonster[ii].iDebuffCt = 0;
+      vTraceMonster(&pastMonster[ii]);
+    }
     
     vSleepSeconds(2);
   }
@@ -236,16 +274,20 @@ void vInitMonstersForLevel(PSTRUCT_MONSTER pastMonster, int iLevel, int *piOutCo
   vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
 }
 
-void vClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
+int iClearDebuff(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
   int ii;
+  int jj=0;
   PSTRUCT_DEBUFF pWrkDebuff = pstDebuff;
 
   for (ii = 0; ii < iDebuffCt; ii++){
-    if ( pWrkDebuff->iRounds <= 0 && (pWrkDebuff+sizeof(STRUCT_DEBUFF))->iRounds ){
-      memcpy(pWrkDebuff, pWrkDebuff+sizeof(STRUCT_DEBUFF), sizeof(STRUCT_DEBUFF));
-      memset(pWrkDebuff+sizeof(STRUCT_DEBUFF), 0, sizeof(STRUCT_DEBUFF));
+    if ( pWrkDebuff->iRounds <= 0 ){
+      pWrkDebuff->iType = DEBUFF_TYPE_NONE;
+      pWrkDebuff->iRounds = 0;
+      // memcpy(pWrkDebuff, &(*(pWrkDebuff+sizeof(STRUCT_DEBUFF))), sizeof(STRUCT_DEBUFF));
+      // pWrkDebuff++;
+      // memset(pWrkDebuff, 0, sizeof(STRUCT_DEBUFF));
+      jj++;
     }
-    pWrkDebuff = pWrkDebuff+sizeof(STRUCT_DEBUFF);
   }
- 
+  return jj;
 }

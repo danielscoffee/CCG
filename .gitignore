@@ -2,3 +2,6 @@
 /obj
 /log
 /.vscode
+*.exe
+*.log
+*.o

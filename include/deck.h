@@ -19,6 +19,7 @@
   #define CARD_HEAL     2
   #define CARD_FIREBALL 3
   #define CARD_POISON   4
+  #define CARD_PARALIZE 5
   #define CARD_NULL    -1
 
   #define DEBUFF_POISON_CYCS 3
@@ -29,14 +30,15 @@
   #define TRACE_HAND         0x02
   #define TRACE_DISCARD_PILE 0x04
   #define TRACE_DECK_ALL     TRACE_DRAW_PILE | TRACE_HAND | TRACE_DISCARD_PILE
-  
+
+
   typedef struct STRUCT_CARD{
     int iType;
     int iTarget;
     int iCost;
     int iValue;
     char szName[16];
-  }STRUCT_CARD, *PSTRUCT_CARD;
+  } STRUCT_CARD, *PSTRUCT_CARD;
 
   typedef struct STRUCT_DECK{
     STRUCT_CARD astDraw[MAX_DECK];

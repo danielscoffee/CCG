@@ -24,6 +24,7 @@ void vFreeProgramName(){
 }
 
 int main(int argc, char *argv[]) {
+  
   STRUCT_MONSTER astMonsters[MAX_MONSTERS];
   STRUCT_DECK stDeck;
   char szPath[_MAX_PATH];
@@ -47,7 +48,6 @@ int main(int argc, char *argv[]) {
   
   vInitLogs();
   vShowInitDialog();
-
   if ( argc > 1 ) vTraceVarArgsFn("excess of cmdline prms argc=%d", argc);
 
   vTraceVarArgsFn("Init OK ==== ***  main LOOP *** =====");
@@ -85,16 +85,18 @@ int main(int argc, char *argv[]) {
       vPrintLine("\n*** Derrota! ***", INSERT_NEW_LINE);
       break;
     }
-
+    vTraceMonsters(astMonsters , iMonsterCount);
     /* checa vitória do nível */
     if (!iAnyMonsterAlive(astMonsters, iMonsterCount)) {
       char szMsg[128];
       snprintf(szMsg, sizeof(szMsg), "\n*** Nivel %d completo! ***", giLevel);
       vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
       
+      vFlushInput();
       vAddPlayerReward(&gstPlayer);
       vOpenShop(&stDeck);
 
+      vFlushInput();
       giLevel++;
       vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
 
@@ -102,7 +104,6 @@ int main(int argc, char *argv[]) {
       iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
       gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
       gstPlayer.iBlock = 0;
-      vFlushInput();
       continue;
     }
 

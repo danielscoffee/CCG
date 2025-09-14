@@ -84,8 +84,11 @@ void vShowPlayer(int bTrace) {
 }
 
 int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster, int iMonsterCt){
-  int iCh, iIdx;
+  int iCh;
+  int iIdx;
+
   if ( !bRunning ) return 1;
+  
   vPrintLine("\nEscolha carta (1..9), 'e' encerra turno, 'q' sai:", INSERT_NEW_LINE);
   iCh = iPortableGetchar();
   if (iCh == 'q') { bRunning = FALSE; return 1; }

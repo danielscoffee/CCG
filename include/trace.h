@@ -40,7 +40,8 @@
  *                                                                            *
  ******************************************************************************/
   #define DEBUG_MSGS      giDebugLevel > 0
-  #define DEBUG_MORE_MSGS giDebugLevel > 8
+  #define DEBUG_MORE_MSGS giDebugLevel > 6
+  #define DEBUG_DIALOG    giDebugLevel > 8
 
   #define vTraceVarArgs(FORMAT, ...) _vTraceVarArgs(__FILE__, __LINE__, FORMAT, ##__VA_ARGS__)
   #define vTraceVarArgsFn(FORMAT, ...) _vTraceVarArgsFn(__FILE__, __LINE__, __func__, FORMAT, ##__VA_ARGS__)

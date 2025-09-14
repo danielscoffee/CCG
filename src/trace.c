@@ -4,6 +4,7 @@
  * Written by Renato Fermi <repiazza@gmail.com>
  *
  * Trace functions and global variables
+ *
  */
 
 #include <stdlib.h>
@@ -23,9 +24,8 @@
 char szRootPathFromBin[_MAX_PATH];
 char gszTraceFile[2048];
 char gszTraceFileDialog[2048];
-int giDebugLevel = 0;
+int giDebugLevel = 7;
 char gszConfFile[_MAX_PATH];
-
 int giNoNL = FALSE;
 
 #ifdef _WIN32
@@ -87,16 +87,17 @@ void vTraceMsg(char *szMsg) {
 void _vTraceMsgDialog(char *szMsg, ...) {
   FILE *pfLog;
   va_list args;
+  if ( DEBUG_DIALOG ){
+    va_start(args, szMsg);
+    if ((pfLog = fopen(gszTraceFileDialog, "a+")) == NULL){
+      return;
+    }
+    vfprintf(pfLog, szMsg, args);
 
-  va_start(args, szMsg);
-  if ((pfLog = fopen(gszTraceFileDialog, "a+")) == NULL){
-    return;
+    va_end(args);
+    fclose(pfLog);
+    pfLog = NULL;
   }
-  vfprintf(pfLog, szMsg, args);
-
-  va_end(args);
-  fclose(pfLog);
-  pfLog = NULL;
 } /* vTraceMsg */
 
 void vTracePid(char *szMsg, int iMsgLen) {

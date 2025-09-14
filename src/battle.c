@@ -98,6 +98,10 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster
     return;
 
   pstCard = &pstDeck->astHand[iCardIndex - 1];
+  
+  vPrintHighlitedLine("Carta Escolhida: ", NO_NEW_LINE);
+  vPrintHighlitedLine(pstCard->szName, INSERT_NEW_LINE);
+  vSleepSeconds(1);
 
   if (gstPlayer.iEnergy <= 0 || pstCard->iCost > gstPlayer.iEnergy ) {
     vTraceVarArgsFn("Not enough energy to play card[%s]", pstCard->szName);
