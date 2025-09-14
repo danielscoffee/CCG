@@ -47,7 +47,9 @@ Windows:
 Linux:
 ./scripts/mk*_linux.sh
 Onde:
- all - Executa o Clean + criacao de diretorios ( usualmente o primeiro make do dia deve ser este )
+ * => all - Executa o Clean + criacao de diretorios ( usualmente o primeiro make do dia deve ser este )
+ * => d - Debug flags de gdb
+ * => (apenas mk_win32 ou mk_linux) - monta apenas os arquivos alterados desde a ultima compilacao
 # Executar
 ./ccg
 ```
