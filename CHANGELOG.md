@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/repiazza/CCG/compare/v1.0.1...v2.0.0) (2025-09-14)
+
+### ⚠ BREAKING CHANGES
+
+* several changes
+
+### Features
+
+* several changes ([a44beeb](https://github.com/repiazza/CCG/commit/a44beeb9ad4c973fea63f554d407939c7d05c240))
+
 ## [1.0.1](https://github.com/repiazza/CCG/compare/v1.0.0...v1.0.1) (2025-09-13)
 
 ### Bug Fixes
