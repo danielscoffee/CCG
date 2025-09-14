@@ -42,8 +42,12 @@ git clone https://github.com/SEU_USUARIO/CCG.git
 cd CCG
 
 # Compilar
-make
-
+Windows:
+./scripts/mk*_win32.sh
+Linux:
+./scripts/mk*_linux.sh
+Onde:
+ all - Executa o Clean + criacao de diretorios ( usualmente o primeiro make do dia deve ser este )
 # Executar
 ./ccg
 ```
