@@ -1,3 +1,13 @@
+## [3.0.0](https://github.com/repiazza/CCG/compare/v2.0.0...v3.0.0) (2025-09-19)
+
+### ⚠ BREAKING CHANGES
+
+* Several changes on battle
+
+### Features
+
+* Several changes on battle ([870ef6e](https://github.com/repiazza/CCG/commit/870ef6ef58b6924ca58ca5991f94f9c38d128fa6))
+
 ## [2.0.0](https://github.com/repiazza/CCG/compare/v1.0.1...v2.0.0) (2025-09-14)
 
 ### ⚠ BREAKING CHANGES
