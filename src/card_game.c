@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
   char szPath[_MAX_PATH];
   char szName[_MAX_PATH];
   char szExt[_MAX_PATH];
-  int bLog = gbLogLevel;
   int bRunning;
   int iMonsterCount;
 
@@ -63,11 +62,7 @@ int main(int argc, char *argv[]) {
     vClearTerminal();
 
     vSortHandByName(&stDeck);
-    vShowPlayer(bLog);
-    vPrintLine("\t=== Sua mao (ordenada) ===", INSERT_NEW_LINE);
-    vShowDeck(&stDeck);
-    vPrintLine("\t== Monstros ==", INSERT_NEW_LINE);
-    vShowMonsters(astMonsters, iMonsterCount);
+    vShowTable(&stDeck, astMonsters, iMonsterCount);
     vTraceDialog(FALSE);
 
     while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(astMonsters, iMonsterCount)) {
@@ -79,13 +74,13 @@ int main(int argc, char *argv[]) {
     vDiscardHand(&stDeck);
     vDoEnemyActions(astMonsters, iMonsterCount);
 
-    vLogDeck(&stDeck, TRACE_DECK_ALL);
     /* checa derrota */
     if (gstPlayer.iHP <= 0) {
-      vPrintLine("\n*** Derrota! ***", INSERT_NEW_LINE);
+      vPrintLine("\n***  Derrota!! Você morreu! ***", INSERT_NEW_LINE);
+      vSleepSeconds(3);
       break;
     }
-    vTraceMonsters(astMonsters , iMonsterCount);
+
     /* checa vitória do nível */
     if (!iAnyMonsterAlive(astMonsters, iMonsterCount)) {
       char szMsg[128];
@@ -111,7 +106,7 @@ int main(int argc, char *argv[]) {
     iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
     
-    vLogDeck(&stDeck, TRACE_DECK_ALL);
+    vTraceDeck(&stDeck, TRACE_DECK_ALL);
   }
   
   vTraceVarArgsFn("             ***                   *** =====");

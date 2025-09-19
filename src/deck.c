@@ -1,4 +1,4 @@
-#include <deck.h>
+#include <deck.h> 
 #include <string.h>  
 #include <stdlib.h>  
 #include <terminal_utils.h>
@@ -12,7 +12,7 @@ char *pszCardTypeDesc[] ={
   NULL
 };
 
-void vLogCardList(STRUCT_CARD astCardList[], int iListCt){
+void vTraceCardList(STRUCT_CARD astCardList[], int iListCt){
   int ii;
 
   if ( iListCt <= 0 )
@@ -20,7 +20,7 @@ void vLogCardList(STRUCT_CARD astCardList[], int iListCt){
 
   for (ii = 0; ii < iListCt; ii++){
     vTraceVarArgsFn(
-  "\t|-> Card=%s EnergyCost=%d Value=%d",
+  "\t|-> Card=%6.6s EnergyCost=%d Value=%d",
       pszCardTypeDesc[astCardList[ii].iType],
       astCardList[ii].iCost,
       astCardList[ii].iValue
@@ -29,20 +29,20 @@ void vLogCardList(STRUCT_CARD astCardList[], int iListCt){
 
 }
 
-void vLogDeck(PSTRUCT_DECK pstDeck, int iTraceLevel){
+void vTraceDeck(PSTRUCT_DECK pstDeck, int iTraceOption){
 
-  vTraceVarArgsFn("%d cartas na pilha de compra:", pstDeck->iDrawCount);
-  if ( iTraceLevel & TRACE_DRAW_PILE )
-    vLogCardList(pstDeck->astDraw, pstDeck->iDrawCount);
-
-  vTraceVarArgsFn("%d cartas na mão do jogador:", pstDeck->iHandCount);
-  if ( iTraceLevel & TRACE_HAND )
-    vLogCardList(pstDeck->astHand, pstDeck->iHandCount);
-
-  vTraceVarArgsFn("%d cartas na pilha de descarte:", pstDeck->iDiscardCount);
-  if ( iTraceLevel & TRACE_DISCARD_PILE )
-    vLogCardList(pstDeck->astDiscard, pstDeck->iDiscardCount);
-
+  if ( TEST_TRACE_OPT(iTraceOption, TRACE_DRAW_PILE) ){
+    vTraceVarArgsFn("%d cartas na pilha de compra:", pstDeck->iDrawCount);
+    vTraceCardList(pstDeck->astDraw, pstDeck->iDrawCount);
+  }
+  if ( TEST_TRACE_OPT(iTraceOption, TRACE_HAND) ){
+    vTraceVarArgsFn("%d cartas na mão do jogador:", pstDeck->iHandCount);
+    vTraceCardList(pstDeck->astHand, pstDeck->iHandCount);
+  }
+  if ( TEST_TRACE_OPT(iTraceOption, TRACE_DISCARD_PILE) ){
+    vTraceVarArgsFn("%d cartas na pilha de descarte:", pstDeck->iDiscardCount);
+    vTraceCardList(pstDeck->astDiscard, pstDeck->iDiscardCount);
+  }
 }
 
 void vInitBasicDeck(PSTRUCT_DECK pstDeck)
@@ -68,7 +68,7 @@ void vInitBasicDeck(PSTRUCT_DECK pstDeck)
   
   vShuffle(pstDeck->astDraw, pstDeck->iDrawCount);
   vTraceVarArgsFn("Deck inicial embaralhado com %d cartas.", pstDeck->iDrawCount);
-  vLogDeck(pstDeck, TRACE_DECK_ALL);
+  vTraceDeck(pstDeck, TRACE_DECK_ALL);
 }
 
 /* descartar uma carta específica da mão (índice 0..iHandCount-1) */
@@ -152,7 +152,12 @@ void vSortHandByName(PSTRUCT_DECK pstDeck) {
       }
     }
   }
-  vTraceVarArgsFn("Mao ordenada alfabeticamente (%d cartas).", pstDeck->iHandCount);
+  vTraceVarArgsFn(
+"%d cartas ordenada%salfabeticamente.",
+    pstDeck->iHandCount,
+    pstDeck->iHandCount > 1 ? "s ": " "
+  );
+  vTraceDeck(pstDeck, TRACE_HAND);
 }
 
 void vSortDiscardByName(PSTRUCT_DECK pstDeck) {
@@ -183,7 +188,7 @@ int iDrawMultipleCard(int iCardCt, PSTRUCT_DECK pstDeck)
   for (ii = 0; ii < iCardCt; ii++){
     iDrawCard(pstDeck);
   }
-
+  
   return ii;
 }
 
@@ -223,8 +228,6 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
         ? 0
         : (pstDeck->iDiscardCount - pstDeck->iDrawCount);
 
-    // memset(&pstDeck->astDiscard[0], 0, MAX_DECK*sizeof(STRUCT_CARD));
-    // memset(pstDeck->astDiscard, 0, MAX_DECK*sizeof(STRUCT_CARD));
     vShuffle(pstDeck->astDraw, pstDeck->iDrawCount);
     vTraceVarArgsFn("Recycle: descarte movido para draw (%d cartas).", pstDeck->iDrawCount);
   }
@@ -232,6 +235,7 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
   pstDeck->iDrawCount--;
   pstDeck->astHand[pstDeck->iHandCount++] = stCard;
   vTraceVarArgsFn("Comprou: %s", stCard.szName);
+
   return 1;
 }
 void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck){
@@ -256,20 +260,35 @@ void vShowDeck(PSTRUCT_DECK pstDeck) {
   int ii;
   char szLine[1024];
 
-  for (ii = 0; ii < pstDeck->iHandCount; ii++)
-  {
+  memset(szLine, 0, sizeof(szLine));
+  snprintf(szLine, sizeof(szLine), 
+"  |-----------------------------------|"
+  );
+  vPrintLine(szLine, INSERT_NEW_LINE);
+
+  memset(szLine, 0, sizeof(szLine));
+  snprintf(szLine, sizeof(szLine),
+"%6.6s Carta%3.3sCusto  Tipo  Valor/Dano\n",
+    " ", " "
+  );
+  vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
+
+  for (ii = 0; ii < pstDeck->iHandCount; ii++) {
     int iLineCt = ii+1;
     int iPadding = (iLineCt % MAX_HAND) ?  1: 0; 
-    memset(szLine,0, sizeof(szLine));
-    snprintf(szLine, sizeof(szLine), "  [%d]%*.*s%-*.*s (custo:%d, %s:%d)",
+    memset(szLine, 0, sizeof(szLine));
+    snprintf(szLine, sizeof(szLine), "  [%d]%*.*s%-*.*s %d%4.4s%-6.6s%4.4s%d",
              iLineCt, iPadding, iPadding, " ", 
              MAX_HAND, MAX_HAND, pstDeck->astHand[ii].szName,
              pstDeck->astHand[ii].iCost,
+             " ",
              pszCardTypeDesc[pstDeck->astHand[ii].iType],
+             " ",
              pstDeck->astHand[ii].iValue
     );
     vPrintLine(szLine, INSERT_NEW_LINE);
   }
+  vPrintLine(" ", INSERT_NEW_LINE);
 } 
 
 STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue, int iTarget) {

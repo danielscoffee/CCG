@@ -19,10 +19,27 @@ int iSelectMonsterFromList(int iMonsterCt){
   return (iChoice-48);
 }
 
+/**
+ * @brief
+ *  Imprime a mesa de jogo:
+ *  - Dados do jogador
+ *  - Cartas na mão
+ *  - Monstros / inimigos
+ */
+void vShowTable(PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCount){
+  vShowPlayer();
+  // vPrintLine("\t======= SUA MAO  =======", INSERT_NEW_LINE);
+  vShowDeck(pstDeck);
+  // vPrintLine("\t======= INIMIGOS =======",  INSERT_NEW_LINE);
+  vShowMonsters(pastMonsters, iMonsterCount);
+}
+
 int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
   int iTarget = 0;
   int ii = 0;
+  int bAlreadyApplied = FALSE;
 
+  /** TODO: Melhorar esta logica - Cartas terao macrotipos e depois tipos (suporte-heal, suporte- paralize, offensivo-strike, etc.) */
   switch ( pstCard->iType ){
     case CARD_STRIKE:
     case CARD_FIREBALL:
@@ -38,9 +55,11 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         iTarget--;
       }
       
-      if ( pstCard->iTarget == CARD_TARGET_MULTIPLE )
+      if ( pstCard->iTarget == CARD_TARGET_MULTIPLE ){
+        bAlreadyApplied = FALSE;
         iTarget = iMonsterCt;
-      
+      }
+
       for ( ; ii <= iTarget; ii++ ) {
         char szLine[1024];
         if ( iTarget < iMonsterCt ) ii = iTarget;
@@ -64,7 +83,15 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
             pastMonsters[ii].iHP   -= pstCard->iValue;
             
           memset(szLine,0,sizeof(szLine));
-          sprintf(szLine, "Voce aplicou %d de dano ao monstro %s", pstCard->iValue, pastMonsters[ii].szName);
+          sprintf(szLine, "Voce utilizou %s:", pstCard->szName);
+          
+          if ( !bAlreadyApplied )
+            vPrintLine(szLine, INSERT_NEW_LINE);
+
+          if ( pstCard->iTarget == CARD_TARGET_MULTIPLE  ){
+            bAlreadyApplied = TRUE;
+          }
+          sprintf(szLine, " - Causando %d dano a %s", pstCard->iValue, pastMonsters[ii].szName);
           vPrintLine(szLine, INSERT_NEW_LINE);
           
           if ( iTarget < iMonsterCt ) ii++;
@@ -85,7 +112,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
     default:
       return CARD_NULL;
 
-    vSleepSeconds(1);
+    vSleepSeconds(3);
   }
   return 0;
 }
@@ -99,14 +126,17 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster
 
   pstCard = &pstDeck->astHand[iCardIndex - 1];
   
+  if (gstPlayer.iEnergy <= 0 || pstCard->iCost > gstPlayer.iEnergy ) {
+    char szMsg[128];
+    vTraceVarArgsFn("Not enough energy to play card[%s]", pstCard->szName);
+    sprintf(szMsg, "Energia insuficiente [%d/%d]", pstCard->iCost, gstPlayer.iEnergy);
+    vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
+    return;
+  }
+
   vPrintHighlitedLine("Carta Escolhida: ", NO_NEW_LINE);
   vPrintHighlitedLine(pstCard->szName, INSERT_NEW_LINE);
   vSleepSeconds(1);
-
-  if (gstPlayer.iEnergy <= 0 || pstCard->iCost > gstPlayer.iEnergy ) {
-    vTraceVarArgsFn("Not enough energy to play card[%s]", pstCard->szName);
-    return;
-  }
   
   if ( iHandlePlayerActionByCard(pstCard, pastMonsters, iMonsterCount) < 0 ) 
     return;
