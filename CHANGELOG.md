@@ -1,3 +1,9 @@
+## [3.1.0](https://github.com/repiazza/CCG/compare/v3.0.0...v3.1.0) (2025-09-20)
+
+### Features
+
+* Adjusted monster selection ([8608d6a](https://github.com/repiazza/CCG/commit/8608d6a9087069e1d07832d0088fa884b634e14c))
+
 ## [3.0.0](https://github.com/repiazza/CCG/compare/v2.0.0...v3.0.0) (2025-09-19)
 
 ### ⚠ BREAKING CHANGES
