@@ -1,3 +1,9 @@
+## [4.1.0](https://github.com/repiazza/CCG/compare/v4.0.0...v4.1.0) (2025-09-20)
+
+### Features
+
+* paralize accumulated ([60660d0](https://github.com/repiazza/CCG/commit/60660d0feda079500aeca6a3eda9b5d2ed323330))
+
 ## [4.0.0](https://github.com/repiazza/CCG/compare/v3.3.1...v4.0.0) (2025-09-20)
 
 ### ⚠ BREAKING CHANGES
