@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/repiazza/CCG/compare/v3.3.0...v3.3.1) (2025-09-20)
+
+### Bug Fixes
+
+* waning on trace ([50f424e](https://github.com/repiazza/CCG/commit/50f424e97cad7bfe529d46ec73eb59467dc8c030))
+
 ## [3.3.0](https://github.com/repiazza/CCG/compare/v3.2.0...v3.3.0) (2025-09-20)
 
 ### Features
