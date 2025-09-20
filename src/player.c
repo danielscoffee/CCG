@@ -59,17 +59,17 @@ void vShowPlayer() {
   vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
   
   snprintf(szLine, sizeof(szLine),
-"     HP    "
+"     HP  "
   );
   vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
   
   snprintf(szLine, sizeof(szLine),
-" ESCUDO"
+"     ESCUDO"
   );
   vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
   
   snprintf(szLine, sizeof(szLine),
-" ENERGIA"
+"    ENERGIA"
   );
   vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
 
@@ -91,13 +91,13 @@ void vShowPlayer() {
   
   snprintf(szLine, sizeof(szLine),
 // " Escudo=[%d]",
-" [%d]",
+"     [%d]",
     gstPlayer.iBlock
   );
   vPrintColored(szLine, TERMINAL_COLOR_BCYAN);
 
   snprintf(szLine, sizeof(szLine),
-" [%d/%d]",
+"       [%d/%d]",
     gstPlayer.iEnergy, PLAYER_ENERGY_MAX
   );
   vPrintColored(szLine, TERMINAL_COLOR_YELLOW);
