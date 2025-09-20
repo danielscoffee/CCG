@@ -120,7 +120,6 @@ int main(int argc, char *argv[]) {
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
     
     vTraceDeck(&stDeck, TRACE_DECK_ALL);
-    iMonsterCount = iAliveMonsterQty(astMonsters, iMonsterCount);
   }
   
   vTraceVarArgsFn("             ***                   *** =====");

@@ -180,6 +180,9 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
       pstDebuff = &pastMonster[ii].astDebuff[jj];
       if (pstDebuff->iType == DEBUFF_TYPE_POISON && pstDebuff->iRounds > 0){
         pastMonster[ii].iHP -= pstDebuff->iDamage;
+        
+        if (pastMonster[ii].iHP <= 0) break;
+
         pstDebuff->iRounds--;
         snprintf(szLine, sizeof(szLine),
       "%s recebe %d de dano do veneno.",
@@ -201,7 +204,7 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
 
     vFixDebuffs(&pastMonster[ii]);
 
-    if (bIsParalized){
+    if (bIsParalized || pastMonster[ii].iHP <= 0){
       vSleepSeconds(3);
       continue;
     }
