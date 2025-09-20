@@ -1,3 +1,13 @@
+## [3.3.0](https://github.com/repiazza/CCG/compare/v3.2.0...v3.3.0) (2025-09-20)
+
+### Features
+
+* adjusted monster selection ([735c528](https://github.com/repiazza/CCG/commit/735c528790711d5ef440ad4bfb405621b73c99dc))
+
+### Bug Fixes
+
+* merge branch 'main' into fix-commits ([4cc8b94](https://github.com/repiazza/CCG/commit/4cc8b94c9a524b0a6839de100437bf0d91be7928))
+
 ## [3.0.0](https://github.com/repiazza/CCG/compare/v2.0.0...v3.0.0) (2025-09-19)
 
 ### ⚠ BREAKING CHANGES
