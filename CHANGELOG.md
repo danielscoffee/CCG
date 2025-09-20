@@ -1,3 +1,13 @@
+## [4.0.0](https://github.com/repiazza/CCG/compare/v3.3.1...v4.0.0) (2025-09-20)
+
+### ⚠ BREAKING CHANGES
+
+* merged branches and corrections
+
+### Features
+
+* merged branches and corrections ([a168c53](https://github.com/repiazza/CCG/commit/a168c53cc8f01656f1be233a944defd2431bcb14))
+
 ## [3.3.1](https://github.com/repiazza/CCG/compare/v3.3.0...v3.3.1) (2025-09-20)
 
 ### Bug Fixes
