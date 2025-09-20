@@ -38,6 +38,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
   int iTarget = 0;
   int ii = 0;
   int bAlreadyApplied = FALSE;
+  int bUsed = FALSE;
 
   /** TODO: Melhorar esta logica - Cartas terao macrotipos e depois tipos (suporte-heal, suporte- paralize, offensivo-strike, etc.) */
   switch ( pstCard->iType ){
@@ -72,6 +73,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
           pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iRounds = DEBUFF_POISON_CYCS;
           pastMonsters[ii].iDebuffCt++;
           vPrintLine("Voce aplicou Veneno!", INSERT_NEW_LINE);
+          bUsed = TRUE;
         }
         else {
           pastMonsters[ii].iBlock  -= pstCard->iValue;
@@ -93,6 +95,8 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
           }
           sprintf(szLine, " - Causando %d dano a %s", pstCard->iValue, pastMonsters[ii].szName);
           vPrintLine(szLine, INSERT_NEW_LINE);
+
+          bUsed = TRUE;
           
           if ( iTarget < iMonsterCt ) ii++;
         }
@@ -101,12 +105,14 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
     case CARD_DEFEND:
       gstPlayer.iBlock += pstCard->iValue;
       vPrintLine("Voce se defendeu.", INSERT_NEW_LINE);
+      bUsed = TRUE;
       break;
     case CARD_HEAL:
       gstPlayer.iHP    += pstCard->iValue;
       if ( gstPlayer.iHP >= PLAYER_HP_MAX )
         gstPlayer.iHP = PLAYER_HP_MAX;
-        
+      
+      bUsed = TRUE;
       vPrintLine("Voce se curou.", INSERT_NEW_LINE);
       break;
     default:
@@ -114,6 +120,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
 
     vSleepSeconds(3);
   }
+  if ( !bUsed ) return -1; 
   return 0;
 }
 
@@ -121,7 +128,7 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster
 {
   PSTRUCT_CARD pstCard;
 
-  if (iCardIndex < 0 || iCardIndex > pstDeck->iHandCount)
+  if (iCardIndex <= 0 || iCardIndex > pstDeck->iHandCount)
     return;
 
   pstCard = &pstDeck->astHand[iCardIndex - 1];
