@@ -1,3 +1,9 @@
+## [4.1.2](https://github.com/repiazza/CCG/compare/v4.1.1...v4.1.2) (2025-09-20)
+
+### Bug Fixes
+
+* battle and monsters ([e9fe56c](https://github.com/repiazza/CCG/commit/e9fe56cd2c4b46b31eb15c2059e440cbc718fb23))
+
 ## [4.1.1](https://github.com/repiazza/CCG/compare/v4.1.0...v4.1.1) (2025-09-20)
 
 ### Bug Fixes
