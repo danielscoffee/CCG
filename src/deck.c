@@ -13,6 +13,12 @@ char *pszCardTypeDesc[] ={
   "Paralisar",
   NULL
 };
+char *pszDebuffTypeDesc[] ={
+  " ",
+  "Envenenado",
+  "Paralisado",
+  NULL
+};
 
 void vTraceCardList(STRUCT_CARD astCardList[], int iListCt){
   int ii;
@@ -286,7 +292,7 @@ void vShowDeck(PSTRUCT_DECK pstDeck) {
     }
     memset(szLine, 0, sizeof(szLine));
     snprintf(szLine, sizeof(szLine), 
-    "  [%d]%*.*s%-*.*s %d%4.4s%-6.6s%4.4s%d",
+    "  [%d]%*.*s%-*.*s %d%4.4s%-6.6s%4.4s%s",
       iLineCt, iPadding, iPadding, " ", 
       MAX_HAND, MAX_HAND, pstDeck->astHand[ii].szName,
       pstDeck->astHand[ii].iCost,

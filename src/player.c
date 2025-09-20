@@ -52,7 +52,30 @@ void vShowPlayer() {
   vPrintLine(" ", INSERT_NEW_LINE);
 
   snprintf(szLine, sizeof(szLine),
-// "   Jogador=%s",
+"%4.4s%-10.10s",
+    " ",
+    "Jogador"
+  );
+  vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
+  
+  snprintf(szLine, sizeof(szLine),
+"     HP    "
+  );
+  vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
+  
+  snprintf(szLine, sizeof(szLine),
+" ESCUDO"
+  );
+  vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
+  
+  snprintf(szLine, sizeof(szLine),
+" ENERGIA"
+  );
+  vPrintColored(szLine, TERMINAL_COLOR_BWHITE);
+
+  vPrintLine(" ", INSERT_NEW_LINE);
+
+  snprintf(szLine, sizeof(szLine),
 "%4.4s%-10.10s",
     " ",
     gstPlayer.szPlayerName
@@ -60,7 +83,6 @@ void vShowPlayer() {
   vPrintColored(szLine, TERMINAL_COLOR_BBLUE);
 
   snprintf(szLine, sizeof(szLine),
-// " HP=[%d/%d]",
 " [%d/%d]",
     gstPlayer.iHP, 
     PLAYER_HP_MAX
@@ -75,17 +97,11 @@ void vShowPlayer() {
   vPrintColored(szLine, TERMINAL_COLOR_BCYAN);
 
   snprintf(szLine, sizeof(szLine),
-  // " Energia=[%d/%d]",
 " [%d/%d]",
     gstPlayer.iEnergy, PLAYER_ENERGY_MAX
   );
   vPrintColored(szLine, TERMINAL_COLOR_YELLOW);
 
-//   snprintf(szLine, sizeof(szLine),
-// " Dinheiro=[%d]\n\n",
-//     gstPlayer.iGold
-//   );
-//   vPrintColored(szLine, TERMINAL_COLOR_BYELLOW);
 
   vPrintLine(" ", INSERT_NEW_LINE);
 

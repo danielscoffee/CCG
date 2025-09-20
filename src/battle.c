@@ -43,7 +43,12 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
     case CARD_STRIKE:
     case CARD_FIREBALL:
     case CARD_POISON:
+    case CARD_PARALIZE:
+      int iRoundsParalized = 0;
+      char* pszRoundStr = "rodadas";
+      time_t lTime;
 
+      
       if ( iAliveMonsterQty(pastMonsters, iMonsterCt) == 1 ){
         iTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
       }
@@ -65,12 +70,38 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         if ( pstCard->iTarget == CARD_TARGET_MULTIPLE && ii == iTarget ) break;
         if ( pastMonsters[ii].iHP <= 0 ) continue;
 
-        if ( pstCard->iType == CARD_POISON ) {
+              
+        if ( pstCard->iType == CARD_PARALIZE ){
+          time(&lTime);
+          srand(lTime);
+          iRoundsParalized = (rand() % 2) + 2;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iType   = DEBUFF_TYPE_PARALYZE;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iDamage = pstCard->iValue;
+          pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iRounds = iRoundsParalized;
+          pastMonsters[ii].iDebuffCt++;
+          memset(szLine, 0, sizeof(szLine));
+          snprintf(szLine, sizeof(szLine),
+            "Voce aplicou paralisia ao monstro %s por %d %s",
+            pastMonsters[ii].szName,
+            iRoundsParalized,
+            pszRoundStr
+          );
+          vPrintLine(szLine, INSERT_NEW_LINE);
+          bUsed = TRUE;
+        }
+        else if ( pstCard->iType == CARD_POISON ) {
           pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iType   = DEBUFF_TYPE_POISON;
           pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iDamage = pstCard->iValue;
           pastMonsters[ii].astDebuff[pastMonsters[ii].iDebuffCt].iRounds = DEBUFF_POISON_CYCS;
           pastMonsters[ii].iDebuffCt++;
-          vPrintLine("Voce aplicou Veneno!", INSERT_NEW_LINE);
+          memset(szLine, 0, sizeof(szLine));
+          snprintf(szLine, sizeof(szLine),
+            "Voce aplicou veneno ao monstro %s por %d %s",
+            pastMonsters[ii].szName,
+            DEBUFF_POISON_CYCS,
+            pszRoundStr
+          );
+          vPrintLine(szLine, INSERT_NEW_LINE);
           bUsed = TRUE;
         }
         else {
@@ -113,57 +144,13 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       bUsed = TRUE;
       vPrintLine("Voce se curou.", INSERT_NEW_LINE);
       break;
-    case CARD_PARALIZE:
-      // deixar o monster sem jogar por x turnos
-      // rolar um dado de 1 a 4 para definir o x turnos
-
-      int iRoundsParalized = 0;
-      int iMonsterTarget = 0;
-      int iDebuffCt = 0;
-      char szLine[63];
-      char* pszRoundStr = "rodadas";
-      
-      time_t lTime;
-  
-      time(&lTime);
-      srand(lTime);
-
-      iRoundsParalized = (rand() % 2) + 2;
-
-      if ( iAliveMonsterQty(pastMonsters, iMonsterCt) == 1) {
-        iMonsterTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
-      } else {
-        iMonsterTarget = iSelectMonsterFromList(iMonsterCt);
-      }
-
-      iDebuffCt = pastMonsters[iMonsterTarget].iDebuffCt;
-
-      pastMonsters[iMonsterTarget].astDebuff[iDebuffCt].iType = DEBUFF_TYPE_PARALYZE;
-      pastMonsters[iMonsterTarget].astDebuff[iDebuffCt].iDamage = pstCard->iValue;
-      pastMonsters[iMonsterTarget].astDebuff[iDebuffCt].iRounds = iRoundsParalized;
-      pastMonsters[iMonsterTarget].iDebuffCt ++;
-
-      if ( iRoundsParalized == 1 )
-        pszRoundStr = "rodada";
-
-      memset(szLine, 0, sizeof(szLine));
-      snprintf(szLine, sizeof(szLine),
-        "Voce aplicou paralisia a o monstro %d por %d %s",
-        iMonsterTarget,
-        iRoundsParalized,
-        pszRoundStr
-      );
-      vPrintLine(szLine, INSERT_NEW_LINE);
-      vSleepSeconds(2);
-      vTraceMonsters(pastMonsters, iMonsterCt);
-      break;
     default:
       return CARD_NONE;
 
     vSleepSeconds(3);
   }
   
-  if ( !bUsed ) return CARD_NULL; 
+  if ( !bUsed ) return CARD_NONE; 
   
   return pstCard->iType;
 }

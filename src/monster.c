@@ -3,6 +3,7 @@
 #include <monster.h>
 #include <string.h>
 #include <debuff.h>
+#include <deck.h>
 #include <player.h>
 #include <input.h>
 #include <terminal_utils.h>
@@ -73,7 +74,7 @@ void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
         "Paralizia/Turnos=%d",
         pstWrkDbf->iRounds
       );
-      vPrintColored(szLine, TERMINAL_COLOR_GREEN);
+      vPrintColored(szLine, TERMINAL_COLOR_BMAGENTA);
     }
     pstWrkDbf++;
   }
@@ -94,7 +95,7 @@ void vTraceDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
       pstWrkDbf->iDamage,
       pstWrkDbf->iRounds
     );
-    vTraceVarArgsFn("---|>Dbff%d [%s]", ii, szLine);
+    vTraceVarArgsFn("---|>Dbff%d - %s - [%s]", ii, pszDebuffTypeDesc[pstWrkDbf->iType], szLine);
     pstWrkDbf++;
   }
 

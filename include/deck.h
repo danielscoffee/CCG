@@ -73,6 +73,9 @@
     int iHandCount;
   }STRUCT_DECK, *PSTRUCT_DECK;
 
+  extern char *pszDebuffTypeDesc[];
+  extern char *pszCardTypeDesc[];
+
   int iDrawMultipleCard(int iCardCt, PSTRUCT_DECK pstDeck);
   int iDrawCard(PSTRUCT_DECK pstDeck);
   int  iUpgradeFirstCardByName(PSTRUCT_DECK pstDeck, const char *kpszName, int iDeltaValue, int iDeltaCost);
