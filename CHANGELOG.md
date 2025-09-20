@@ -1,3 +1,9 @@
+## [4.1.1](https://github.com/repiazza/CCG/compare/v4.1.0...v4.1.1) (2025-09-20)
+
+### Bug Fixes
+
+* Adjustments on alignment interface ([fe2f9e1](https://github.com/repiazza/CCG/commit/fe2f9e1c3ef0ebff152b7444a0173b29e974ac76))
+
 ## [4.1.0](https://github.com/repiazza/CCG/compare/v4.0.0...v4.1.0) (2025-09-20)
 
 ### Features
