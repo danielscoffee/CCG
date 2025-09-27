@@ -1,10 +1,11 @@
-#include <stdio.h>
-#include <string.h>
-#include <shop.h>
-#include <terminal_utils.h>
-#include <input.h>
+#include <debuff.h>
+#include <deck.h>
 #include <trace.h>
-#include <card_game.h>
+#include <terminal_utils.h>
+#include <monster.h>
+#include <player.h>
+#include <input.h>
+#include <shop.h>
 
 static void vPrintShopHeader(void) {
   char sz[128];

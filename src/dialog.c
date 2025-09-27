@@ -1,11 +1,5 @@
-#include <card_game.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 #include <trace.h>
-#include <sys_interface.h>
+#include <dialog.h>
 
 #ifdef LINUX
   #ifdef __has_include

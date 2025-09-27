@@ -7,11 +7,7 @@
  *
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include <trace.h>
-#include <unistd.h>
-#include <sys_interface.h>
 
 #ifdef LINUX
   #include <sys/time.h>
@@ -253,3 +249,13 @@ void vInitLogs(void) {
   iDIR_SplitFilename(gszTraceFileDialog, szPath2, szName, szExt);
   sprintf(gszTraceFileDialog, "%s/%s%s",szPath,szName,szExt);
 } /* vInitLogs */
+void vTraceMainLoopInit(){
+  vTraceVarArgs("          ***                   *** =====");
+  vTraceVarArgs("          ***   Init Main LOOP  *** =====");
+  vTraceVarArgs("          ***     Mode=%s       *** =====", gbSDL_Mode ? "SDL" : "CONSOLE");
+}
+void vTraceMainLoopEnd(){
+  vTraceVarArgsFn("          ***                   *** =====");
+  vTraceVarArgsFn("          ***   End Main LOOP   *** =====");
+  vTraceVarArgsFn("          ***                   *** =====");
+}

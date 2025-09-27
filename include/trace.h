@@ -16,9 +16,6 @@
  *                                                                            *
  ******************************************************************************/ 
   #include <errno.h>
-  #include <stdarg.h>
-  #include <stdio.h>
-  #include <sys_interface.h>
   #include <card_game.h>
 
   #ifdef _WIN32
@@ -78,5 +75,6 @@
                        const int kiLine,
                        const char *kpszFmt, ... );
   void _vTraceVarArgsFn(char *pszModuleName, const int kiLine, const char *kpszFunctionName, const char *kpszFmt, ...);
-
+  void vTraceMainLoopEnd();
+  void vTraceMainLoopInit();
 #endif /* _TRACE_H */

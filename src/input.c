@@ -1,12 +1,9 @@
-#include <ctype.h>
-#include <input.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys_interface.h>
-#include <terminal_utils.h>
-#include <player.h>
+#include <debuff.h>
 #include <deck.h>
+#include <monster.h>
+#include <player.h>
+#include <terminal_utils.h>
+#include <input.h>
 
 #ifdef _WIN32
 #include <windows.h>

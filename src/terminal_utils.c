@@ -1,9 +1,11 @@
-#include <stdio.h>  
-#include <stdlib.h>  
-#include <terminal_utils.h>
-#include <input.h>
+#include <debuff.h>
+#include <deck.h>
+#include <monster.h>
+#include <player.h>
 #include <dialog.h>
-#include <string.h>
+#include <input.h>
+#include <terminal_utils.h>
+
 
 char *pszTerminalColors[] ={
   "\033",

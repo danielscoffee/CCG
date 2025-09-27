@@ -1,5 +1,6 @@
 #ifndef DIALOG_H
   #define DIALOG_H
+  #include <card_game.h>
   void vInitDialog(void);
   int iAddMsgToDialog(char *pszMsg, int iMsgLen);
   void vFreeDialog(void);

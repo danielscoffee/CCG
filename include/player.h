@@ -9,12 +9,10 @@
  * 
  */
 
-#include <deck.h>
-#include <debuff.h>
-#include <monster.h>
-
 #ifndef PLAYER_H
   #define PLAYER_H
+
+  #include <card_game.h>
 
   #define PLAYER_HP_MAX       100
   #define PLAYER_NAME_SIZE    64
@@ -34,8 +32,10 @@
   }STRUCT_PLAYER, *PSTRUCT_PLAYER;
   
   extern STRUCT_PLAYER gstPlayer;
-
-  void vInitPlayer(PSTRUCT_DECK pstGameDeck);
-  void vShowPlayer();
+#ifdef USE_SDL2
+  extern SDL_Rect gSDL_Player_Rect;
+#endif
   int  iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster, int iMonsterCt);
+  void vInitPlayer(PSTRUCT_DECK pstGameDeck, int bReadName);
+  void vShowPlayer();
 #endif

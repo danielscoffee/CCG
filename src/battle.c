@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <battle.h>
+#include <debuff.h>
 #include <deck.h>
 #include <monster.h>
-#include <input.h>
 #include <player.h>
 #include <terminal_utils.h>
+#include <trace.h>
+#include <input.h>
+#include <battle.h>
 
 int iSelectMonsterFromList(int iMonsterCt){
   int iChoice;

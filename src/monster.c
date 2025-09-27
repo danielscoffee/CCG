@@ -1,12 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <monster.h>
-#include <string.h>
 #include <debuff.h>
 #include <deck.h>
+#include <trace.h>
+#include <terminal_utils.h>
+#include <monster.h>
 #include <player.h>
 #include <input.h>
-#include <terminal_utils.h>
 
 int giMaxMonsterHP = MONSTER_INITAL_HP_MAX;
 

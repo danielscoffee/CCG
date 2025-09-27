@@ -1,7 +1,7 @@
-#include <deck.h> 
-#include <string.h>  
-#include <stdlib.h>  
+#include <debuff.h>
+#include <trace.h>
 #include <terminal_utils.h>
+#include <deck.h>
 
 char *pszCardTypeDesc[] ={
   " ",

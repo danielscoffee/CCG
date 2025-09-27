@@ -1,7 +1,6 @@
-#include <debuff.h>
-
 #ifndef MONSTER_H
   #define MONSTER_H
+  #include <card_game.h>
 
   #define MAX_MONSTERS             6
   #define MONSTER_INITAL_HP_MAX    50

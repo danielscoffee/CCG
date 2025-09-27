@@ -67,7 +67,6 @@ ifneq (${RM_ALTER_CMD}, "")
 	MKDIR_CMD = ${MKDIR_ALTER_CMD}
 endif
 
-LIBS          = 
 SRC_PATH      = ${TARGET_PREFIX}src
 INCLUDE_PATH  = ${TARGET_PREFIX}include
 OBJ_DIR       = ${TARGET_PREFIX}obj
@@ -76,24 +75,48 @@ HTML_DIR      = ${TARGET_PREFIX}html
 LATEX_DIR     = ${TARGET_PREFIX}latex
 LOG_DIR       = ${TARGET_PREFIX}log
 INC_DIR       = -I$(INCLUDE_PATH)
-CCOPT         = -Wall -Wextra
 
+
+SDL_ADD_LIBS =
+ifdef USE_SDL2
+	ifdef _WIN32
+		SDL_ADD_LIBS += -lmingw32 -LD:/msys64/mingw64
+	endif
+	SDL_ADD_LIBS += -lSDL2main -lSDL2
+	INC_DIR += -I/mingw64/include
+endif
+
+
+LIBS    = 
+CCOPT   = -Wall -Wextra
 ifdef _WIN32
-  CCOPT += -D_WIN32
+  CCOPT +=  -D_WIN32 
+  LIBS  += $(SDL_ADD_LIBS) -mconsole -D_WIN32 
 endif
-
 ifdef LINUX
-  CCOPT += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags -DLINUX
-  LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags -DLINUX 
+  CCOPT += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX
+  LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX 
 endif
+ifdef USE_SDL2
+  CCOPT += -DUSE_SDL2
+endif 
 
-DEBUG_ADD_FLAGS = -O2
-ifdef DEBUG
-  DEBUG_ADD_FLAGS = -g -ggdb
-endif
-
+# FAKE OPT
 ifdef FAKE
   CCOPT += -DFAKE
+endif
+
+# DEBUG ADDON FLAGS
+DEBUG_ADD_FLAGS =
+ifdef DEBUG
+  DEBUG_ADD_FLAGS = -g -ggdb -O0
+else 
+  CCOPT += -O2
+endif
+
+SDL_OBJ = 
+ifdef USE_SDL2
+	SDL_OBJ = $(OBJ_DIR)/sdl_api.o
 endif
 
 CARD_GAME_EXEC = card_game
@@ -109,6 +132,8 @@ OBJS = \
 	$(OBJ_DIR)/battle.o \
 	$(OBJ_DIR)/shop.o \
 	$(OBJ_DIR)/dialog.o \
+	$(SDL_OBJ)  \
+	$(OBJ_DIR)/console_api.o \
 	$(OBJ_DIR)/trace.o 
 
 all: clean directories $(BIN_DIR)/$(CARD_GAME_EXEC)
