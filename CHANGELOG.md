@@ -1,3 +1,9 @@
+## [5.1.0](https://github.com/repiazza/CCG/compare/v5.0.0...v5.1.0) (2025-09-27)
+
+### Features
+
+* some adjustments on main ([5babb61](https://github.com/repiazza/CCG/commit/5babb61b6c1f7859811000a7f585723c499809db))
+
 ## [5.0.0](https://github.com/repiazza/CCG/compare/v4.1.2...v5.0.0) (2025-09-27)
 
 ### ⚠ BREAKING CHANGES
