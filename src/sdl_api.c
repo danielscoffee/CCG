@@ -5,10 +5,27 @@
 #include <trace.h>
 #include <sdl_api.h>
 
-#ifdef USE_SDL2
-  void vSDL_MainInit(SDL_Window *pSDL_Window, SDL_Renderer *pSDL_Renderer ){
+#ifdef USE_SDL2  
+  static const char *sdl_event_type_name(Uint32 type)
+  {
+      // user range: 0x8000..0xFFFF
+      if (type >= SDL_USEREVENT && type <= SDL_LASTEVENT) {
+          static char buf[64];
+          if (type == SDL_USEREVENT) return "SDL_USEREVENT";
+          snprintf(buf, sizeof(buf), "SDL_USEREVENT+%u", (unsigned)(type - SDL_USEREVENT));
+          return buf;
+      }
+      // linear lookup (tabela pequena)
+      for (size_t i = 0; i < sizeof(gEventNames)/sizeof(gEventNames[0]); ++i) {
+          if (gEventNames[i].type == type)
+              return gEventNames[i].name;
+      }
+      return "SDL_UNKNOWN_EVENT";
+  }
+  void vSDL_MainInit(){
+    vTraceVarArgsFn("MainInit Begin");
     SDL_SetMainReady();
-  
+    
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -23,34 +40,31 @@
       }
       return ;
     }
-
-  // Create a window
-    pSDL_Window = SDL_CreateWindow(
-      "CCG",
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
-      800,
-      600,
-      SDL_WINDOW_SHOWN
-    );
-
-    pSDL_Renderer = SDL_CreateRenderer( pSDL_Window, -1, SDL_RENDERER_ACCELERATED );
-    SDL_SetRenderDrawBlendMode( pSDL_Renderer, SDL_BLENDMODE_BLEND );
-
+    vTraceVarArgsFn("MainInit End OK");
   }
+  
   // void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
 
   // }
   void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
     uint64_t ui64ElapsedTime;
+
+    vTraceVarArgsFn("MainLoop Begin");
+    
     while ( *pbRunning ){
       vSortHandByName(pstDeck);
       //vSDL_DrawTable(pSDL_Renderer, pstDeck, pastMonsters, iMonsterCt);
-      while ( SDL_PollEvent(pSDL_Event) && *pbRunning ) { 
+
+      while ( SDL_PollEvent(pSDL_Event) && *pbRunning ) {
+        int iType = pSDL_Event->type; // Uint32
+        if (iType > SDL_FIRSTEVENT && iType < SDL_LASTEVENT) {
+            const char *name = sdl_event_type_name((Uint32)iType);
+            vTraceVarArgsFn("Event=[%s] (0x%04X)", name, (unsigned)iType);
+        }
         switch (pSDL_Event->type) {
           case SDL_QUIT:
-          pbRunning = FALSE;
-          break;
+            *pbRunning = FALSE;
+            break;
         }
       }
       ui64ElapsedTime = SDL_GetTicks64();

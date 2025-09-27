@@ -58,14 +58,10 @@ void vParseCmdlineArgs(char *argv[]){
 }
 
 /** ===  Main  === */
-#ifdef USE_SDL2
-int SDL_main(int argc, char *argv[]){
-#else
-int main(int argc, char *argv[]){
-#endif
+int CCG_Main(int argc, char *argv[]){
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
-  SDL_Renderer* pSDL_Rnd = NULL;
+  SDL_Renderer *pSDL_Rnd = NULL;
   SDL_Event SDL_Ev;
 #endif
   STRUCT_MONSTER astMonsters[MAX_MONSTERS];
@@ -81,12 +77,24 @@ int main(int argc, char *argv[]){
     vParseCmdlineArgs(argv);
      
   #ifdef USE_SDL2
-  if ( gbSDL_Mode )
-    vSDL_MainInit(pSDL_Wndw, pSDL_Rnd);
-  else 
-    vShowInitDialog();
+    if ( gbSDL_Mode ){
+      vSDL_MainInit();
+        // Create a window
+      pSDL_Wndw = SDL_CreateWindow(
+        "CCG",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        800,
+        600,
+        SDL_WINDOW_SHOWN
+      );
+      pSDL_Rnd = SDL_CreateRenderer(pSDL_Wndw, -1, SDL_RENDERER_ACCELERATED );
+      SDL_SetRenderDrawBlendMode(pSDL_Rnd, SDL_BLENDMODE_BLEND);
+    }
+    else 
+      vShowInitDialog();
   #else
-  vShowInitDialog();
+    vShowInitDialog();
   #endif
 
   vInitBasicDeck(&stDeck);
@@ -102,12 +110,12 @@ int main(int argc, char *argv[]){
   vTraceMainLoopInit();
 
   #ifdef USE_SDL2
-  if ( gbSDL_Mode )
-    vSDL_MainInit(pSDL_Wndw, pSDL_Rnd);
-  else 
-    vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
+    if ( gbSDL_Mode )
+      vSDL_MainLoop(&bRunning, &SDL_Ev, pSDL_Rnd, &stDeck, astMonsters, iMonsterCount);
+    else 
+      vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
   #else
-  vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
+    vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
   #endif
 
   vTraceMainLoopEnd();

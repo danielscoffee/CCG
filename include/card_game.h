@@ -24,3 +24,6 @@
   #define VSYNC_TIME 16.666666666 
   
 #endif
+#ifndef USE_SDL2
+  #define CCG_Main main
+#endif
