@@ -12,6 +12,7 @@
 #ifdef LINUX
   #include <sys/time.h>
   #include <sys/types.h>
+  #include <stdarg.h>
 #else
   #include <windows.h>
   #include <process.h>
