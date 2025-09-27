@@ -1,3 +1,17 @@
+## [5.0.0](https://github.com/repiazza/CCG/compare/v4.1.2...v5.0.0) (2025-09-27)
+
+### ⚠ BREAKING CHANGES
+
+* major SDL2 + console api
+
+### Features
+
+* major SDL2 + console api ([3fb8365](https://github.com/repiazza/CCG/commit/3fb83659bd1a37b7b8f977ebd1217d0189c34b97))
+
+### Bug Fixes
+
+* include header ([9e92e5b](https://github.com/repiazza/CCG/commit/9e92e5bfe4c77bde02b19233fb529ae13ad642ef))
+
 ## [4.1.2](https://github.com/repiazza/CCG/compare/v4.1.1...v4.1.2) (2025-09-20)
 
 ### Bug Fixes
