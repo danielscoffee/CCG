@@ -52,11 +52,20 @@ jobs:
           choco install make
 
       - name: Build Windows binary
+        shell: bash
+
         run: |
           ./scripts/mkall_win32.sh
           mkdir -p dist
-          cp bin/card_game.exe dist/card_game-windows-amd64.exe
-        shell: bash
+          mv bin/card_game.exe dist/card_game-windows-amd64.exe
+          ./scripts/mkallS_win32.sh
+          mv bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
+
+      - name: Upload Windows binary with SDL
+        uses: actions/upload-artifact@v4
+        with:
+          name: card_game-windows-sdl-amd64
+          path: dist/card_game-windows-sdl-amd64.exe
 
       - name: Upload Windows binary
         uses: actions/upload-artifact@v4
@@ -101,6 +110,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: card_game-windows-amd64
+          path: dist/
+
+      - name: Download Windows binary with SDL
+        uses: actions/download-artifact@v4
+        with:
+          name: card_game-windows-sdl-amd64
           path: dist/
 
       - name: Run semantic release
