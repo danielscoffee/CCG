@@ -51,9 +51,15 @@ jobs:
           choco install llvm --version 17.0.6
           choco install make
 
-      - name: Build Windows binary
-        shell: bash
+      - name: Install SDL2 dependencies
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git C:\vcpkg
+          C:\vcpkg\bootstrap-vcpkg.bat
+          C:\vcpkg\vcpkg.exe install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows
+          echo "VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
+          echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $env:GITHUB_ENV
 
+      - name: Build Windows binaries
         run: |
           ./scripts/mkall_win32.sh
           mkdir -p dist
