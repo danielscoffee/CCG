@@ -61,9 +61,10 @@ jobs:
           $env:PATH = "D:\msys64\mingw64\bin;$env:PATH"
           ./scripts/mkall_win32.sh
           mkdir -p dist
-          mv bin/card_game.exe dist/card_game-windows-amd64.exe
+          cp bin/card_game.exe dist/card_game-windows-amd64.exe
+          rm -rf bin/
           ./scripts/mkallS_win32.sh
-          mv bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
+          cp bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
 
       - name: Upload Windows binary with SDL
         uses: actions/upload-artifact@v4
