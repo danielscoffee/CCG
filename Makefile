@@ -80,10 +80,17 @@ INC_DIR       = -I$(INCLUDE_PATH)
 SDL_ADD_LIBS =
 ifdef USE_SDL2
 	ifdef _WIN32
-		SDL_ADD_LIBS += -lmingw32 -LD:/msys64/mingw64
+		# Check if vcpkg paths are available (GitHub Actions)
+		ifdef VCPKG_ROOT
+			SDL_ADD_LIBS += -lmingw32 -L$(VCPKG_ROOT)/installed/x64-windows/lib
+			INC_DIR += -I$(VCPKG_ROOT)/installed/x64-windows/include
+		else
+			# Fallback to traditional mingw paths
+			SDL_ADD_LIBS += -lmingw32 -LD:/msys64/mingw64
+			INC_DIR += -I/mingw64/include
+		endif
 	endif
 	SDL_ADD_LIBS += -lSDL2main -lSDL2
-	INC_DIR += -I/mingw64/include
 endif
 
 

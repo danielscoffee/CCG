@@ -53,14 +53,12 @@ jobs:
 
       - name: Install SDL2 dependencies
         run: |
-          git clone https://github.com/Microsoft/vcpkg.git C:\vcpkg
-          C:\vcpkg\bootstrap-vcpkg.bat
-          C:\vcpkg\vcpkg.exe install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows
-          echo "VCPKG_ROOT=C:\vcpkg" >> $env:GITHUB_ENV
-          echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $env:GITHUB_ENV
+          choco install msys2 --params="/NoUpdate /InstallDir:D:\msys64"
+          D:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf"
 
       - name: Build Windows binaries
         run: |
+          $env:PATH = "D:\msys64\mingw64\bin;$env:PATH"
           ./scripts/mkall_win32.sh
           mkdir -p dist
           mv bin/card_game.exe dist/card_game-windows-amd64.exe
