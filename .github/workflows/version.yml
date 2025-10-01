@@ -43,22 +43,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Visual Studio Build Tools
-        uses: microsoft/setup-msbuild@v1.1
-
-      - name: Setup Make and LLVM
-        run: |
-          choco install llvm --version 17.0.6
-          choco install make
-
-      - name: Install SDL2 dependencies
+      - name: Setup MSYS2 and build tools
         run: |
           choco install msys2 --params="/NoUpdate /InstallDir:D:\msys64"
-          D:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf"
+          D:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf"
 
       - name: Build Windows binaries
         run: |
-          D:\msys64\usr\bin\bash.exe -lc "cd /d/a/CCG/CCG && ./scripts/mkall_win32.sh"
+          D:\msys64\usr\bin\bash.exe -lc "export PATH=/mingw64/bin:/usr/bin:`$PATH && cd /d/a/CCG/CCG && ./scripts/mkall_win32.sh"
 
           if (!(Test-Path "bin/card_game.exe")) {
             Write-Error "Regular build failed - bin/card_game.exe not found"
@@ -70,7 +62,7 @@ jobs:
 
           Remove-Item -Recurse -Force bin,obj -ErrorAction SilentlyContinue
 
-          D:\msys64\usr\bin\bash.exe -lc "cd /d/a/CCG/CCG && ./scripts/mkallS_win32.sh"
+          D:\msys64\usr\bin\bash.exe -lc "export PATH=/mingw64/bin:/usr/bin:`$PATH && cd /d/a/CCG/CCG && ./scripts/mkallS_win32.sh"
           if (!(Test-Path "bin/card_game.exe")) {
             Write-Error "SDL build failed - bin/card_game.exe not found"
             Get-ChildItem -Recurse bin,obj 2>$null
