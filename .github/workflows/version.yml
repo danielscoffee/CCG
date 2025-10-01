@@ -58,13 +58,27 @@ jobs:
 
       - name: Build Windows binaries
         run: |
+
           $env:PATH = "D:\msys64\mingw64\bin;$env:PATH"
-          ./scripts/mkall_win32.sh
-          mkdir -p dist
-          cp bin/card_game.exe dist/card_game-windows-amd64.exe
-          rm -rf bin/
-          ./scripts/mkallS_win32.sh
-          cp bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
+          bash ./scripts/mkall_win32.sh
+
+          if (!(Test-Path "bin/card_game.exe")) {
+            Write-Error "Regular build failed - bin/card_game.exe not found"
+            Get-ChildItem -Recurse bin,obj 2>$null
+            exit 1
+          }
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item bin/card_game.exe dist/card_game-windows-amd64.exe
+          
+          Remove-Item -Recurse -Force bin,obj -ErrorAction SilentlyContinue
+          
+          bash ./scripts/mkallS_win32.sh
+          if (!(Test-Path "bin/card_game.exe")) {
+            Write-Error "SDL build failed - bin/card_game.exe not found"
+            Get-ChildItem -Recurse bin,obj 2>$null
+            exit 1
+          }
+          Copy-Item bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
 
       - name: Upload Windows binary with SDL
         uses: actions/upload-artifact@v4
