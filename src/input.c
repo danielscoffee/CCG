@@ -10,6 +10,7 @@
 #else
 #include <termios.h>
 #include <unistd.h>
+#include <ctype.h>
 #endif
 
 /**
