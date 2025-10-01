@@ -1,3 +1,9 @@
+## [5.1.1](https://github.com/repiazza/CCG/compare/v5.1.0...v5.1.1) (2025-10-01)
+
+### Bug Fixes
+
+* included ctype header on input.c ([67977a4](https://github.com/repiazza/CCG/commit/67977a4bacfdbfcd5a4834aa514f3d097f264b9c))
+
 ## [5.1.0](https://github.com/repiazza/CCG/compare/v5.0.0...v5.1.0) (2025-09-27)
 
 ### Features
