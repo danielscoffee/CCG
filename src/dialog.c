@@ -16,13 +16,6 @@
   #include <time.h>
 #endif
 
-typedef struct STRUCT_DIALOG{
-  int  iLevel;
-  char *pszMsg;
-  char szDT[64];
-  struct STRUCT_DIALOG *pstNext;
-}STRUCT_DIALOG, *PSTRUCT_DIALOG;
-
 STRUCT_DIALOG gstDialog;
 
 void vInitDialog(){
@@ -50,10 +43,10 @@ int iAddMsgToDialog(char *pszMsg, int iMsgLen){
     (int)st_tm_Now->tm_hour, (int)st_tm_Now->tm_min,     (int)st_tm_Now->tm_sec
   );
   
-  pszWrkMsg = (char *) malloc(iMsgLen + 2);
-  
-  memset(pszWrkMsg, 0, iMsgLen);
-  strcpy(pszWrkMsg, pszMsg);
+  pszWrkMsg = (char *) malloc(iMsgLen + 1);
+  memset(pszWrkMsg, 0, iMsgLen + 1);
+  strncpy(pszWrkMsg, pszMsg, iMsgLen);
+  pszWrkMsg[iMsgLen-1] = 0;
   
   if ( bStrIsEmpty(gstDialog.pszMsg) ){
     pstDialog = &gstDialog;
@@ -64,7 +57,7 @@ int iAddMsgToDialog(char *pszMsg, int iMsgLen){
     pstDialog = (PSTRUCT_DIALOG) malloc(sizeof(STRUCT_DIALOG));
     (*pWrk).pstNext = pstDialog;
   }
-  
+  memset(&(*pstDialog), 0, sizeof(STRUCT_DIALOG));
   (*pstDialog).iLevel = giLevel;
   (*pstDialog).pszMsg = pszWrkMsg;
   strcpy((*pstDialog).szDT, szNow);

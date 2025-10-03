@@ -101,7 +101,7 @@ int CCG_Main(int argc, char *argv[]){
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         800,
-        600,
+        800,
         SDL_WINDOW_SHOWN
       );
       pSDL_Rnd = SDL_CreateRenderer(pSDL_Wndw, -1, SDL_RENDERER_ACCELERATED );

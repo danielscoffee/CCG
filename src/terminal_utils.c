@@ -4,8 +4,8 @@
 #include <player.h>
 #include <dialog.h>
 #include <input.h>
+#include <trace.h>
 #include <terminal_utils.h>
-
 
 char *pszTerminalColors[] ={
   "\033",
@@ -25,10 +25,13 @@ char *pszTerminalColors[] ={
 };
 
 void vPrintLine(char *pszLine, int bNewLine) {
+  #ifdef USE_SDL2
+    if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+  #else
   printf("%s", pszLine);
   if ( bNewLine )
     printf("\n");
-    
+  #endif
   if ( bNewLine ) {
     char *pszWrkMsg;
     pszWrkMsg = (char *) malloc(strlen(pszLine) + 8);
@@ -44,9 +47,13 @@ void vPrintLine(char *pszLine, int bNewLine) {
 }
 
 void vPrintHighlitedLine(char *pszLine, int bNewLine) {
+  #ifdef USE_SDL2
+    if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+  #else
   printf("\x1b[7m%s\x1b[0m", pszLine);
   if ( bNewLine )
     printf("\n");
+  #endif
     
   if ( bNewLine ) {
     char *pszWrkMsg;
