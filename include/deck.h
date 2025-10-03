@@ -2,32 +2,33 @@
   #define DECK_H
   #include <card_game.h>
 
-  #define MAX_DECK 50
-  #define MAX_HAND 10
-  #define INIT_HAND_CARDS 6
+  #define MAX_DECK             50
+  #define MAX_HAND             10
+  #define INIT_HAND_CARDS       6
 
-  #define CARD_TYPE_NONE       0
-  #define CARD_TYPE_OFFENSIVE  1
-  #define CARD_TYPE_DEFFENSIVE 2
-  #define CARD_TYPE_DEBUFF     3
-  #define CARD_TYPE_SUPPORT    4
+  #define CARD_TYPE_NONE        0
+  #define CARD_TYPE_OFFENSIVE   1
+  #define CARD_TYPE_DEFFENSIVE  2
+  #define CARD_TYPE_DEBUFF      3
+  #define CARD_TYPE_SUPPORT     4
+ 
+  #define CARD_TARGET_SINGLE    1
+  #define CARD_TARGET_MULTIPLE  2
 
-  #define CARD_TARGET_SINGLE   1
-  #define CARD_TARGET_MULTIPLE 2
+  #define CARD_NONE             0
+  #define CARD_STRIKE           1
+  #define CARD_DEFEND           2
+  #define CARD_HEAL             3
+  #define CARD_FIREBALL         4
+  #define CARD_POISON           5
+  #define CARD_PARALIZE         6
+  #define CARD_CURSE_BLOCK      7
+  #define CARD_NULL            -1
+ 
+  #define DEBUFF_POISON_CYCS    3
+  #define DEBUFF_PARALISE_CYCS  3
 
-  #define CARD_NONE     0
-  #define CARD_STRIKE   1
-  #define CARD_DEFEND   2
-  #define CARD_HEAL     3
-  #define CARD_FIREBALL 4
-  #define CARD_POISON   5
-  #define CARD_PARALIZE 6
-  #define CARD_NULL    -1
-
-  #define DEBUFF_POISON_CYCS 3
-  #define DEBUFF_PARALISE_CYCS 3
-
-  #define TARGET_ALL 99
+  #define TARGET_ALL           99
 
   #define TRACE_DRAW_PILE    0x01
   #define TRACE_HAND         0x02
@@ -53,25 +54,25 @@
   #define TEST_TRACE_OPT(OPT, TRACE_MASK) (OPT & TRACE_MASK)
 
   typedef struct STRUCT_CARD{
-    int iClass;
-    int iType;
-    int iTarget;
-    int iCost;
-    int iValue;
+    int  iClass;
+    int  iType;
+    int  iTarget;
+    int  iCost;
+    int  iValue;
     char szName[16];
   } STRUCT_CARD, *PSTRUCT_CARD;
 
   typedef struct STRUCT_DECK{
-    STRUCT_CARD astDraw[MAX_DECK];
+    STRUCT_CARD astDraw   [MAX_DECK];
     STRUCT_CARD astDiscard[MAX_DECK];
-    STRUCT_CARD astHand[MAX_HAND];
-    int iDrawCount;
-    int iDiscardCount;
-    int iHandCount;
+    STRUCT_CARD astHand   [MAX_HAND];
+    int         iDrawCount;
+    int         iDiscardCount;
+    int         iHandCount;
   }STRUCT_DECK, *PSTRUCT_DECK;
 
   extern char *pszDebuffTypeDesc[];
-  extern char *pszCardTypeDesc[];
+  extern char   *pszCardTypeDesc[];
 
   int iDrawMultipleCard(int iCardCt, PSTRUCT_DECK pstDeck);
   int iDrawCard(PSTRUCT_DECK pstDeck);

@@ -213,3 +213,10 @@ int bStrIsEmpty(const char *kpszStr) {
 
   return FALSE;
 } /* bStrIsEmpty */
+
+int bStrIsNumeric(const char *kpszString)
+{
+  if (bStrIsEmpty(kpszString) == TRUE) return FALSE;
+  for ( ; *kpszString >= '0' && *kpszString <= '9'; kpszString++);
+  return (*kpszString == 0);
+}

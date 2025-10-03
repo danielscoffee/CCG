@@ -38,6 +38,7 @@
  *                                                                            *
  ******************************************************************************/
   int bStrIsEmpty(const char *kpszStr);
+  int bStrIsNumeric(const char *kpszString);
   int iDIR_MkDir(char *szDir);
   int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName,
                          char *szExt);

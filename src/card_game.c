@@ -41,23 +41,38 @@ void vSetProgramName(char *argv[]){
 }
 void vInitGlobals(){
   giLevel = 1;
-  gkpszProgramName = NULL;
+  giDebugLevel = DEBUG_LVL_DETAILS;
   gbSDL_Mode = FALSE;
+  gkpszProgramName = NULL;
 }
 void vParseCmdlineArgs(char *argv[]){
   char *pTok;
+
+  vSetProgramName(argv);
+
   if (bStrIsEmpty(argv[1]) || strstr(argv[1], "--") == NULL)
     return ;
 
   pTok = strtok(argv[1], "--");
 
-  if (pTok != NULL && strcasecmp(pTok, "sdl"))
-    return ;
+  if (!memcmp(pTok, "sdl", 3))
+    gbSDL_Mode = TRUE;
 
-  gbSDL_Mode = TRUE;
+  if (bStrIsEmpty(argv[2]) || strstr(argv[2], "--") == NULL)
+    return ;
+  
+  pTok = strtok(argv[2], "--");
+
+  if (!memcmp(pTok, "debug=", 6)){
+    pTok += 6;
+    pTok = strtok(argv[2]," \n\r\t");
+    if ( bStrIsNumeric(pTok) )
+      giDebugLevel = atoi(pTok);
+  }
+  
 }
 
-/** ===  Main  === */
+/** ===  Main  === **/
 int CCG_Main(int argc, char *argv[]){
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
@@ -69,12 +84,13 @@ int CCG_Main(int argc, char *argv[]){
   int bRunning = TRUE;
   int iMonsterCount;
   
-  vSetProgramName(argv);
-  vInitLogs();
   vInitGlobals();
-  
+
   if (argc > 1)
     vParseCmdlineArgs(argv);
+
+  vInitLogs();
+  
      
   #ifdef USE_SDL2
     if ( gbSDL_Mode ){
@@ -91,7 +107,7 @@ int CCG_Main(int argc, char *argv[]){
       pSDL_Rnd = SDL_CreateRenderer(pSDL_Wndw, -1, SDL_RENDERER_ACCELERATED );
       SDL_SetRenderDrawBlendMode(pSDL_Rnd, SDL_BLENDMODE_BLEND);
     }
-    else 
+    else
       vShowInitDialog();
   #else
     vShowInitDialog();
@@ -121,6 +137,9 @@ int CCG_Main(int argc, char *argv[]){
   vTraceMainLoopEnd();
   vFreeDialog();
   vFreeProgramName();
+  #ifdef USE_SDL2
+    if ( gbSDL_Mode ) vSDL_MainQuit();
+  #endif
 
   return 0;
 }

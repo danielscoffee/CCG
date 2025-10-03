@@ -61,7 +61,7 @@
     if ( SDL_SRFC_Img == NULL ) {
       printf("Error loading image: %s\n", IMG_GetError());
   
-      if ( DEBUG_MORE_MSGS ) vTraceVarArgs("%s - end return NULL", __func__);
+      if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("%s - end return NULL", __func__);
   
       return NULL;
     }

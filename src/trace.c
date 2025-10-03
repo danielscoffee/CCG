@@ -21,9 +21,9 @@
 char szRootPathFromBin[_MAX_PATH];
 char gszTraceFile[2048];
 char gszTraceFileDialog[2048];
-int giDebugLevel = 7;
+int  giDebugLevel;
 char gszConfFile[_MAX_PATH];
-int giNoNL = FALSE;
+int  giNoNL = FALSE;
 
 #ifdef _WIN32
 
@@ -174,46 +174,8 @@ void _vTraceVarArgsFn(char *pszModuleName, const int kiLine, const char *kpszFun
 
   fclose(pfLog);
   pfLog = NULL;
-} /* _vTraceVarArgs */
+} /* _vTraceVarArgsFn */
 
-void _vTraceVarArgs(const char *kpszModuleName, const int kiLine, const char *kpszFmt, ...) {
-  va_list args;
-  FILE *pfLog = NULL;
-  char szDbg[2048];
-  struct tm *st_tm_Now;
-  struct timeval tv;
-  time_t lTime;
-
-  memset(szDbg, 0x00, sizeof(szDbg));
-
-  time(&lTime);
-  st_tm_Now = localtime(&lTime);
-  gettimeofday(&tv, NULL);
-
-  if ((pfLog = fopen(gszTraceFile, "a+")) == NULL) {
-    fprintf(stderr, "E: Impossible create or open file %s!\n"
-            "%s\n",
-            gszTraceFile, strerror(errno));
-    exit(EXIT_FAILURE);
-  }
-
-  va_start(args, kpszFmt);
-
-  snprintf(szDbg, sizeof(szDbg), "[%02d/%02d/%02d %02d:%02d:%02d.%03ld] %s:%d ",
-           (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1,
-           (int)st_tm_Now->tm_year + 1900, (int)st_tm_Now->tm_hour,
-           (int)st_tm_Now->tm_min, (int)st_tm_Now->tm_sec,
-           (long)tv.tv_usec / 1000, kpszModuleName, kiLine);
-
-  strcat(szDbg, kpszFmt);
-  strcat(szDbg, "\n");
-  vfprintf(pfLog, szDbg, args);
-
-  va_end(args);
-
-  fclose(pfLog);
-  pfLog = NULL;
-} /* _vTraceVarArgs */
 
 void vSetLogFileTitle(void) {
   memset(gszTraceFile, 0, sizeof(gszTraceFile));
@@ -251,12 +213,12 @@ void vInitLogs(void) {
   sprintf(gszTraceFileDialog, "%s/%s%s",szPath,szName,szExt);
 } /* vInitLogs */
 void vTraceMainLoopInit(){
-  vTraceVarArgs("          ***                   *** =====");
-  vTraceVarArgs("          ***   Init Main LOOP  *** =====");
-  vTraceVarArgs("          ***     Mode=%s       *** =====", gbSDL_Mode ? "SDL" : "CONSOLE");
+  vTraceVarArgsFn("=====     ***                   *** =====");
+  vTraceVarArgsFn("=====     ***   Init Main LOOP  *** =====");
+  vTraceVarArgsFn("=====     ***     Mode=%s       *** =====", gbSDL_Mode ? "SDL" : "CONSOLE");
 }
 void vTraceMainLoopEnd(){
-  vTraceVarArgsFn("          ***                   *** =====");
-  vTraceVarArgsFn("          ***   End Main LOOP   *** =====");
-  vTraceVarArgsFn("          ***                   *** =====");
+  vTraceVarArgsFn("=====     ***                   *** =====");
+  vTraceVarArgsFn("=====     ***   End Main LOOP   *** =====");
+  vTraceVarArgsFn("=====     ***                   *** =====");
 }

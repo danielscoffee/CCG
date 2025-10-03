@@ -1,9 +1,11 @@
 #ifdef USE_SDL2
   #include <card_game.h>
+  #include <font.h>
   #ifndef SDL_API_H
     #define SDL_API_H
     void vSDL_MainInit();
     void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
+    void vSDL_MainQuit(void);
     typedef struct { Uint32 type; const char *name; } SDLEventName;
 
     static const SDLEventName gEventNames[] = {

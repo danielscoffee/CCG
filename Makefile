@@ -90,7 +90,7 @@ ifdef USE_SDL2
 			INC_DIR += -I/mingw64/include
 		endif
 	endif
-	SDL_ADD_LIBS += -lSDL2main -lSDL2
+	SDL_ADD_LIBS += -lSDL2main -lSDL2 -lSDL2_ttf
 endif
 
 

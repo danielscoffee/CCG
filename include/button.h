@@ -175,18 +175,15 @@
     //   if ( DEBUG_MSGS ) vTraceBegin();
 
     //   if ( iButtonType == BUTTON_DIRECTION || iButtonType == BUTTON_CONFIGURE ) {
-    //     if( DEBUG_MORE_MSGS ) vTraceVarArgs("iButtonType == BUTTON_DIRECTION");
-        
+    
     //     SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255 );
     //   }
     //   else if ( iButtonType == BUTTON_CONFIRM ) {
-    //     if( DEBUG_MORE_MSGS ) vTraceVarArgs("iButtonType == BUTTON_CONFIRM");
-        
+  
     //     SDL_SetRenderDrawColor(renderer, 0, 200, 50, 255);
     //   }
     //   else if ( iButtonType == BUTTON_ERASE ) {
-    //     if( DEBUG_MORE_MSGS ) vTraceVarArgs("iButtonType == BUTTON_ERASE");
-
+   
     //     SDL_SetRenderDrawColor( renderer, 255, 255, 200, 255 );
     //   }
 
