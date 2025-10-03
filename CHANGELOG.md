@@ -1,3 +1,13 @@
+## [6.0.0](https://github.com/repiazza/CCG/compare/v5.1.1...v6.0.0) (2025-10-03)
+
+### ⚠ BREAKING CHANGES
+
+* included initial table drawing
+
+### Features
+
+* included initial table drawing ([8c1b935](https://github.com/repiazza/CCG/commit/8c1b9353b6447581469f5445b1d41d0482f9a037))
+
 ## [5.1.1](https://github.com/repiazza/CCG/compare/v5.1.0...v5.1.1) (2025-10-01)
 
 ### Bug Fixes
