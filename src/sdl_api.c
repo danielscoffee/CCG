@@ -38,7 +38,7 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
   SDL_RenderDrawRect(pSDL_Renderer, &stRectDialog);
 
   /* mostra as últimas N linhas (cabe na altura da HUD) */
-  int iMaxLines = iH / iLineH;
+  int iMaxLines = iH / iLineH -1;
   int iTotal = 0;
   for (pstWrk = &gstDialog; pstWrk; pstWrk = pstWrk->pstNext) iTotal++;
   int iSkip = (iTotal > iMaxLines) ? (iTotal - iMaxLines) : 0;
@@ -156,7 +156,7 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
 
   /* --- MÃO DO JOGADOR (base da mesa) --- */
   iCardCt = pstDeck->iHandCount;
-  gCardCount = (iCardCt < MAX_HAND) ? iCardCt : MAX_HAND;
+  gCardCount = iCardCt;
 
   if (gCardCount > 0)
   {
@@ -288,6 +288,7 @@ void vSDL_MainLoop(int *pbRunning,
   gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
   gstPlayer.iBlock  = 0;
   iDrawMultipleCard(INIT_HAND_CARDS, pstDeck);
+  pstDeck->iHandCount = INIT_HAND_CARDS;
 
   while (*pbRunning)
   {
@@ -298,7 +299,7 @@ void vSDL_MainLoop(int *pbRunning,
     SDL_RenderClear(pSDL_Renderer);
     vSDL_DrawTable(pSDL_Renderer, pstDeck, pastMonsters, iMonsterCt);
     vSDL_DrawHUD(pSDL_Renderer, &gstPlayer);
-    vSDL_DrawDialog(pSDL_Renderer, 60, 600, 640, 180);
+    vSDL_DrawDialog(pSDL_Renderer, 60, 600, 640, 190 );
 
     SDL_RenderPresent(pSDL_Renderer);
 
@@ -377,7 +378,7 @@ void vSDL_MainLoop(int *pbRunning,
       SDL_RenderClear(pSDL_Renderer);
       vSDL_DrawTable(pSDL_Renderer, pstDeck, pastMonsters, iMonsterCt);
       vSDL_DrawHUD(pSDL_Renderer, &gstPlayer);
-      vSDL_DrawDialog(pSDL_Renderer, 60, 600, 640, 180);
+      vSDL_DrawDialog(pSDL_Renderer, 60, 600, 640, 190);
       SDL_RenderPresent(pSDL_Renderer);
     }
 

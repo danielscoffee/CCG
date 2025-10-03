@@ -39,7 +39,7 @@ int iAddMsgToDialog(char *pszMsg, int iMsgLen){
   memset(szNow, 0, sizeof(szNow));
   sprintf(szNow,
 "%02d/%02d/%02d %02d:%02d:%02d",
-    (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1, (int)st_tm_Now->tm_year + 1900,
+    (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1, (int)st_tm_Now->tm_year -100,
     (int)st_tm_Now->tm_hour, (int)st_tm_Now->tm_min,     (int)st_tm_Now->tm_sec
   );
   
