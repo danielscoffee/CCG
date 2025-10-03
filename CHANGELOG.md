@@ -1,3 +1,13 @@
+## [7.0.0](https://github.com/repiazza/CCG/compare/v6.0.0...v7.0.0) (2025-10-03)
+
+### ⚠ BREAKING CHANGES
+
+* changes on main sdl interface
+
+### Features
+
+* changes on main sdl interface ([7a88cec](https://github.com/repiazza/CCG/commit/7a88cec00e6015e94f13ea53a5020898beaedbcd))
+
 ## [6.0.0](https://github.com/repiazza/CCG/compare/v5.1.1...v6.0.0) (2025-10-03)
 
 ### ⚠ BREAKING CHANGES
