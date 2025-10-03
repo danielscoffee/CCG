@@ -1,3 +1,9 @@
+## [7.1.0](https://github.com/repiazza/CCG/compare/v7.0.0...v7.1.0) (2025-10-03)
+
+### Features
+
+* SDL dialog ([0c91268](https://github.com/repiazza/CCG/commit/0c912685ae570e1568fa7535f5aa8db6a4c8d0bd))
+
 ## [7.0.0](https://github.com/repiazza/CCG/compare/v6.0.0...v7.0.0) (2025-10-03)
 
 ### ⚠ BREAKING CHANGES
