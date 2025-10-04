@@ -25,6 +25,7 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 ```
 ├── include/          # Cabeçalhos (.h)
 ├── src/              # Implementações (.c)
+├── fonts/            # Fontes/texto (.ttf)
 ├── scripts/          # scripts de compilação para prod/debug/fake (.sh)
 ├── doc/              # documentacoes (.md)
 ├── Makefile          # Build simplificado
@@ -36,12 +37,9 @@ O projeto é pensado para ser **leve, didático e open source**, servindo tanto 
 ```
 ├── obj/              # Arquivos objetos da compilacao (.o)
 ├── log/              # Registros da execucao (.log)
-├── bin/              # Local onde o executavel sera gerado
-├── Makefile          # Build simplificado
-├── .gitignore
-└── README.md
-```
+└── bin/              # Local onde o executavel sera gerado
 
+```
 
 ---
 
@@ -57,14 +55,20 @@ cd CCG
 # Compilar
 Windows:
 ./scripts/mk*_win32.sh
+   % Com SDL2
+   ./scripts/mk*S_win32.sh
 Linux:
 ./scripts/mk*_linux.sh
+   % Com SDL2
+   ./scripts/mk*S_linux.sh
 Onde:
  * => all - Executa o Clean + criacao de diretorios ( usualmente o primeiro make do dia deve ser este )
  * => d - Debug flags de gdb
  * => (apenas mk_win32 ou mk_linux) - monta apenas os arquivos alterados desde a ultima compilacao
 # Executar
 ./bin/card_game
+   % Com SDL2
+   ./bin/card_game --sdl
 ```
 
 Limpar artefatos:
@@ -105,9 +109,9 @@ Consulte o arquivo [CONTRIBUTING.md](CONTRIBUTING.md) para mais detalhes sobre p
 
 ## 🗺️ Roadmap inicial
 
-- [ ] Melhorar loop de batalha
+- [x] Melhorar loop de batalha
 - [ ] Adicionar testes unitários
 - [ ] Suporte a diferentes modos de jogo
 - [ ] Localização (PT/EN)
-
+- [x] Suporte a SDL2 - **NOVO** - Em desenvolvimento
 ---
