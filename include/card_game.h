@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifndef SDL_MAIN_HANDLED
   #define SDL_MAIN_HANDLED

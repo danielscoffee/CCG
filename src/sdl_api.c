@@ -16,16 +16,21 @@
 #include <input.h>
 #include <terminal_utils.h>
 #include <event.h>
+#include <sdl_animation.h>
 #include <sdl_api.h>
 
 /* SDL */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+/* Animações (flip) */
+#include <sdl_animation.h>
+
 /* -------------------------------------------------------------- */
 /* Variáveis globais locais de renderização */
 static TTF_Font *gFont = NULL;
-static SDL_Rect gCardRects[64];
+/* gCardRects PRECISA ser global p/ sdl_animation.c (vAnimateFlipHand) */
+SDL_Rect gCardRects[64];
 static SDL_Rect gMonsterRects[64];
 static int gCardCount = 0;
 static int gMonsterCount = 0;
@@ -154,6 +159,7 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
   stRectMesa.w = 700;
   stRectMesa.h = 500;
 
+  /* Mesa verde, borda marrom */
   SDL_SetRenderDrawColor(pSDL_Renderer, 0, 100, 0, 255);
   SDL_RenderFillRect(pSDL_Renderer, &stRectMesa);
   SDL_SetRenderDrawColor(pSDL_Renderer, 139, 69, 19, 255);
@@ -181,8 +187,9 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
       int iHP;
       int iAtk;
 
-      if ( pastMonsters[ii].iHP <= 0) continue;
- 
+      if (pastMonsters[ii].iHP <= 0)
+        continue;
+
       stRectMonster.x = stRectMesa.x + iPad + ii * iSlotW + 8;
       stRectMonster.y = stRectMesa.y + iPad;
       stRectMonster.w = iSlotW - 16;
@@ -210,6 +217,7 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
   }
 
   /* --- Cartas do jogador --- */
+    /* --- Cartas do jogador --- */
   gCardCount = 0;
   if (pstDeck->iHandCount > 0) {
     int iPadX;
@@ -223,6 +231,7 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
     stWhite = (SDL_Color){255, 255, 255, 255};
 
     for (ii = 0; ii < pstDeck->iHandCount; ii++) {
+      SDL_Rect stRectCard;
       char szLine1[64];
       char szLine2[64];
       int iTx;
@@ -236,23 +245,26 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
       if (ii < (int)(sizeof(gCardRects) / sizeof(gCardRects[0])))
         gCardRects[ii] = stRectCard;
 
-      SDL_SetRenderDrawColor(pSDL_Renderer, 200, 200, 200, 255);
-      SDL_RenderFillRect(pSDL_Renderer, &stRectCard);
-      SDL_SetRenderDrawColor(pSDL_Renderer, 30, 30, 30, 255);
-      SDL_RenderDrawRect(pSDL_Renderer, &stRectCard);
+      /* 🔑 sempre renderizar via animação; ela cobre estático/flip */
+      if (ii < MAX_HAND) {
+        gastCardFlip[ii].stDst = stRectCard;     /* sincroniza posição por frame */
+        vAnimateFlipRender(&gastCardFlip[ii], pSDL_Renderer);
+      }
 
-      snprintf(szLine1, sizeof(szLine1), "%s", pstDeck->astHand[ii].szName);
-      snprintf(szLine2, sizeof(szLine2), "E:%d V:%d", pstDeck->astHand[ii].iCost, pstDeck->astHand[ii].iValue);
-
-      iTx = stRectCard.x + 8;
-      iTy = stRectCard.y + 8;
-
-      vSDL_DrawText(pSDL_Renderer, szLine1, iTx, iTy, stWhite);
-      vSDL_DrawText(pSDL_Renderer, szLine2, iTx, iTy + 21, stWhite);
+      /* Texto apenas quando a frente está visível e não está flipando */
+      if (ii < MAX_HAND && !gastCardFlip[ii].bIsFlipping && gastCardFlip[ii].bIsFront) {
+        snprintf(szLine1, sizeof(szLine1), "%s", pstDeck->astHand[ii].szName);
+        snprintf(szLine2, sizeof(szLine2), "E:%d V:%d", pstDeck->astHand[ii].iCost, pstDeck->astHand[ii].iValue);
+        iTx = stRectCard.x + 8;
+        iTy = stRectCard.y + 8;
+        vSDL_DrawText(pSDL_Renderer, szLine1, iTx, iTy, stWhite);
+        vSDL_DrawText(pSDL_Renderer, szLine2, iTx, iTy + 21, stWhite);
+      }
 
       gCardCount++;
     }
   }
+
 
   if (DEBUG_DIALOG)
     vTraceVarArgsFn("vSDL_DrawTable END OK");
@@ -271,7 +283,7 @@ void vSDL_MainInit(void) {
     return;
   }
 
-  /* Garante TTF inicializado antes de carregar fonte, caso ttfSDL_InitFont não o faça */
+  /* Inicializa TTF (se ainda não) */
   if (TTF_WasInit() == 0) {
     if (TTF_Init() != 0)
       vTraceVarArgsFn("Erro TTF_Init: %s", TTF_GetError());
@@ -283,6 +295,7 @@ void vSDL_MainInit(void) {
 
   vTraceVarArgsFn("MainInit End OK");
 }
+
 int iHitTestMonster(int iX, int iY) {
   int ii;
   for (ii = 0; ii < gMonsterCount; ii++) {
@@ -292,6 +305,7 @@ int iHitTestMonster(int iX, int iY) {
   }
   return -1;
 }
+
 /* Alterna fullscreen/windowed */
 void vSDL_ToggleFullscreen(void) {
   SDL_Window *pWindow;
@@ -316,8 +330,14 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
   vTraceVarArgsFn("vSDL_MainLoop BEGIN");
 
   vInitPlayer(pstDeck, PLAYER_GET_NAME_NONE);
+
+  /* Primeira compra e ordenação */
   iDrawMultipleCard(INIT_HAND_CARDS, pstDeck);
   vSortHandByName(pstDeck);
+
+  /* Apresentação inicial das cartas: viradas → flip automático */
+  vAnimateFlipHand(pSDL_Renderer, pstDeck, pastMonsters, iMonsterCt, &gstPlayer);
+
   iRedrawAction = REDRAW_IMAGE;
 
   while (*pbRunning) {
@@ -354,8 +374,8 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
           for (jj = 0; jj < gCardCount; jj++) {
             if (bAreCoordsInSDL_Rect(&gCardRects[jj], iX, iY)) {
               PSTRUCT_CARD pstCard;
-              int iAlive = 0;
-              int iLastM = -1;
+              int iAlive;
+              int iLastM;
               int mm;
 
               pstCard = &pstDeck->astHand[jj];
@@ -380,6 +400,8 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
               }
 
               /* --- Caso 3: carta com alvo único --- */
+              iAlive = 0;
+              iLastM = -1;
               for (mm = 0; mm < gMonsterCount; mm++) {
                 if (pastMonsters[mm].iHP > 0) {
                   iAlive++;
@@ -437,8 +459,11 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
         int iDlgH;
         int iWinW;
         int iWinH;
-        int iMarginInferior = 2;
-        int iMarginSuperior = 2;
+        int iMarginInferior;
+        int iMarginSuperior;
+
+        iMarginInferior = 2;
+        iMarginSuperior = 2;
 
         SDL_GetRendererOutputSize(pSDL_Renderer, &iWinW, &iWinH);
         iDlgY = 50 + 500 + iMarginSuperior;
@@ -454,6 +479,11 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
       vDoEnemyActions(pastMonsters, iMonsterCt);
       vDiscardHand(pstDeck);
       iDrawMultipleCard(INIT_HAND_CARDS, pstDeck);
+      vSortHandByName(pstDeck);
+
+      /* Animação de apresentação da nova mão */
+      vAnimateFlipHand(pSDL_Renderer, pstDeck, pastMonsters, iMonsterCt, &gstPlayer);
+
       gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
       iRedrawAction = REDRAW_IMAGE;
     }
@@ -476,28 +506,19 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
       int iMarginInferior;
       int iMarginSuperior;
 
-      /* Margens configuráveis */
-      iMarginSuperior = 2;   /* espaço entre mesa e diálogo */
-      iMarginInferior = 2;   /* espaço inferior antes da borda da janela */
+      iMarginSuperior = 2;
+      iMarginInferior = 2;
 
-      /* Obtém dimensões reais do renderer */
       SDL_GetRendererOutputSize(pSDL_Renderer, &iWinW, &iWinH);
-
-      /* Posição Y inicial: onde termina a mesa + margem superior */
       iDlgY = 50 + 500 + iMarginSuperior;
-
-      /* Altura: altura real da janela - posição inicial - margem inferior */
       iDlgH = iWinH - iDlgY - iMarginInferior;
 
       if (iDlgH < 0)
         iDlgH = 0;
 
       vTraceVarArgsFn("DlgH[%d] WinH[%d] DlgY[%d]", iDlgH, iWinH, iDlgY);
-
       vSDL_DrawDialog(pSDL_Renderer, 50, iDlgY, 700, iDlgH);
     }
-
-
 
     SDL_RenderPresent(pSDL_Renderer);
 
