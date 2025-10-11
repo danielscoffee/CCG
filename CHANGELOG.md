@@ -1,3 +1,13 @@
+## [8.0.0](https://github.com/repiazza/CCG/compare/v7.2.0...v8.0.0) (2025-10-11)
+
+### ⚠ BREAKING CHANGES
+
+* card flip animation
+
+### Features
+
+* card flip animation ([8ff8bab](https://github.com/repiazza/CCG/commit/8ff8bab82e89cfa6ee980151feb35079305d5dff))
+
 ## [7.2.0](https://github.com/repiazza/CCG/compare/v7.1.0...v7.2.0) (2025-10-11)
 
 ### Features
