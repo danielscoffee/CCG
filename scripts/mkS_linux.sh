@@ -1,0 +1,1 @@
+make LINUX=1 USE_SDL2=1 bin/card_game

@@ -1,1 +1,1 @@
-make _WIN32=1 DEBUG=1 bin/card_game
+make LINUX=1 DEBUG=1 bin/card_game
