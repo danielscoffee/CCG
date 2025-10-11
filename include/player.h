@@ -14,6 +14,10 @@
 
   #include <card_game.h>
 
+  #define PLAYER_GET_NAME_NONE 0
+  #define PLAYER_GET_NAME      1
+  
+
   #define PLAYER_HP_MAX       100
   #define PLAYER_NAME_SIZE    64
   #define PLAYER_ENERGY_MAX   3

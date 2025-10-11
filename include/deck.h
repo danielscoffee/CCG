@@ -3,8 +3,8 @@
   #include <card_game.h>
 
   #define MAX_DECK             50
-  #define MAX_HAND             10
   #define INIT_HAND_CARDS       6
+  #define MAX_HAND             INIT_HAND_CARDS /** TODO: Global enhancement by dngn lvl */
 
   #define CARD_TYPE_NONE        0
   #define CARD_TYPE_OFFENSIVE   1
@@ -14,6 +14,7 @@
  
   #define CARD_TARGET_SINGLE    1
   #define CARD_TARGET_MULTIPLE  2
+  #define CARD_TARGET_SELF      3
 
   #define CARD_NONE             0
   #define CARD_STRIKE           1

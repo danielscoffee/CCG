@@ -60,7 +60,6 @@ void vShowPlayer(){
   char szLine[1024];
 
   if (gbSDL_Mode){
-    // vSDL_ShowPlayer();
     return ;
   }
   memset(szLine, 0, sizeof(szLine));
@@ -131,6 +130,9 @@ int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonst
   if (!bRunning)
     return 1;
 
+  if ( !bHasAnyPlayableCard(pstDeck) )
+    return 1;
+    
   memset(szLine, 0, sizeof(szLine));
   sprintf(szLine,
           "\nEscolha carta (1..%d), 'e' encerra turno, 'q' sai:",

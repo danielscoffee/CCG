@@ -12,6 +12,23 @@
   extern int gSDL_SelectedMonster;
 #endif
 
+int bHasAnyPlayableCard(PSTRUCT_DECK pstDeck){
+  PSTRUCT_CARD pstCard;
+  int iWrkCardIx;
+  int ii;
+  
+  /* No SDL já recebemos índice zero-based, no console era 1-based */
+  
+  iWrkCardIx = pstDeck->iHandCount-1;
+
+  for ( ii = 0 ; ii < iWrkCardIx ; ii++ ){
+    pstCard = &pstDeck->astHand[ii];
+    if ( pstCard->iCost <= gstPlayer.iEnergy )
+      return TRUE;
+  }
+  return FALSE;
+}
+
 int iSelectMonsterFromList(int iMonsterCt){
 #ifndef USE_SDL2
   int iChoice;
@@ -46,13 +63,13 @@ void vShowTable(PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonster
 #endif
 }
 
-
-
 int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
   int iTarget = 0;
   int ii = 0;
   int bAlreadyApplied = FALSE;
   int bUsed = FALSE;
+
+  vTraceVarArgsFn("Card Type=%d", pstCard->iType);
 
   switch ( pstCard->iType ){
     case CARD_STRIKE:
@@ -68,11 +85,25 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         iTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
       }
       else if ( pstCard->iTarget != CARD_TARGET_MULTIPLE && iMonsterCt > 1 ){
-        if ( (iTarget = iSelectMonsterFromList(iMonsterCt)) < 0 || iTarget > iMonsterCt )
-          return -1;
-        iTarget--; /* console: ajusta para base 0 */
-      }
+        #ifdef USE_SDL2
+          /* SDL: usa o monstro clicado pelo jogador */
+          if (gbSDL_Mode) {
+            iTarget = gSDL_SelectedMonster;
+            vTraceVarArgsFn("SDL Target [%d] %s", iTarget, pastMonsters[iTarget].szName);
+          }
+          else{
+            iTarget = iSelectMonsterFromList(iMonsterCt);    
+            iTarget--; /* console: ajusta para base 0 */
+          }
+        #else
+          /* modo console: pedir ao jogador */
+          iTarget = iSelectMonsterFromList(iMonsterCt);
+          iTarget--; /* console: ajusta para base 0 */
+        #endif  
 
+        if ( iTarget < 0 || iTarget >= iMonsterCt )
+          return -1;
+      }
       if ( pstCard->iTarget == CARD_TARGET_MULTIPLE ){
         bAlreadyApplied = FALSE;
         iTarget = iMonsterCt;
@@ -165,13 +196,15 @@ void vPlayCard(int iCardIndex, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonster
   
   /* No SDL já recebemos índice zero-based, no console era 1-based */
   
-iWrkCardIx = iCardIndex - 1;
-#ifdef USE_SDL2
-  if ( gbSDL_Mode)
-    iWrkCardIx = iCardIndex;
-#endif
+  iWrkCardIx = iCardIndex - 1;
+  #ifdef USE_SDL2
+    if ( gbSDL_Mode )
+      iWrkCardIx = iCardIndex;
+  #endif
+ 
   if (iWrkCardIx < 0 || iWrkCardIx >= pstDeck->iHandCount)
     return;
+
   pstCard = &pstDeck->astHand[iWrkCardIx];
 
   if (gstPlayer.iEnergy <= 0 || pstCard->iCost > gstPlayer.iEnergy ) {

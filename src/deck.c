@@ -68,9 +68,9 @@ void vInitBasicDeck(PSTRUCT_DECK pstDeck)
   for (ii = 0; ii < 8; ii++)
     pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_STRIKE, "Strike", 1, 6, CARD_TARGET_SINGLE);
   for (ii = 0; ii < 6; ii++)
-    pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_DEFEND, "Defend", 2, 5, CARD_TARGET_SINGLE);
+    pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_DEFEND, "Defend", 2, 5, CARD_TARGET_SELF);
   for (ii = 0; ii < 4; ii++)
-    pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_HEAL, "Heal", 1, 3, CARD_TARGET_SINGLE);
+    pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_HEAL, "Heal", 1, 3, CARD_TARGET_SELF);
   for (ii = 0; ii < 2; ii++)
     pstDeck->astDraw[pstDeck->iDrawCount++] = stMakeCard(CARD_FIREBALL, "Fireball", 1, 4, CARD_TARGET_MULTIPLE);
   
@@ -204,6 +204,7 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
 {
   int ii;
   STRUCT_CARD stCard;
+  char szMsg[_MAX_EXT];
 
   if (pstDeck->iHandCount >= MAX_HAND) {
     vTraceVarArgsFn("Mao cheia, nao pode comprar.");
@@ -216,7 +217,9 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
     }
 
     pstDeck->iDrawCount    = 0;
-    vTraceVarArgsFn("Embaralhando %d cartas de discarte no deck", pstDeck->iDiscardCount);
+    memset(szMsg, 0, sizeof(szMsg));
+    sprintf(szMsg, "Embaralhando %d cartas do cemiterio", pstDeck->iDiscardCount);
+    vPrintLine(szMsg, INSERT_NEW_LINE);
     
     vShuffle(pstDeck->astDiscard, pstDeck->iDiscardCount);
     for (ii = 0; ii < pstDeck->iDiscardCount; ii++) {
@@ -242,7 +245,9 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
   stCard = pstDeck->astDraw[pstDeck->iDrawCount - 1];
   pstDeck->iDrawCount--;
   pstDeck->astHand[pstDeck->iHandCount++] = stCard;
-  vTraceVarArgsFn("Comprou: %s", stCard.szName);
+  memset(szMsg, 0, sizeof(szMsg));
+  sprintf(szMsg, "Comprou : %s", stCard.szName);
+  vPrintLine(szMsg, INSERT_NEW_LINE);
 
   return 1;
 }

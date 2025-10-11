@@ -3,12 +3,23 @@
   #include <font.h>
   #ifndef SDL_API_H
     #define SDL_API_H
+    #define REDRAW_NONE   0
+    #define REDRAW_IMAGE  1
+    #define SET_RENDER_DRAW_COLOR(RENDERER, RGBA) \
+            SDL_SetRenderDrawColor( \
+              RENDERER, \
+              (unsigned char)(RGBA[0] != ZERO_RGB ? RGBA[0] : 0x00), \
+              (unsigned char)(RGBA[1] != ZERO_RGB ? RGBA[1] : 0x00), \
+              (unsigned char)(RGBA[2] != ZERO_RGB ? RGBA[2] : 0x00), \
+              (unsigned char)(RGBA[3] != ZERO_RGB ? RGBA[3] : 0x00) \
+            )
     void vSDL_MainInit();
     void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
     void vSDL_MainQuit(void);
-    static void vSDL_DrawText(SDL_Renderer *pSDL_Renderer, const char *szTxt, int iX, int iY, SDL_Color stCol);
+    int bAreCoordsInSDL_Rect( SDL_Rect *pSDL_RECT, int iX, int iY );
+    void vSDL_DrawText(SDL_Renderer *pSDL_Renderer, const char *szTxt, int iX, int iY, SDL_Color stCol);
     typedef struct { Uint32 type; const char *name; } SDLEventName;
-
+   
     static const SDLEventName gEventNames[] = {
         { SDL_FIRSTEVENT, "SDL_FIRSTEVENT" },
         { SDL_QUIT, "SDL_QUIT" },
@@ -56,25 +67,25 @@
     #ifdef SDL_CONTROLLERSTEAMHANDLEUPDATED
         { SDL_CONTROLLERSTEAMHANDLEUPDATED, "SDL_CONTROLLERSTEAMHANDLEUPDATED" },
     #endif
-        { SDL_FINGERDOWN, "SDL_FINGERDOWN" },
-        { SDL_FINGERUP, "SDL_FINGERUP" },
+        { SDL_FINGERDOWN,   "SDL_FINGERDOWN" },
+        { SDL_FINGERUP,     "SDL_FINGERUP" },
         { SDL_FINGERMOTION, "SDL_FINGERMOTION" },
-        { SDL_DOLLARGESTURE, "SDL_DOLLARGESTURE" },
+        { SDL_DOLLARGESTURE,"SDL_DOLLARGESTURE" },
         { SDL_DOLLARRECORD, "SDL_DOLLARRECORD" },
         { SDL_MULTIGESTURE, "SDL_MULTIGESTURE" },
         { SDL_CLIPBOARDUPDATE, "SDL_CLIPBOARDUPDATE" },
-        { SDL_DROPFILE, "SDL_DROPFILE" },
-        { SDL_DROPTEXT, "SDL_DROPTEXT" },
-        { SDL_DROPBEGIN, "SDL_DROPBEGIN" },
-        { SDL_DROPCOMPLETE, "SDL_DROPCOMPLETE" },
-        { SDL_AUDIODEVICEADDED, "SDL_AUDIODEVICEADDED" },
+        { SDL_DROPFILE,        "SDL_DROPFILE" },
+        { SDL_DROPTEXT,        "SDL_DROPTEXT" },
+        { SDL_DROPBEGIN,       "SDL_DROPBEGIN" },
+        { SDL_DROPCOMPLETE,    "SDL_DROPCOMPLETE" },
+        { SDL_AUDIODEVICEADDED,"SDL_AUDIODEVICEADDED" },
         { SDL_AUDIODEVICEREMOVED, "SDL_AUDIODEVICEREMOVED" },
-        { SDL_SENSORUPDATE, "SDL_SENSORUPDATE" },
+        { SDL_SENSORUPDATE,    "SDL_SENSORUPDATE" },
         { SDL_RENDER_TARGETS_RESET, "SDL_RENDER_TARGETS_RESET" },
         { SDL_RENDER_DEVICE_RESET, "SDL_RENDER_DEVICE_RESET" },
-        { SDL_POLLSENTINEL, "SDL_POLLSENTINEL" },
-        { SDL_USEREVENT, "SDL_USEREVENT" },   // base
-        { SDL_LASTEVENT, "SDL_LASTEVENT" }
+        { SDL_POLLSENTINEL,    "SDL_POLLSENTINEL" },
+        { SDL_USEREVENT,       "SDL_USEREVENT" },   // base
+        { SDL_LASTEVENT,       "SDL_LASTEVENT" }
     };
   #endif
   

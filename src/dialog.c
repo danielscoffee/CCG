@@ -39,7 +39,7 @@ int iAddMsgToDialog(char *pszMsg, int iMsgLen){
   memset(szNow, 0, sizeof(szNow));
   sprintf(szNow,
 "%02d/%02d/%02d %02d:%02d:%02d",
-    (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1, (int)st_tm_Now->tm_year -100,
+    (int)st_tm_Now->tm_mday, (int)st_tm_Now->tm_mon + 1, (int)st_tm_Now->tm_year -100 ,
     (int)st_tm_Now->tm_hour, (int)st_tm_Now->tm_min,     (int)st_tm_Now->tm_sec
   );
   
@@ -86,7 +86,7 @@ void vTraceDialog(int bLogDT){
 
   for (pWrk = &gstDialog; pWrk!= NULL; pWrk = pWrk->pstNext){
     if ( bLogDT )
-      sprintf(szDbg, "%s - %s", pWrk->szDT, pWrk->pszMsg);
+      sprintf(szDbg, "[%s] %s", pWrk->szDT, pWrk->pszMsg);
     else
       sprintf(szDbg, "%s", pWrk->pszMsg);
 

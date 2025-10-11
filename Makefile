@@ -123,7 +123,8 @@ endif
 
 SDL_OBJ = 
 ifdef USE_SDL2
-	SDL_OBJ = $(OBJ_DIR)/sdl_api.o
+	SDL_OBJ = $(OBJ_DIR)/sdl_api.o \
+			  $(OBJ_DIR)/event.o
 endif
 
 CARD_GAME_EXEC = card_game

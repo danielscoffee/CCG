@@ -27,10 +27,15 @@ char *pszTerminalColors[] ={
 void vPrintLine(char *pszLine, int bNewLine) {
   #ifdef USE_SDL2
     if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+    else {
+      printf("%s", pszLine);
+      if ( bNewLine )
+        printf("\n");
+    }
   #else
-  printf("%s", pszLine);
-  if ( bNewLine )
-    printf("\n");
+    printf("%s", pszLine);
+    if ( bNewLine )
+      printf("\n");
   #endif
   if ( bNewLine ) {
     char *pszWrkMsg;
@@ -49,6 +54,11 @@ void vPrintLine(char *pszLine, int bNewLine) {
 void vPrintHighlitedLine(char *pszLine, int bNewLine) {
   #ifdef USE_SDL2
     if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+    else {
+      printf("\x1b[7m%s\x1b[0m", pszLine);
+      if ( bNewLine )
+        printf("\n");
+    }
   #else
   printf("\x1b[7m%s\x1b[0m", pszLine);
   if ( bNewLine )
@@ -97,7 +107,12 @@ void vGotoInputTextPosition() {
 
 void vPrintColored(const char *pszText, int iColor) {
   iAddMsgToDialog((char*)pszText, strlen((char*)pszText));
+#ifdef USE_SDL2
+  if ( !gbSDL_Mode )
+    printf("\033[%dm%s\033[0m", iColor, pszText);
+#else
   printf("\033[%dm%s\033[0m", iColor, pszText);
+#endif
 }
 
 void vClearLineFromCursor() {

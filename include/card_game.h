@@ -2,10 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+
+#ifndef SDL_MAIN_HANDLED
+  #define SDL_MAIN_HANDLED
+#endif
+
 #ifdef USE_SDL2
   #include <SDL2/SDL.h>
+#else
+  #define CCG_Main main
 #endif
+
 #include <sys_interface.h>
+
 #ifdef FAKE
   #include <fdummies.h>
 #endif
@@ -24,6 +33,4 @@
   #define VSYNC_TIME 16.666666666 
   
 #endif
-#ifndef USE_SDL2
-  #define CCG_Main main
-#endif
+

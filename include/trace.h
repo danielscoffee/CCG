@@ -53,6 +53,7 @@
   #define DEBUG_MSGS      giDebugLevel >=  DEBUG_LVL_FNCALL
   #define DEBUG_MORE_MSGS giDebugLevel >=  DEBUG_LVL_DETAILS
   #define DEBUG_DIALOG    giDebugLevel >=  DEBUG_LVL_MORE_DETAILS
+  #define DEBUG_ALL       giDebugLevel >=  DEBUG_LVL_ALL
 
   #define vTraceVarArgsFn(FORMAT, ...) _vTraceVarArgsFn(__FILE__, __LINE__, __func__, FORMAT, ##__VA_ARGS__)
   #define vTraceMsgDialog(FORMAT, ...) _vTraceMsgDialog(FORMAT, ##__VA_ARGS__)

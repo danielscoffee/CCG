@@ -21,9 +21,9 @@
   - Ofensivas
   - Defensivas
   - Suporte
-  - (De)buffs
+  - Buffs(Curses/Cycles)
 
-- **ATTACK**  
+- **STRIKE**  
 - **BLOCK**  
   - Funciona como vida extra
 - **DEFENSE** (?)  
@@ -37,7 +37,7 @@
       - **COND** – [Após alguma carta, (NÃO) tendo qualquer, tendo apenas...]
   - **Board Effect Cards**  
     - *Earthquake* – Afeta o grupo inimigo (?) dano único/múltiplos turnos
-    - **Debuffs (?)**
+    - **Debuffs **
 - **ARTIFACTS (?)**
 
 ---
