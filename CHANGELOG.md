@@ -1,3 +1,9 @@
+## [7.2.0](https://github.com/repiazza/CCG/compare/v7.1.0...v7.2.0) (2025-10-11)
+
+### Features
+
+* New battle system SDL ([7a895f4](https://github.com/repiazza/CCG/commit/7a895f417b86bbbbd7599381b9d025dc79d82e2a))
+
 ## [7.1.0](https://github.com/repiazza/CCG/compare/v7.0.0...v7.1.0) (2025-10-03)
 
 ### Features
