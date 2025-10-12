@@ -61,6 +61,7 @@ jobs:
           mkdir -p dist
           cp bin/card_game dist/card_game-linux-amd64
           make clean
+          chmod +x ./scripts/mkallS_linux.sh
           ./scripts/mkallS_linux.sh
           cp bin/card_game dist/card_game-linux-sdl2-amd64
 
