@@ -20,43 +20,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache apt packages and lists
-        uses: actions/cache@v4
-        with:
-          path: |
-            /var/cache/apt/archives/*.deb
-            /var/cache/apt/archives/partial/*.deb
-            /var/lib/apt/lists
-          key: ${{ runner.os }}-apt-packages-${{ hashFiles('.github/workflows/version.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-packages-
-
-      - name: Cache build objects
-        uses: actions/cache@v4
-        with:
-          path: |
-            obj
-            bin
-          key: ${{ runner.os }}-build-${{ hashFiles('src/**', 'include/**', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
-
       - name: Install build dependencies
         run: |
-          if [ ! -f /var/lib/apt/lists/lock ]; then
-            sudo apt-get update
-          fi
-          sudo apt-get install -y --no-install-recommends gcc make libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+          sudo apt-get update
+          sudo apt-get install -y gcc make
 
       - name: Build Linux binary
         run: |
           ./scripts/mkall_linux.sh
           mkdir -p dist
           cp bin/card_game dist/card_game-linux-amd64
-          make clean
-          ./scripts/mkallS_linux.sh
-          mkdir -p dist
-          cp bin/card_game dist/card_game-linux-sdl2-amd64
 
       - name: Upload Linux binary
         uses: actions/upload-artifact@v4
@@ -64,56 +37,44 @@ jobs:
           name: card_game-linux-amd64
           path: dist/card_game-linux-amd64
 
-      - name: Upload Linux binary with SDL2
-        uses: actions/upload-artifact@v4
-        with:
-          name: card_game-linux-sdl2-amd64
-          path: dist/card_game-linux-sdl2-amd64
-
   build-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache MSYS2 packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            D:\msys64\var\cache\pacman\pkg
-            D:\msys64\mingw64
-          key: ${{ runner.os }}-msys2-${{ hashFiles('.github/workflows/version.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-msys2-
-
-      - name: Setup MSYS2 with caching
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: false
-          cache: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-SDL2
-            mingw-w64-x86_64-SDL2_image
-            mingw-w64-x86_64-SDL2_ttf
-            make
+      - name: Setup MSYS2 and build tools
+        run: |
+          choco install msys2 --params="/NoUpdate /InstallDir:D:\msys64"
+          D:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf"
 
       - name: Build Windows binaries
-        shell: msys2 {0}
         run: |
-          ./scripts/mkall_win32.sh
-          mkdir -p dist
-          cp bin/card_game.exe dist/card_game-windows-amd64.exe
-          make clean
-          ./scripts/mkallS_win32.sh
-          cp bin/card_game.exe dist/card_game-windows-sdl2-amd64.exe
+          D:\msys64\usr\bin\bash.exe -lc "export PATH=/mingw64/bin:/usr/bin:`$PATH && cd /d/a/CCG/CCG && ./scripts/mkall_win32.sh"
 
-      - name: Upload Windows binary with SDL2
+          if (!(Test-Path "bin/card_game.exe")) {
+            Write-Error "Regular build failed - bin/card_game.exe not found"
+            Get-ChildItem -Recurse bin,obj 2>$null
+            exit 1
+          }
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item bin/card_game.exe dist/card_game-windows-amd64.exe
+
+          Remove-Item -Recurse -Force bin,obj -ErrorAction SilentlyContinue
+
+          D:\msys64\usr\bin\bash.exe -lc "export PATH=/mingw64/bin:/usr/bin:`$PATH && cd /d/a/CCG/CCG && ./scripts/mkallS_win32.sh"
+          if (!(Test-Path "bin/card_game.exe")) {
+            Write-Error "SDL build failed - bin/card_game.exe not found"
+            Get-ChildItem -Recurse bin,obj 2>$null
+            exit 1
+          }
+          Copy-Item bin/card_game.exe dist/card_game-windows-sdl-amd64.exe
+
+      - name: Upload Windows binary with SDL
         uses: actions/upload-artifact@v4
         with:
-          name: card_game-windows-sdl2-amd64
-          path: dist/card_game-windows-sdl2-amd64.exe
+          name: card_game-windows-sdl-amd64
+          path: dist/card_game-windows-sdl-amd64.exe
 
       - name: Upload Windows binary
         uses: actions/upload-artifact@v4
@@ -139,16 +100,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
-
-      - name: Cache semantic-release packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-semantic-${{ hashFiles('.github/workflows/version.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-semantic-
-            ${{ runner.os }}-npm-
 
       - name: Install semantic-release
         run: |
@@ -170,16 +121,10 @@ jobs:
           name: card_game-windows-amd64
           path: dist/
 
-      - name: Download Windows binary with SDL2
+      - name: Download Windows binary with SDL
         uses: actions/download-artifact@v4
         with:
-          name: card_game-windows-sdl2-amd64
-          path: dist/
-
-      - name: Download Linux binary with SDL2
-        uses: actions/download-artifact@v4
-        with:
-          name: card_game-linux-sdl2-amd64
+          name: card_game-windows-sdl-amd64
           path: dist/
 
       - name: Run semantic release
