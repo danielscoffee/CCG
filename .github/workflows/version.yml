@@ -46,8 +46,7 @@ jobs:
           if [ ! -f /var/lib/apt/lists/lock ]; then
             sudo apt-get update
           fi
-          sudo apt-get install -y --no-install-recommends gcc make 
-            - uses: libsdl-org/setup-sdl@main
+          sudo apt-get install -y --no-install-recommends gcc make
 
       - name: Setup SDL2
         uses: libsdl-org/setup-sdl@main
