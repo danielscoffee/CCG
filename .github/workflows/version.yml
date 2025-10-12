@@ -43,26 +43,16 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          if [ ! -f /var/lib/apt/lists/lock ]; then
-            sudo apt-get update
-          fi
-          sudo apt-get install -y --no-install-recommends gcc make libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
-
-      # WARN: DEPRECATED
-      #- name: Setup SDL2
-      # uses: libsdl-org/setup-sdl@main
-      #  with:
-      #    install-linux-dependencies: true
-      #    version: 2-latest
-      #    version-sdl-image: 2-latest
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends gcc make libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 
       - name: Build Linux binary
         run: |
+          chmod +x ./scripts/*
           ./scripts/mkall_linux.sh
           mkdir -p dist
           cp bin/card_game dist/card_game-linux-amd64
           make clean
-          chmod +x ./scripts/mkallS_linux.sh
           ./scripts/mkallS_linux.sh
           cp bin/card_game dist/card_game-linux-sdl2-amd64
 
@@ -110,6 +100,7 @@ jobs:
       - name: Build Windows binaries
         shell: msys2 {0}
         run: |
+          chmod +x ./scripts/*
           ./scripts/mkall_win32.sh
           mkdir -p dist
           cp bin/card_game.exe dist/card_game-windows-amd64.exe
