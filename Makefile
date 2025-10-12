@@ -26,12 +26,12 @@ endif
 # Set make prefix only 4 targeted compilation.
 # If already "pathed" make, in other words, if you CAN use make from current directory:
 # -- Just leave it empty!
-# Dont forget the last slash or backslash 
+# Dont forget the last slash or backslash
 #
 # In case of using, DONT forget the last slash or backslash E.g.: ROOT_PATH/
-# 
+#
 # E.g.: PREFIX = D:/cardgame/
-TARGET_PREFIX = 
+TARGET_PREFIX =
 
 #
 # Set gcc prefix only 4 targeted compilation.
@@ -39,11 +39,11 @@ TARGET_PREFIX =
 # -- Just leave it empty!
 #
 # In case of using, DONT forget the last slash or backslash E.g.: ROOT_PATH/
-# 
+#
 # E.g.: CC_PREFIX = D:/msys64/mingw64/bin/
 CC_PREFIX = ""
 
-# Don't write slashes or backslashes here. 
+# Don't write slashes or backslashes here.
 ifneq (${CC_PREFIX}, "")
 	CC = ${CC_PREFIX}gcc
 endif
@@ -59,11 +59,11 @@ MKDIR_ALTER_CMD = ""
 RM_CMD = rm -rf
 MKDIR_CMD = mkdir -p
 
-ifneq (${RM_ALTER_CMD}, "") 
+ifneq (${RM_ALTER_CMD}, "")
 	RM_CMD = ${RM_ALTER_CMD}
 endif
 
-ifneq (${RM_ALTER_CMD}, "") 
+ifneq (${RM_ALTER_CMD}, "")
 	MKDIR_CMD = ${MKDIR_ALTER_CMD}
 endif
 
@@ -94,19 +94,20 @@ ifdef USE_SDL2
 endif
 
 
-LIBS    = 
+LIBS    =
 CCOPT   = -Wall -Wextra
 ifdef _WIN32
-  CCOPT +=  -D_WIN32 
-  LIBS  += $(SDL_ADD_LIBS) -D_WIN32 
+  CCOPT +=  -D_WIN32
+  LIBS  += $(SDL_ADD_LIBS) -D_WIN32
 endif
 ifdef LINUX
   CCOPT += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX
-  LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX 
+  LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX
 endif
 ifdef USE_SDL2
   CCOPT += -DUSE_SDL2
-endif 
+endif
+LIBS +=	-lm
 
 # FAKE OPT
 ifdef FAKE
@@ -117,11 +118,11 @@ endif
 DEBUG_ADD_FLAGS =
 ifdef DEBUG
   DEBUG_ADD_FLAGS = -g -ggdb -O0
-else 
+else
   CCOPT += -O2
 endif
 
-SDL_OBJ = 
+SDL_OBJ =
 ifdef USE_SDL2
 	SDL_OBJ = $(OBJ_DIR)/sdl_api.o \
 		      $(OBJ_DIR)/sdl_animation.o \
@@ -143,7 +144,7 @@ OBJS = \
 	$(OBJ_DIR)/dialog.o \
 	$(SDL_OBJ)  \
 	$(OBJ_DIR)/console_api.o \
-	$(OBJ_DIR)/trace.o 
+	$(OBJ_DIR)/trace.o
 
 all: clean directories $(BIN_DIR)/$(CARD_GAME_EXEC)
 
@@ -161,7 +162,30 @@ $(OBJ_DIR)/%.o: $(SRC_PATH)/%.c
 
 distclean: clean
 
-.PHONY: all clean distclean directories 
+.PHONY: all clean distclean directories
+
+# TEST AND COVERAGE TARGETS
+TEST_CCOPT = $(CCOPT) --coverage -fprofile-arcs -ftest-coverage
+TEST_LDOPT = --coverage -lgcov
+
+test: CCOPT := $(TEST_CCOPT)
+test: LDOPT := $(TEST_LDOPT)
+test: clean directories $(BIN_DIR)/$(CARD_GAME_EXEC)
+	@echo "Running tests..."
+	@$(BIN_DIR)/$(CARD_GAME_EXEC) --test || true
+
+coverage: test
+	@echo "Generating coverage report..."
+	@lcov --capture --directory $(OBJ_DIR) --output-file coverage.info
+	@lcov --remove coverage.info '/usr/*' --output-file coverage.info
+	@lcov --list coverage.info
+
+coverage-html: coverage
+	@echo "Generating HTML coverage report..."
+	@genhtml coverage.info --output-directory coverage_html
+	@echo "Coverage report generated in coverage_html/"
+
+.PHONY: all clean distclean directories test coverage coverage-html
 
 # DOCKER TARGETS
 docker-build:
