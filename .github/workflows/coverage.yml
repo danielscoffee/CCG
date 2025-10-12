@@ -1,0 +1,50 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-coverage-${{ hashFiles('.github/workflows/coverage.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-coverage-
+            ${{ runner.os }}-apt-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc make lcov
+
+      - name: Run tests and generate coverage report
+        run: |
+          make coverage
+
+      - name: Generate HTML coverage report
+        run: |
+          make coverage-html
+
+      - name: Upload coverage info
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-info
+          path: coverage.info
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage_html/
