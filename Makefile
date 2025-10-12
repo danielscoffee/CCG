@@ -97,11 +97,11 @@ endif
 LIBS    =
 CCOPT   = -Wall -Wextra
 ifdef _WIN32
-  CCOPT +=  -D_WIN32
+  CCOPT += -D_WIN32
   LIBS  += $(SDL_ADD_LIBS) -D_WIN32
 endif
 ifdef LINUX
-  CCOPT += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX
+  CCOPT += -DLINUX
   LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags  $(SDL_ADD_LIBS) -DLINUX
 endif
 ifdef USE_SDL2
