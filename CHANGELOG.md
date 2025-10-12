@@ -1,3 +1,9 @@
+## [8.0.1](https://github.com/repiazza/CCG/compare/v8.0.0...v8.0.1) (2025-10-12)
+
+### Bug Fixes
+
+* created linux SDL scripts ([ef1f748](https://github.com/repiazza/CCG/commit/ef1f74897b723faff719710d0b50ce5749d89ee2))
+
 ## [8.0.0](https://github.com/repiazza/CCG/compare/v7.2.0...v8.0.0) (2025-10-11)
 
 ### ⚠ BREAKING CHANGES
