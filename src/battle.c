@@ -18,7 +18,6 @@ int bHasAnyPlayableCard(PSTRUCT_DECK pstDeck){
   int ii;
   
   /* No SDL já recebemos índice zero-based, no console era 1-based */
-  
   iWrkCardIx = pstDeck->iHandCount-1;
 
   for ( ii = 0 ; ii < iWrkCardIx ; ii++ ){
@@ -33,6 +32,7 @@ int iSelectMonsterFromList(int iMonsterCt){
 #ifndef USE_SDL2
   int iChoice;
   char szLine[1024];
+  
   sprintf(szLine, "\nEscolha um monstro (1..%d). 'q' para sair.", iMonsterCt);
   vPrintLine(szLine, INSERT_NEW_LINE);
   iChoice = iPortableGetchar();
