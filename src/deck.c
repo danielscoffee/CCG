@@ -19,6 +19,13 @@ char *pszDebuffTypeDesc[] ={
   "Paralisado",
   NULL
 };
+char *pszTargetableDesc[] ={
+  " ",
+  "Unico",
+  "Multiplo",
+  "Player",
+  NULL
+};
 
 void vTraceCardList(STRUCT_CARD astCardList[], int iListCt){
   int ii;
@@ -28,10 +35,11 @@ void vTraceCardList(STRUCT_CARD astCardList[], int iListCt){
 
   for (ii = 0; ii < iListCt; ii++){
     vTraceVarArgsFn(
-  "\t|-> Card=%6.6s EnergyCost=%d Value=%d",
+  "\t|-> Card=%-6.6s EnergyCost=%d Value=%d Targetable=%s",
       pszCardTypeDesc[astCardList[ii].iType],
       astCardList[ii].iCost,
-      astCardList[ii].iValue
+      astCardList[ii].iValue,
+      pszTargetableDesc[astCardList[ii].iTarget]
     );
   }
 
@@ -288,7 +296,7 @@ void vShowDeck(PSTRUCT_DECK pstDeck) {
 
   for (ii = 0; ii < pstDeck->iHandCount; ii++) {
     int iLineCt = ii+1;
-    int iPadding = (iLineCt % MAX_HAND) ?  1: 0;
+    int iPadding = (iLineCt % (MAX_HAND+1)) ?  1: 0;
     char szFormat[128];
     
     sprintf(szFormat, "%d", pstDeck->astHand[ii].iValue);
@@ -296,10 +304,11 @@ void vShowDeck(PSTRUCT_DECK pstDeck) {
       sprintf(szFormat, "\?\?/%d", DEBUFF_PARALISE_CYCS);
     }
     memset(szLine, 0, sizeof(szLine));
-    snprintf(szLine, sizeof(szLine), 
-    "  [%d]%*.*s%-*.*s %d%4.4s%-6.6s%4.4s%s",
+    snprintf(szLine, sizeof(szLine),
+    "  [%d]%*.*s%-*.*s%5.5s%d%4.4s%-6.6s%4.4s%s",
       iLineCt, iPadding, iPadding, " ", 
       MAX_HAND, MAX_HAND, pstDeck->astHand[ii].szName,
+      " ",
       pstDeck->astHand[ii].iCost,
       " ",
       pszCardTypeDesc[pstDeck->astHand[ii].iType],

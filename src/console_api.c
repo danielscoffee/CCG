@@ -17,7 +17,7 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
     vShowTable(pstDeck, pastMonsters, iMonsterCt);
     vTraceDialog(FALSE);
 
-    while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(pastMonsters, iMonsterCt))  {
+    while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(pastMonsters, iMonsterCt)) {
       if (iDoPlayerTurn(pbRunning, pstDeck, pastMonsters, iMonsterCt))
         break;
     }
@@ -27,16 +27,14 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
     vDoEnemyActions(pastMonsters, iMonsterCt);
 
     /* checa derrota */
-    if (gstPlayer.iHP <= 0)
-    {
+    if (gstPlayer.iHP <= 0) {
       vPrintLine("\n***  Derrota!! Você morreu! ***", INSERT_NEW_LINE);
       vSleepSeconds(3);
       break;
     }
 
     /* checa vitória do nível */
-    if (!iAnyMonsterAlive(pastMonsters, iMonsterCt))
-    {
+    if (!iAnyMonsterAlive(pastMonsters, iMonsterCt)) {
       char szMsg[128];
       snprintf(szMsg, sizeof(szMsg), "\n*** Nivel %d completo! ***", giLevel);
       vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
@@ -51,6 +49,7 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
 
       /* reset de mão/energia para novo nível */
       iDrawMultipleCard(INIT_HAND_CARDS, pstDeck);
+      vSleepSeconds(3);
       gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
       gstPlayer.iBlock = 0;
       continue;
@@ -58,6 +57,7 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
 
     /* próximo turno no mesmo nível */
     iDrawMultipleCard(INIT_HAND_CARDS, pstDeck);
+    vSleepSeconds(3);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
 
     vTraceDeck(pstDeck, TRACE_DECK_ALL);

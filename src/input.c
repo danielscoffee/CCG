@@ -25,7 +25,7 @@ void vTrimSpaces(char *pszStr) {
   while (*pszStart == ' ') {
     pszStart++;
   }
-
+ 
   // Move string para o início se necessário
   if (pszStart != pszStr) {
     memmove(pszStr, pszStart, strlen(pszStart) + 1);

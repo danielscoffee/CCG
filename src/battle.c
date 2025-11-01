@@ -5,6 +5,7 @@
 #include <terminal_utils.h>
 #include <trace.h>
 #include <input.h>
+#include <dialog.h>
 #include <battle.h>
 
 #ifdef USE_SDL2
@@ -17,8 +18,11 @@ int bHasAnyPlayableCard(PSTRUCT_DECK pstDeck){
   int iWrkCardIx;
   int ii;
   
-  /* No SDL já recebemos índice zero-based, no console era 1-based */
-  iWrkCardIx = pstDeck->iHandCount-1;
+  iWrkCardIx = pstDeck->iHandCount - 1;
+  #ifdef USE_SDL2
+    if ( gbSDL_Mode )
+      iWrkCardIx = pstDeck->iHandCount;
+  #endif
 
   for ( ii = 0 ; ii < iWrkCardIx ; ii++ ){
     pstCard = &pstDeck->astHand[ii];
@@ -28,23 +32,28 @@ int bHasAnyPlayableCard(PSTRUCT_DECK pstDeck){
   return FALSE;
 }
 
+int iInitCurrentLevel(int iCurrLevel, PSTRUCT_MONSTER pastMonsters, int *iMonsterCount){
+  vFreeDialog();
+  vInitMonstersForLevel(pastMonsters, iCurrLevel, iMonsterCount);
+  return 0;
+}
+
 int iSelectMonsterFromList(int iMonsterCt){
-#ifndef USE_SDL2
   int iChoice;
   char szLine[1024];
-  
+#ifdef USE_SDL2
+  if ( gbSDL_Mode ){
+    /* No SDL, o alvo é definido pelo clique */
+    if (gSDL_SelectedMonster >= 0 && gSDL_SelectedMonster < iMonsterCt) {
+      return gSDL_SelectedMonster;
+    }
+    return 0;
+  }
+#endif
   sprintf(szLine, "\nEscolha um monstro (1..%d). 'q' para sair.", iMonsterCt);
   vPrintLine(szLine, INSERT_NEW_LINE);
   iChoice = iPortableGetchar();
-  return (iChoice - 48); /* converte de char p/ int */
-#else
-/* No SDL, o alvo é definido pelo clique */
-  if (gSDL_SelectedMonster >= 0 && gSDL_SelectedMonster < iMonsterCt) {
-    return gSDL_SelectedMonster;
-  }
-  return 0; /* fallback: primeiro monstro vivo */
-  
-#endif
+  return (iChoice - 48); // Returns ASCII char
 }
 
 /**
@@ -57,19 +66,20 @@ void vShowTable(PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonster
   vShowMonsters(pastMonsters, iMonsterCount);
 #else
   /* no SDL a mesa é desenhada em sdl_api.c */
-  (void)pstDeck;
-  (void)pastMonsters;
-  (void)iMonsterCount;
+  if ( !gbSDL_Mode ){
+    vShowPlayer();
+    vShowDeck(pstDeck);
+    vShowMonsters(pastMonsters, iMonsterCount);
+  }
 #endif
 }
 
 int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
   int iTarget = 0;
   int ii = 0;
-  int bAlreadyApplied = FALSE;
   int bUsed = FALSE;
 
-  vTraceVarArgsFn("Card Type=%d", pstCard->iType);
+  vTraceVarArgsFn("CType=%d", pstCard->iType);
 
   switch ( pstCard->iType ){
     case CARD_STRIKE:
@@ -85,6 +95,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         iTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
       }
       else if ( pstCard->iTarget != CARD_TARGET_MULTIPLE && iMonsterCt > 1 ){
+        /* Single target e vamos escolher o monstro */
         #ifdef USE_SDL2
           /* SDL: usa o monstro clicado pelo jogador */
           if (gbSDL_Mode) {
@@ -104,8 +115,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
         if ( iTarget < 0 || iTarget >= iMonsterCt )
           return -1;
       }
-      if ( pstCard->iTarget == CARD_TARGET_MULTIPLE ){
-        bAlreadyApplied = FALSE;
+      else if ( pstCard->iTarget == CARD_TARGET_MULTIPLE ){
         iTarget = iMonsterCt;
       }
 
@@ -155,13 +165,6 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
           else {
             pastMonsters[ii].iHP   -= pstCard->iValue;
           }
-
-          sprintf(szLine, "Voce utilizou %s:", pstCard->szName);
-          if ( !bAlreadyApplied )
-            vPrintLine(szLine, INSERT_NEW_LINE);
-          if ( pstCard->iTarget == CARD_TARGET_MULTIPLE  ){
-            bAlreadyApplied = TRUE;
-          }
           sprintf(szLine, " Causou %d dano a %s", pstCard->iValue, pastMonsters[ii].szName);
           vPrintLine(szLine, INSERT_NEW_LINE);
           bUsed = TRUE;
@@ -171,15 +174,22 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
     }
     break;
     case CARD_DEFEND:
+    {
+      char szLine[128];
       gstPlayer.iBlock += pstCard->iValue;
-      vPrintLine("Voce se defendeu.", INSERT_NEW_LINE);
+      sprintf(szLine, "Voce se defendeu. +%d = %d Escudo", pstCard->iValue, gstPlayer.iBlock);
+      vPrintLine(szLine, INSERT_NEW_LINE);
       bUsed = TRUE;
       break;
+    }
     case CARD_HEAL:
-      gstPlayer.iHP    += pstCard->iValue;
+      char szLine[128];
+      gstPlayer.iHP += pstCard->iValue;
       if ( gstPlayer.iHP >= PLAYER_HP_MAX )
         gstPlayer.iHP = PLAYER_HP_MAX;
-      vPrintLine("Voce se curou.", INSERT_NEW_LINE);
+        
+      sprintf(szLine, "Voce se curou. +%d = %d HP", pstCard->iValue, gstPlayer.iHP);
+      vPrintLine(szLine, INSERT_NEW_LINE);
       bUsed = TRUE;
       break;
     default:

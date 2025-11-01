@@ -29,11 +29,11 @@ void vFreeProgramName(){
 void vSetProgramName(char *argv[]){
   char szPath[_MAX_PATH];
   char szName[_MAX_PATH];
-  char szExt[_MAX_PATH];
+  char szExt [_MAX_PATH];
 
   iDIR_SplitFilename(argv[0], szPath, szName, szExt);
 
-  if (!bStrIsEmpty(szName)) {
+  if ( !bStrIsEmpty(szName) ) {
     gkpszProgramName = (char *)malloc(strlen(szName) + 1);
     memset(gkpszProgramName, 0, strlen(szName) + 1);
     strcpy(gkpszProgramName, szName);
@@ -45,10 +45,14 @@ void vInitGlobals(){
   gbSDL_Mode = FALSE;
   gkpszProgramName = NULL;
 }
-void vParseCmdlineArgs(char *argv[]){
+
+void vParseCmdlineArgs(int argc, char *argv[]){
   char *pTok;
 
   vSetProgramName(argv);
+  
+  if (argc <= 1)
+    return ;
 
   if (bStrIsEmpty(argv[1]) || strstr(argv[1], "--") == NULL)
     return ;
@@ -74,39 +78,25 @@ void vParseCmdlineArgs(char *argv[]){
 
 /** ===  Main  === **/
 int CCG_Main(int argc, char *argv[]){
+  STRUCT_DECK stDeck;
+  STRUCT_MONSTER astMonsters[MAX_MONSTERS];
+  int bRunning = TRUE;
+  int iMonsterCount;
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
   SDL_Renderer *pSDL_Rnd = NULL;
   SDL_Event SDL_Ev;
 #endif
-  STRUCT_MONSTER astMonsters[MAX_MONSTERS];
-  STRUCT_DECK stDeck;
-  int bRunning = TRUE;
-  int iMonsterCount;
-  
+
   vInitGlobals();
 
-  if (argc > 1)
-    vParseCmdlineArgs(argv);
+  vParseCmdlineArgs(argc, argv);
 
   vInitLogs();
-  
      
   #ifdef USE_SDL2
-    if ( gbSDL_Mode ){
-      vSDL_MainInit();
-        // Create a window
-      pSDL_Wndw = SDL_CreateWindow(
-        "CCG",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        800,
-        800,
-        SDL_WINDOW_SHOWN
-      );
-      pSDL_Rnd = SDL_CreateRenderer(pSDL_Wndw, -1, SDL_RENDERER_ACCELERATED );
-      SDL_SetRenderDrawBlendMode(pSDL_Rnd, SDL_BLENDMODE_BLEND);
-    }
+    if ( gbSDL_Mode )      
+      vSDL_SetupMain(&pSDL_Rnd, &pSDL_Wndw);
     else
       vShowInitDialog();
   #else
@@ -119,11 +109,11 @@ int CCG_Main(int argc, char *argv[]){
   vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
   vInitDialog();
  
-#ifdef FAKE
-  vFakeOpenShopEarly(&stDeck);
-#endif
+  #ifdef FAKE
+    vFakeOpenShopEarly(&stDeck);
+  #endif
 
-  vTraceMainLoopInit();
+  vTraceMainLoopInit(); 
 
   #ifdef USE_SDL2
     if ( gbSDL_Mode )
@@ -137,8 +127,10 @@ int CCG_Main(int argc, char *argv[]){
   vTraceMainLoopEnd();
   vFreeDialog();
   vFreeProgramName();
+  
   #ifdef USE_SDL2
-    if ( gbSDL_Mode ) vSDL_MainQuit();
+    if ( gbSDL_Mode ) 
+      vSDL_MainQuit();
   #endif
 
   return 0;

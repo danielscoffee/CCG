@@ -1,14 +1,11 @@
 #ifdef USE_SDL2
 
 #include <card_game.h>
-
-/* Quarteto base */
 #include <deck.h>
 #include <debuff.h>
 #include <monster.h>
 #include <player.h>
 
-/* Restante do motor */
 #include <trace.h>
 #include <battle.h>
 #include <shop.h>
@@ -19,11 +16,8 @@
 #include <sdl_animation.h>
 #include <sdl_api.h>
 
-/* SDL */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-
-/* Animações (flip) */
 #include <sdl_animation.h>
 
 /* -------------------------------------------------------------- */
@@ -44,11 +38,72 @@ int gSDL_SelectedMonster = -1;
 /* estado global da rolagem do dialog */
 int giDlgTopIndex = 0;  /* primeira linha visível (0 = do começo) */
 
-/* helpers locais */
-static int iClamp(int iVal, int iMin, int iMax) {
-  if (iVal < iMin) return iMin;
-  if (iVal > iMax) return iMax;
-  return iVal;
+void vSDL_DrawRectShadow(SDL_Renderer *pSDL_Renderer, SDL_Rect *pstRect, int iOffX, int iOffY, Uint8 uAlpha) {
+  SDL_Rect stSh;
+  if (pstRect == NULL)
+    return;
+  stSh = *pstRect;
+  stSh.x += iOffX;
+  stSh.y += iOffY;
+  SET_RENDER_DRAW_COLOR(pSDL_Renderer, SDL_COLOR_FROM_RGB_OPACITY(SDL_RGB_BLACK, uAlpha));
+  SDL_RenderFillRect(pSDL_Renderer, &stSh);
+}
+
+void vSDL_SetupMain(SDL_Renderer **pSDL_Renderer, SDL_Window **pSDL_Window){
+  vSDL_MainInit();
+  // Create a window
+  *pSDL_Window = SDL_CreateWindow(
+    "CCG",
+    SDL_WINDOWPOS_UNDEFINED,
+    SDL_WINDOWPOS_UNDEFINED,
+    800,
+    800,
+    SDL_WINDOW_SHOWN
+  );
+  *pSDL_Renderer = SDL_CreateRenderer(*pSDL_Window, -1, SDL_RENDERER_ACCELERATED );
+  SDL_SetRenderDrawBlendMode(*pSDL_Renderer, SDL_BLENDMODE_BLEND);
+}
+
+/* Chame após iAddMsgToDialog (ex.: logo depois de inserir uma nova msg) */
+int iDlgMaybeFollowTail(int iVisibleCount) {
+  int iWasAtEnd;
+  int iMaxTop;
+
+  if (iVisibleCount < 1)
+    iVisibleCount = 1;
+
+  iMaxTop = gstDlgList.iCount - iVisibleCount;
+  if (iMaxTop < 0)
+    iMaxTop = 0;
+
+  /* verifica se o jogador estava no fim */
+  iWasAtEnd = (gstDlgList.iTopIndex >= iMaxTop) ? 1 : 0;
+
+  if (iWasAtEnd != 0) {
+    gstDlgList.iTopIndex = iMaxTop;
+    giDlgTopIndex = iMaxTop; /* manter estado global sincronizado */
+  }
+
+  if (gstDlgList.iPinned != 0) {
+    vClearPin();
+  }
+
+  vScrollToBottomInternal(iVisibleCount);
+
+  return iWasAtEnd;
+}
+
+void vSDL_DrawTextShadow(SDL_Renderer *pSDL_Renderer,
+                         const char *pszTxt,
+                         int iX, int iY,
+                         SDL_Color stFG,
+                         SDL_Color stShadow,
+                         int iOffX, int iOffY) {
+  if (pszTxt == NULL || *pszTxt == '\0')
+    return;
+
+  vSDL_DrawText(pSDL_Renderer, pszTxt, iX + iOffX, iY + iOffY, stShadow);
+  vSDL_DrawText(pSDL_Renderer, pszTxt, iX, iY, stFG);
 }
 
 static void vSDL_DialogScrollLines(int iDelta, int iVisible) {
@@ -56,8 +111,8 @@ static void vSDL_DialogScrollLines(int iDelta, int iVisible) {
   int iMaxTop;
   PSTRUCT_DIALOG pstWrk;
 
-  iTotal = 0;
   pstWrk = gstDlgList.pstHead;
+  iTotal = 0;
   while (pstWrk != NULL) {
     iTotal++;
     pstWrk = pstWrk->pstNext;
@@ -66,17 +121,26 @@ static void vSDL_DialogScrollLines(int iDelta, int iVisible) {
   if (iVisible < 1)
     iVisible = 1;
 
-  iMaxTop = iTotal - iVisible;
-  if (iMaxTop < 0)
-    iMaxTop = 0;
+  iMaxTop = (iTotal > iVisible) ? (iTotal - iVisible) : 0;
 
-  giDlgTopIndex = iClamp(giDlgTopIndex + iDelta, 0, iMaxTop);
+  giDlgTopIndex += iDelta;
+
+  /* Clamp seguro */
+  if (giDlgTopIndex < 0)
+    giDlgTopIndex = 0;
+  if (giDlgTopIndex > iMaxTop)
+    giDlgTopIndex = iMaxTop;
+
+  /* Sincroniza com lista de diálogo global */
+  gstDlgList.iTopIndex = giDlgTopIndex;
+
+  vTraceVarArgsFn("Scroll atualizado: TopIndex=%d / Total=%d / Visible=%d",
+                  giDlgTopIndex, iTotal, iVisible);
 }
 
 void vSDL_DialogHandleMouse(SDL_Event *pstEvt, int iX, int iY, int iW, int iH) {
   SDL_Rect stUp;
   SDL_Rect stDown;
-  SDL_Rect stDlg;
   int iLineH;
   int iVisible;
   int iXMouse;
@@ -87,11 +151,6 @@ void vSDL_DialogHandleMouse(SDL_Event *pstEvt, int iX, int iY, int iW, int iH) {
   iVisible = (iH - 16) / iLineH; /* considera 8px topo + 8px base */
   if (iVisible < 1)
     iVisible = 1;
-
-  stDlg.x = iX;
-  stDlg.y = iY;
-  stDlg.w = iW;
-  stDlg.h = iH;
 
   stUp.x = iX + iW - 8 - 24;
   stUp.y = iY + 6;
@@ -115,15 +174,7 @@ void vSDL_DialogHandleMouse(SDL_Event *pstEvt, int iX, int iY, int iW, int iH) {
         vSDL_DialogScrollLines( 1, iVisible);
       }
     }
-  } else if (pstEvt->type == SDL_MOUSEWHEEL) {
-    SDL_GetMouseState(&iXMouse, &iYMouse);
-    if (bAreCoordsInSDL_Rect(&stDlg, iXMouse, iYMouse)) {
-      if (pstEvt->wheel.y > 0)
-        vSDL_DialogScrollLines(-3, iVisible);
-      else if (pstEvt->wheel.y < 0)
-        vSDL_DialogScrollLines( 3, iVisible);
-    }
-  }
+  } 
 }
 
 /* -------------------------------------------------------------- */
@@ -156,9 +207,6 @@ int bAreCoordsInSDL_Rect(SDL_Rect *pSDL_RECT, int iX, int iY) {
   if (pSDL_RECT == NULL)
     return FALSE;
 
-  if (iX < 0 || iY < 0 || iX > INT_WINDOW_WIDTH || iY > INT_WINDOW_HEIGHT)
-    return FALSE;
-
   if (iX >= pSDL_RECT->x &&
       iY >= pSDL_RECT->y &&
       iX <= pSDL_RECT->x + pSDL_RECT->w &&
@@ -168,9 +216,9 @@ int bAreCoordsInSDL_Rect(SDL_Rect *pSDL_RECT, int iX, int iY) {
   return FALSE;
 }
 
+
 /* -------------------------------------------------------------- */
 /* HUD / Dialog / Mesa */
-
 void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH) {
   int iLineH;
   int iBaseY;
@@ -182,32 +230,48 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
   char szGlyphUp[4];
   char szGlyphDown[4];
   SDL_Rect stRectDialog;
+  SDL_Rect stRectShadow;
   SDL_Color stColorWhite;
   SDL_Rect stUp;
   SDL_Rect stDown;
   SDL_Color stBtnBG;
   SDL_Color stBtnFG;
+  SDL_Color stShadowTxt;
+  SDL_Color stShadowGlyph;
   PSTRUCT_DIALOG pstWrk;
-
 
   iLineH = 18;
   iBaseY = iY + 8;
   ii = 0;
+
   stRectDialog.x = iX;
   stRectDialog.y = iY;
   stRectDialog.w = iW;
   stRectDialog.h = iH;
-  stColorWhite = (SDL_Color){255, 255, 255, 255};
+
+  stColorWhite.r = 255; stColorWhite.g = 255; stColorWhite.b = 255; stColorWhite.a = 255;
+
+  stBtnBG.r = 60;  stBtnBG.g = 60;  stBtnBG.b = 60;  stBtnBG.a = 220;
+  stBtnFG.r = 255; stBtnFG.g = 255; stBtnFG.b = 255; stBtnFG.a = 255;
+
+  stShadowTxt.r   = 0; stShadowTxt.g   = 0; stShadowTxt.b   = 0; stShadowTxt.a   = 180;
+  stShadowGlyph.r = 0; stShadowGlyph.g = 0; stShadowGlyph.b = 0; stShadowGlyph.a = 180;
+
+  /* --- painel com sombra (drop) --- */
+  stRectShadow = stRectDialog;
+  vSDL_DrawRectShadow(pSDL_Renderer, &stRectShadow, 3, 3, OPACITY_SEMI_TRANSPARENT);
 
   SDL_SetRenderDrawColor(pSDL_Renderer, 40, 40, 40, 220);
   SDL_RenderFillRect(pSDL_Renderer, &stRectDialog);
   SDL_SetRenderDrawColor(pSDL_Renderer, 200, 200, 200, 255);
   SDL_RenderDrawRect(pSDL_Renderer, &stRectDialog);
 
+  /* capacidade de linhas visíveis */
   iMaxLines = iH / iLineH - 1;
   if (iMaxLines < 1)
     iMaxLines = 1;
 
+  /* contagem total */
   iTotal = 0;
   pstWrk = gstDlgList.pstHead;
   while (pstWrk != NULL) {
@@ -222,7 +286,7 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
     giDlgTopIndex = (iTotal - iMaxLines) < 0 ? 0 : (iTotal - iMaxLines);
   iStart = giDlgTopIndex;
 
-  /* desenha linhas visíveis */
+  /* pula até a primeira linha visível */
   iIdx = 0;
   pstWrk = gstDlgList.pstHead;
   while (pstWrk != NULL && iIdx < iStart) {
@@ -230,12 +294,17 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
     iIdx++;
   }
 
+  /* desenha linhas com sombra sutil */
   while (pstWrk != NULL && ii < iMaxLines) {
     char szLine[1024];
+    int iTx;
+    int iTy;
 
     if (bStrIsEmpty(pstWrk->pszMsg) == 0) {
       snprintf(szLine, sizeof(szLine), "%s - %s", pstWrk->szDT, pstWrk->pszMsg);
-      vSDL_DrawText(pSDL_Renderer, szLine, iX + 8, iBaseY + ii * iLineH, stColorWhite);
+      iTx = iX + 8;
+      iTy = iBaseY + ii * iLineH;
+      vSDL_DrawTextShadow(pSDL_Renderer, szLine, iTx, iTy, stColorWhite, stShadowTxt, 1, 1);
       ii++;
     }
 
@@ -243,8 +312,6 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
   }
 
   /* --- setas de rolagem --- */
-  stBtnBG = (SDL_Color){60, 60, 60, 220};
-  stBtnFG = (SDL_Color){255, 255, 255, 255};
   stUp.x = iX + iW - 8 - 24;
   stUp.y = iY + 6;
   stUp.w = 24;
@@ -255,6 +322,10 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
   stDown.w = 24;
   stDown.h = 24;
 
+  /* sombra dos botões (leve) */
+  vSDL_DrawRectShadow(pSDL_Renderer, &stUp,   2, 2, 100);
+  vSDL_DrawRectShadow(pSDL_Renderer, &stDown, 2, 2, 100);
+
   SDL_SetRenderDrawColor(pSDL_Renderer, stBtnBG.r, stBtnBG.g, stBtnBG.b, stBtnBG.a);
   SDL_RenderFillRect(pSDL_Renderer, &stUp);
   SDL_RenderFillRect(pSDL_Renderer, &stDown);
@@ -263,32 +334,33 @@ void vSDL_DrawDialog(SDL_Renderer *pSDL_Renderer, int iX, int iY, int iW, int iH
   SDL_RenderDrawRect(pSDL_Renderer, &stUp);
   SDL_RenderDrawRect(pSDL_Renderer, &stDown);
 
-  /* tenta usar glifos ▲ ▼; se sua fonte não suportar, substitua por '^' e 'v' */
+  /* glifos ▲ ▼ com sombra; fallback '^'/'v' se necessário */
   szGlyphUp[0] = '\0';
   szGlyphDown[0] = '\0';
   strcpy(szGlyphUp,   "▲");
   strcpy(szGlyphDown, "▼");
 
-  vSDL_DrawText(pSDL_Renderer, szGlyphUp,   stUp.x + 6,   stUp.y + 2,   stBtnFG);
-  vSDL_DrawText(pSDL_Renderer, szGlyphDown, stDown.x + 6, stDown.y + 2, stBtnFG);
+  vSDL_DrawTextShadow(pSDL_Renderer, szGlyphUp,   stUp.x + 6,   stUp.y + 2,   stBtnFG, stShadowGlyph, 1, 1);
+  vSDL_DrawTextShadow(pSDL_Renderer, szGlyphDown, stDown.x + 6, stDown.y + 2, stBtnFG, stShadowGlyph, 1, 1);
 
-  /* desabilita setas quando no topo/fundo (efeito visual simples) */
+  /* desabilita setas quando no topo/fundo (efeito visual) */
   if (giDlgTopIndex <= 0) {
     SDL_SetRenderDrawColor(pSDL_Renderer, 0, 0, 0, 140);
     SDL_RenderFillRect(pSDL_Renderer, &stUp);
     SDL_SetRenderDrawColor(pSDL_Renderer, 180, 180, 180, 255);
     SDL_RenderDrawRect(pSDL_Renderer, &stUp);
-    vSDL_DrawText(pSDL_Renderer, szGlyphUp, stUp.x + 6, stUp.y + 2, (SDL_Color){160,160,160,255});
+    vSDL_DrawTextShadow(pSDL_Renderer, szGlyphUp, stUp.x + 6, stUp.y + 2,
+                        (SDL_Color){160,160,160,255}, (SDL_Color){0,0,0,120}, 1, 1);
   }
   if (giDlgTopIndex >= (iTotal - iMaxLines)) {
     SDL_SetRenderDrawColor(pSDL_Renderer, 0, 0, 0, 140);
     SDL_RenderFillRect(pSDL_Renderer, &stDown);
     SDL_SetRenderDrawColor(pSDL_Renderer, 180, 180, 180, 255);
     SDL_RenderDrawRect(pSDL_Renderer, &stDown);
-    vSDL_DrawText(pSDL_Renderer, szGlyphDown, stDown.x + 6, stDown.y + 2, (SDL_Color){160,160,160,255});
+    vSDL_DrawTextShadow(pSDL_Renderer, szGlyphDown, stDown.x + 6, stDown.y + 2,
+                        (SDL_Color){160,160,160,255}, (SDL_Color){0,0,0,120}, 1, 1);
   }
 }
-
 
 void vSDL_DrawHUD(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer) {
   SDL_Color stColHP;
@@ -308,50 +380,53 @@ void vSDL_DrawHUD(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer) {
   int iChipW;
   int iChipH;
   int iChipPad;
+  int iPaddingAdjust = 0;
 
-  stColHP.r = 220; stColHP.g = 40;  stColHP.b = 40;  stColHP.a = 255;
-  stColEnergy.r = 240; stColEnergy.g = 220; stColEnergy.b = 0; stColEnergy.a = 255;
-  stColBlock.r = 40; stColBlock.g = 120; stColBlock.b = 220; stColBlock.a = 255;
-  stColShadow.r = 0; stColShadow.g = 0; stColShadow.b = 0; stColShadow.a = 255;
+  stColHP.r     = 220; stColHP.g     = 40;  stColHP.b     = 40;  stColHP.a     = 255;
+  stColEnergy.r = 240; stColEnergy.g = 220; stColEnergy.b = 0;   stColEnergy.a = 255;
+  stColBlock.r  = 40;  stColBlock.g  = 120; stColBlock.b  = 220; stColBlock.a  = 255;
+  stColShadow.r = 0;   stColShadow.g = 0;   stColShadow.b = 0;   stColShadow.a = 255;
 
-  sprintf(szHP, "HP: %d", pstPlayer->iHP);
+  sprintf(szHP,     "HP: %d", pstPlayer->iHP);
   sprintf(szEnergy, "Energia: %d", pstPlayer->iEnergy);
-  sprintf(szBlock, "Escudo: %d", pstPlayer->iBlock);
+  sprintf(szBlock,  "Escudo: %d", pstPlayer->iBlock);
 
   iBaseX = 60;
-  iY = 20;
-  iGap = 200;
+  iY     = 20;
+  iGap   = 200;
 
-  iXHP = iBaseX;
-  iXEnergy = iBaseX + iGap;
-  iXBlock = iBaseX + 2 * iGap;
+  iXHP     = iBaseX + 10;
+  iXEnergy = iBaseX + iGap + 10;
+  iXBlock  = iBaseX + 2 * iGap + 10;
 
-  iChipW = 12;
-  iChipH = 12;
-  iChipPad = 6;
+  iChipW   = 12;
+  iChipH   = 12;
+  iChipPad =  6;
 
+  iPaddingAdjust = iChipW + iChipPad;
   /* chip + texto HP */
-  stRectChip.x = iXHP - (iChipW + iChipPad);
+  stRectChip.x = iXHP - iPaddingAdjust;
   stRectChip.y = iY + 2;
   stRectChip.w = iChipW;
   stRectChip.h = iChipH;
+  
   SDL_SetRenderDrawColor(pSDL_Renderer, stColHP.r, stColHP.g, stColHP.b, stColHP.a);
   SDL_RenderFillRect(pSDL_Renderer, &stRectChip);
-  vSDL_DrawText(pSDL_Renderer, szHP, iXHP + 1, iY + 1, stColShadow);
+  vSDL_DrawTextShadow(pSDL_Renderer, szHP, iXHP, iY, stColHP, stColShadow, 1, 1);
   vSDL_DrawText(pSDL_Renderer, szHP, iXHP,     iY,     stColHP);
 
   /* chip + texto Energia */
-  stRectChip.x = iXEnergy - (iChipW + iChipPad);
+  stRectChip.x = iXEnergy - iPaddingAdjust;
   SDL_SetRenderDrawColor(pSDL_Renderer, stColEnergy.r, stColEnergy.g, stColEnergy.b, stColEnergy.a);
   SDL_RenderFillRect(pSDL_Renderer, &stRectChip);
-  vSDL_DrawText(pSDL_Renderer, szEnergy, iXEnergy + 1, iY + 1, stColShadow);
+  vSDL_DrawTextShadow(pSDL_Renderer, szEnergy, iXEnergy, iY, stColEnergy, stColShadow, 1, 1);
   vSDL_DrawText(pSDL_Renderer, szEnergy, iXEnergy,     iY,     stColEnergy);
 
   /* chip + texto Escudo/Block */
-  stRectChip.x = iXBlock - (iChipW + iChipPad);
+  stRectChip.x = iXBlock - iPaddingAdjust;
   SDL_SetRenderDrawColor(pSDL_Renderer, stColBlock.r, stColBlock.g, stColBlock.b, stColBlock.a);
   SDL_RenderFillRect(pSDL_Renderer, &stRectChip);
-  vSDL_DrawText(pSDL_Renderer, szBlock, iXBlock + 1, iY + 1, stColShadow);
+  vSDL_DrawTextShadow(pSDL_Renderer, szBlock, iXBlock, iY, stColBlock, stColShadow, 1, 1);
   vSDL_DrawText(pSDL_Renderer, szBlock, iXBlock,     iY,     stColBlock);
 }
 
@@ -361,7 +436,6 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
                     PSTRUCT_MONSTER pastMonsters,
                     int iMonsterCt) {
   SDL_Rect stRectMesa;
-  SDL_Rect stRectCard;
   int ii;
 
   if (DEBUG_DIALOG)
@@ -373,9 +447,11 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
   stRectMesa.h = 500;
 
   /* Mesa verde, borda marrom */
-  SDL_SetRenderDrawColor(pSDL_Renderer, 0, 100, 0, 255);
+  SET_RENDER_DRAW_COLOR(pSDL_Renderer, SDL_COLOR_FROM_RGB_OPACITY(SDL_RGB_TABLE_GREEN, OPACITY_OPAQUE));
+  // SDL_SetRenderDrawColor(pSDL_Renderer, 0, 100, 0, 255);
   SDL_RenderFillRect(pSDL_Renderer, &stRectMesa);
-  SDL_SetRenderDrawColor(pSDL_Renderer, 139, 69, 19, 255);
+  SET_RENDER_DRAW_COLOR(pSDL_Renderer, SDL_COLOR_FROM_RGB_OPACITY(SDL_RGB_TABLE_BORDER, OPACITY_OPAQUE));
+  // SDL_SetRenderDrawColor(pSDL_Renderer, 139, 69, 19, 255);
   SDL_RenderDrawRect(pSDL_Renderer, &stRectMesa);
 
   /* --- Monstros --- */
@@ -408,9 +484,12 @@ void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer,
       stRectMonster.w = iSlotW - 16;
       stRectMonster.h = iSlotH;
 
-      SDL_SetRenderDrawColor(pSDL_Renderer, 180, 40, 40, 255);
+      vSDL_DrawRectShadow(pSDL_Renderer, &stRectMonster, 2, 2, OPACITY_SEMI_OPAQUE);
+      // SDL_SetRenderDrawColor(pSDL_Renderer, 180, 40, 40, 255);
+      SET_RENDER_DRAW_COLOR(pSDL_Renderer, SDL_COLOR_FROM_RGB_OPACITY(SDL_RGB_RED_BLOOD, OPACITY_OPAQUE));
       SDL_RenderFillRect(pSDL_Renderer, &stRectMonster);
-      SDL_SetRenderDrawColor(pSDL_Renderer, 0, 0, 0, 255);
+      SET_RENDER_DRAW_COLOR(pSDL_Renderer, SDL_COLOR_FROM_RGB_OPACITY(SDL_RGB_BLACK, OPACITY_OPAQUE));
+      // SDL_SetRenderDrawColor(pSDL_Renderer, 0, 0, 0, 255);
       SDL_RenderDrawRect(pSDL_Renderer, &stRectMonster);
 
       szName = pastMonsters[ii].szName;
@@ -600,12 +679,17 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
           if (iDlgH < 0)
             iDlgH = 0;
 
-        
           vSDL_DialogHandleMouse(pSDL_Event, 50, iDlgY, 700, iDlgH);
         }
 
         if (!gSelectingTarget) {
           for (jj = 0; jj < gCardCount; jj++) {
+            if ( !bHasAnyPlayableCard(pstDeck) ) {
+              gSDL_SelectedMonster = -1;
+              gPendingCard = -1;
+              iRedrawAction = REDRAW_IMAGE;
+              break;
+            }
             if (bAreCoordsInSDL_Rect(&gCardRects[jj], iX, iY)) {
               PSTRUCT_CARD pstCard;
               int iAlive;
@@ -644,7 +728,7 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
               }
 
               if (iAlive <= 1) {
-                if (bHasAnyPlayableCard(pstDeck)) {
+                if ( bHasAnyPlayableCard(pstDeck) ) {
                   gSDL_SelectedMonster = (iLastM >= 0) ? iLastM : 0;
                   vTraceVarArgsFn("SDL: auto-alvo [%s] -> monstro %d",
                                   pstCard->szName, gSDL_SelectedMonster);
@@ -695,7 +779,7 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
         int iWinH;
         int iMarginInferior;
         int iMarginSuperior;
-
+        int iVisible;
         iMarginInferior = 2;
         iMarginSuperior = 2;
 
@@ -705,6 +789,11 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
         if (iDlgH < 0)
           iDlgH = 0;
 
+        iVisible = (iDlgH - 16) / 18;
+        if (iVisible < 1)
+          iVisible = 1;
+
+        iDlgMaybeFollowTail(iVisible);
         vSDL_DrawDialog(pSDL_Renderer, 50, iDlgY, 700, iDlgH);
       }
 
@@ -739,6 +828,7 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
       int iWinH;
       int iMarginInferior;
       int iMarginSuperior;
+      int iVisible;
 
       iMarginSuperior = 2;
       iMarginInferior = 2;
@@ -750,7 +840,11 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
       if (iDlgH < 0)
         iDlgH = 0;
 
-      vTraceVarArgsFn("DlgH[%d] WinH[%d] DlgY[%d]", iDlgH, iWinH, iDlgY);
+      iVisible = (iDlgH - 16) / 18;
+      if (iVisible < 1)
+        iVisible = 1;
+
+      iDlgMaybeFollowTail(iVisible);
       vSDL_DrawDialog(pSDL_Renderer, 50, iDlgY, 700, iDlgH);
     }
 

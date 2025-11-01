@@ -3,16 +3,47 @@
   #include <font.h>
   #ifndef SDL_API_H
     #define SDL_API_H
+    
     #define REDRAW_NONE   0
     #define REDRAW_IMAGE  1
+
+    #define OPACITY_OPAQUE           255  /* fully solid          */
+    #define OPACITY_SEMI_OPAQUE      180  /* slightly translucent */
+    #define OPACITY_SEMI_TRANSPARENT 100  /* mostly see-through   */
+    #define OPACITY_TRANSPARENT        0  /* invisible            */
+
+    #define SDL_RGB_BLACK        ((unsigned char[3]){   0,   0,   0 })
+    #define SDL_RGB_TABLE_GREEN  ((unsigned char[3]){   0, 100,   0 })
+    #define SDL_RGB_WHITE        ((unsigned char[3]){ 255, 255, 255 })
+    #define SDL_RGB_ORANGE       ((unsigned char[3]){ 255, 165,   0 })
+    #define SDL_RGB_RED_BLOOD    ((unsigned char[3]){ 180,  40,  40 })
+    #define SDL_RGB_TABLE_BORDER ((unsigned char[3]){ 139,  69,  19 })
+    #define SDL_RGB_GRAY40       ((unsigned char[3]){  40,  40,  40 })
+    #define SDL_RGB_GRAY60       ((unsigned char[3]){  60,  60,  60 })
+    #define SDL_RGB_GRAY180      ((unsigned char[3]){ 180, 180, 180 })
+    #define SDL_RGB_GRAY200      ((unsigned char[3]){ 200, 200, 200 })
+
+    #define SDL_COLOR_BG           SDL_COLOR_BLACK
+    #define SDL_COLOR_DIALOG_BG    SDL_COLOR_GRAY40_A220
+    #define SDL_COLOR_DIALOG_BRDR  SDL_COLOR_GRAY200
+    #define SDL_COLOR_BTN_BG       SDL_COLOR_GRAY60_A220
+    #define SDL_COLOR_BTN_BRDR     SDL_COLOR_GRAY180
+    #define SDL_COLOR_MESA         SDL_COLOR_TABLE_GREEN
+    #define SDL_COLOR_MESA_BRDR    SDL_COLOR_TABLE_BORDER
+    #define SDL_COLOR_MONSTER      SDL_RGB_RED_BLOOD
+
+    #define SDL_COLOR_FROM_RGB_OPACITY(RGB, OPACITY) \
+      ((unsigned char[4]){ (RGB)[0], (RGB)[1], (RGB)[2], (unsigned char)(OPACITY) })
+
     #define SET_RENDER_DRAW_COLOR(RENDERER, RGBA) \
-            SDL_SetRenderDrawColor( \
-              RENDERER, \
-              (unsigned char)(RGBA[0] != ZERO_RGB ? RGBA[0] : 0x00), \
-              (unsigned char)(RGBA[1] != ZERO_RGB ? RGBA[1] : 0x00), \
-              (unsigned char)(RGBA[2] != ZERO_RGB ? RGBA[2] : 0x00), \
-              (unsigned char)(RGBA[3] != ZERO_RGB ? RGBA[3] : 0x00) \
-            )
+      SDL_SetRenderDrawColor( \
+        (RENDERER), \
+        (unsigned char)(RGBA)[0], \
+        (unsigned char)(RGBA)[1], \
+        (unsigned char)(RGBA)[2], \
+        (unsigned char)(RGBA)[3] \
+      )
+    void vSDL_SetupMain(SDL_Renderer **pSDL_Renderer, SDL_Window **pSDL_Window);
     void vSDL_MainInit();
     void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
     void vSDL_MainQuit(void);
@@ -23,9 +54,8 @@
                     PSTRUCT_MONSTER pastMonsters,
                     int iMonsterCt);
     void vSDL_DrawHUD(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer);
-
+    int iDlgMaybeFollowTail(int iVisibleCount);
     typedef struct { Uint32 type; const char *name; } SDLEventName;
-   
     static const SDLEventName gEventNames[] = {
         { SDL_FIRSTEVENT, "SDL_FIRSTEVENT" },
         { SDL_QUIT, "SDL_QUIT" },

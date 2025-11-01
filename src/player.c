@@ -16,7 +16,7 @@
 #include <player.h>
 #include <battle.h> 
 #include <input.h>
-
+ 
 #ifdef USE_SDL2
   SDL_Rect gSDL_Player_Rect;
 #endif
@@ -153,6 +153,12 @@ int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonst
   {
     iIdx = iCh - '0';
     vPlayCard(iIdx, pstDeck, pastMonster, iMonsterCt);
+    #ifdef USE_SDL2
+      if ( !gbSDL_Mode )
+        vSleepSeconds(3);
+    #else
+      vSleepSeconds(3);
+    #endif
     vClearTerminal();
     vSortHandByName(pstDeck);
     vShowTable(pstDeck, pastMonster, iMonsterCt);

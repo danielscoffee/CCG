@@ -246,11 +246,13 @@
         if (!gastCardFlip[ii].bIsFlipping && gastCardFlip[ii].bIsFront) {
           char szLine1[64];
           char szLine2[64];
-          SDL_Color stWhite;
+          SDL_Color stBlack;
+          // SDL_Color stWhite;
           int iTx;
           int iTy;
 
-          stWhite = (SDL_Color){255, 255, 255, 255};
+          stBlack = (SDL_Color){0, 0, 0, 255};
+          // stWhite = (SDL_Color){255, 255, 255, 255};
           iTx = gCardRects[ii].x + 8;
           iTy = gCardRects[ii].y + 8;
 
@@ -259,8 +261,8 @@
                    pstDeck->astHand[ii].iCost,
                    pstDeck->astHand[ii].iValue);
 
-          vSDL_DrawText(pstRenderer, szLine1, iTx, iTy, stWhite);
-          vSDL_DrawText(pstRenderer, szLine2, iTx, iTy + 21, stWhite);
+          vSDL_DrawText(pstRenderer, szLine1, iTx, iTy, stBlack);
+          vSDL_DrawText(pstRenderer, szLine2, iTx, iTy + 21, stBlack);
         }
       }
 

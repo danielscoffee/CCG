@@ -1,0 +1,1 @@
+make _WIN32=1 USE_SDL2=1 DEBUG=1 bin/card_game

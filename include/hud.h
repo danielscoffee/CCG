@@ -11,18 +11,10 @@
     #define _HUD_H_
     #include <trace.h>
     #include <rect.h>
+    #include <sdl_api.h>
     #include <card_game.h>
 
     #define ZERO_RGB 'Z'
-    #define SET_RENDER_DRAW_COLOR(RENDERER, RGBA) \
-              SDL_SetRenderDrawColor( \
-                RENDERER, \
-                (unsigned char)(RGBA[0] != ZERO_RGB ? RGBA[0] : 0x00), \
-                (unsigned char)(RGBA[1] != ZERO_RGB ? RGBA[1] : 0x00), \
-                (unsigned char)(RGBA[2] != ZERO_RGB ? RGBA[2] : 0x00), \
-                (unsigned char)(RGBA[3] != ZERO_RGB ? RGBA[3] : 0x00) \
-              )
-    
     #define RENDER_RECT(RENDERER, HUDRECT, operation) do { \
               if(strcmp(operation, "Fill") == 0) { \
                   SDL_RenderFillRect(RENDERER, HUDRECT); \
@@ -166,7 +158,7 @@
     void vSetPlayerHUDRect( SDL_Rect *pSDL_RECT_Hud ) {
       if ( DEBUG_MSGS ) vTraceBegin();
 
-      pSDL_RECT_Hud->x = HUD_X_FACTOR * INT_WINDOW_WIDTH - 10;
+      pSDL_RECT_Hud->x = HUD_X_FACTOR * INT_WINDOW_WIDTH;
       pSDL_RECT_Hud->y = INT_WINDOW_HEIGHT - HUD_X_FACTOR * INT_WINDOW_HEIGHT - 30;
       pSDL_RECT_Hud->w = 2 * INT_WINDOW_WIDTH / 4 - 20;
       pSDL_RECT_Hud->h = COL_RATIO - 10;

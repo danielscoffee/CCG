@@ -1,13 +1,43 @@
 #include <dialog.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <debuff.h>
+#include <deck.h>
+#include <monster.h>
+#include <player.h>
+#include <card_game.h>
+#include <trace.h>
 #include <time.h>
+
+#ifdef USE_SDL2
+  #include <sdl_api.h>
+#endif
 
 /* estado global */
 STRUCT_DIALOG_LIST gstDlgList;
 
 /* ---------- Helpers internos ---------- */
+/* dialog.c */
+static inline int iDlgGetMaxTop(int iVisibleCount) {
+  int iMaxTop;
+  if (iVisibleCount < 1)
+    iVisibleCount = 1;
+  iMaxTop = gstDlgList.iCount - iVisibleCount;
+  if (iMaxTop < 0)
+    iMaxTop = 0;
+  return iMaxTop;
+}
+/* helpers locais */
+static int iClamp(int iVal, int iMin, int iMax) {
+  if (iVal < iMin) return iMin;
+  if (iVal > iMax) return iMax;
+  return iVal;
+}
+void vDlgScrollLines(int iDelta, int iVisibleCount) {
+  gstDlgList.iTopIndex = iClamp(
+    gstDlgList.iTopIndex + iDelta,
+    0,
+    iDlgGetMaxTop(iVisibleCount)
+  );
+}
 
 static PSTRUCT_DIALOG pstDlgNodeCreate(const char *pszMsgIn, int iMsgLen, int iLevel) {
   PSTRUCT_DIALOG pstNode;
@@ -60,13 +90,6 @@ static void vDlgNodeDestroy(PSTRUCT_DIALOG pstNode) {
     free(pstNode->pszMsg);
   free(pstNode);
 }
-
-static int iClamp(int iVal, int iMin, int iMax) {
-  if (iVal < iMin) return iMin;
-  if (iVal > iMax) return iMax;
-  return iVal;
-}
-
 /* ---------- API pública ---------- */
 
 void vInitDialog(void) {
@@ -96,7 +119,27 @@ int iAddMsgToDialog(char *pszMsg, int iMsgLen) {
   }
 
   gstDlgList.iCount++;
+  #ifdef USE_SDL2
+    if (gbSDL_Mode){
+      int iWinH = 800;
+      int iDlgY;
+      int iDlgH;
+      int iVisible;
 
+      /* calcula o mesmo tamanho de área que o renderer usa */
+      iDlgY = 50 + 500 + 2;
+      iDlgH = iWinH - iDlgY - 2;
+      if (iDlgH < 0)
+        iDlgH = 0;
+
+      /* mesmo cálculo que o draw usa: 8 px topo + 8 px base, 18 px por linha */
+      iVisible = (iDlgH - 16) / 18;
+      if (iVisible < 1)
+        iVisible = 1;
+
+      iDlgMaybeFollowTail(iVisible);
+    }
+  #endif
   return 0;
 }
 
@@ -125,39 +168,70 @@ void vTraceDialog(int bLogDT) {
   iIdx = 0;
 
   while (pstCur != NULL) {
+    char *pszMsg;
+    int iLen = strlen(pstCur->szDT) + strlen(pstCur->pszMsg) + 32;
+    if ( (pszMsg = (char *)malloc(iLen)) == NULL ) 
+      return ;
+    
+    memset(pszMsg, 0, iLen);
     if (bLogDT != 0)
-      printf("[%03d][%s] %s\n", iIdx, pstCur->szDT, pstCur->pszMsg);
+      sprintf(pszMsg, "[%03d][%s] %s\n", iIdx, pstCur->szDT, pstCur->pszMsg);
     else
-      printf("[%03d] %s\n", iIdx, pstCur->pszMsg);
+      sprintf(pszMsg, "[%03d] %s\n", iIdx, pstCur->pszMsg);
 
+    #ifdef USE_SDL2
+      if (gbSDL_Mode)
+        printf("%s", pszMsg);
+      else
+        vTraceMsgDialog(pszMsg);
+    #else
+      vTraceMsgDialog(pszMsg);
+    #endif
     pstCur = pstCur->pstNext;
     iIdx++;
   }
 }
 
-/* ---------- Navegação/scroll ---------- */
+void vClearPin(void) {
+  gstDlgList.iPinned = 0;
+}
 
+void vSetPin(void) {
+  gstDlgList.iPinned = 1;
+}
+
+void vScrollToBottomInternal(int iVisibleCount) {
+  int iMaxTop;
+  if (iVisibleCount < 1)
+    iVisibleCount = 1;
+  iMaxTop = gstDlgList.iCount - iVisibleCount;
+  if (iMaxTop < 0)
+    iMaxTop = 0;
+  gstDlgList.iTopIndex = iMaxTop;
+}
+
+/* ---------- Navegação/scroll ---------- */
 PSTRUCT_DIALOG pstDlgGetAt(int iIndex) {
   PSTRUCT_DIALOG pstCur;
-  int i;
+  int ii;
 
   if (iIndex < 0 || iIndex >= gstDlgList.iCount)
     return NULL;
 
   if (iIndex <= (gstDlgList.iCount / 2)) {
     pstCur = gstDlgList.pstHead;
-    i = 0;
-    while (pstCur != NULL && i < iIndex) {
+    ii = 0;
+    while (pstCur != NULL && ii < iIndex) {
       pstCur = pstCur->pstNext;
-      i++;
+      ii++;
     }
     return pstCur;
   } else {
     pstCur = gstDlgList.pstTail;
-    i = gstDlgList.iCount - 1;
-    while (pstCur != NULL && i > iIndex) {
+    ii = gstDlgList.iCount - 1;
+    while (pstCur != NULL && ii > iIndex) {
       pstCur = pstCur->pstPrev;
-      i--;
+      ii--;
     }
     return pstCur;
   }
@@ -171,18 +245,6 @@ int iDlgGetCount(void) {
   return gstDlgList.iCount;
 }
 
-void vDlgScrollLines(int iDelta, int iVisibleCount) {
-  int iMaxTop;
-
-  if (iVisibleCount < 1)
-    iVisibleCount = 1;
-
-  iMaxTop = gstDlgList.iCount - iVisibleCount;
-  if (iMaxTop < 0)
-    iMaxTop = 0;
-
-  gstDlgList.iTopIndex = iClamp(gstDlgList.iTopIndex + iDelta, 0, iMaxTop);
-}
 
 void vDlgPageUp(int iVisibleCount) {
   vDlgScrollLines(-iVisibleCount, iVisibleCount);

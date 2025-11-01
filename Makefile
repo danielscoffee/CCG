@@ -76,16 +76,13 @@ LATEX_DIR     = ${TARGET_PREFIX}latex
 LOG_DIR       = ${TARGET_PREFIX}log
 INC_DIR       = -I$(INCLUDE_PATH)
 
-
 SDL_ADD_LIBS =
 ifdef USE_SDL2
 	ifdef _WIN32
-		# Check if vcpkg paths are available (GitHub Actions)
 		ifdef VCPKG_ROOT
 			SDL_ADD_LIBS += -lmingw32 -L$(VCPKG_ROOT)/installed/x64-windows/lib
 			INC_DIR += -I$(VCPKG_ROOT)/installed/x64-windows/include
 		else
-			# Fallback to traditional mingw paths
 			SDL_ADD_LIBS += -lmingw32 -LD:/msys64/mingw64
 			INC_DIR += -I/mingw64/include
 		endif
@@ -126,14 +123,14 @@ SDL_OBJ =
 ifdef USE_SDL2
 	SDL_OBJ = $(OBJ_DIR)/sdl_api.o \
 		      $(OBJ_DIR)/sdl_animation.o \
-			  $(OBJ_DIR)/event.o \
-			  $(OBJ_DIR)/dialog_render.o
+			  $(OBJ_DIR)/event.o
 endif
 
 CARD_GAME_EXEC = card_game
 
 OBJS = \
 	$(OBJ_DIR)/card_game.o \
+	$(SDL_OBJ)  \
 	$(OBJ_DIR)/sys_interface.o \
 	$(OBJ_DIR)/input.o \
 	$(OBJ_DIR)/terminal_utils.o \
@@ -143,7 +140,6 @@ OBJS = \
 	$(OBJ_DIR)/battle.o \
 	$(OBJ_DIR)/shop.o \
 	$(OBJ_DIR)/dialog.o \
-	$(SDL_OBJ)  \
 	$(OBJ_DIR)/console_api.o \
 	$(OBJ_DIR)/trace.o
 
