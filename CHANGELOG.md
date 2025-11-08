@@ -1,3 +1,15 @@
+## [8.1.0](https://github.com/LampiaoTechTeam/CCG/compare/v8.0.1...v8.1.0) (2025-11-08)
+
+### Features
+
+* dialog scroll  and coloured player hud ([7295a97](https://github.com/LampiaoTechTeam/CCG/commit/7295a971776ee81acc13b46c6be3c6f7187888e9))
+
+### Bug Fixes
+
+* console version ([3ddcc25](https://github.com/LampiaoTechTeam/CCG/commit/3ddcc254e88812f77dfa34b08a64be93bfe15f43))
+* corrigido erro na compilacao de SDL2 para linux ([607f3c6](https://github.com/LampiaoTechTeam/CCG/commit/607f3c6e91c18ea79d34c059b52f8b00346835b8))
+* makefile CCOPT for linux ([5677d50](https://github.com/LampiaoTechTeam/CCG/commit/5677d50fe8dfeebb6ac3b334fcf4d0a95139985e))
+
 ## [8.0.1](https://github.com/repiazza/CCG/compare/v8.0.0...v8.0.1) (2025-10-12)
 
 ### Bug Fixes
