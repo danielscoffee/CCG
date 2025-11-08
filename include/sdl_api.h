@@ -125,7 +125,11 @@
     };
   #endif
   
-  #define CCG_Main SDL_main
+  #ifndef LINUX
+    #define CCG_Main SDL_main
+  #else
+    #define CCG_Main main
+  #endif
 #endif
  
   
