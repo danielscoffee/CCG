@@ -138,16 +138,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
 
-      - name: Cache semantic-release packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-semantic-${{ hashFiles('.github/workflows/version.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-semantic-
-            ${{ runner.os }}-npm-
+      #      - name: Cache semantic-release packages
+      #        uses: actions/cache@v4
+      #        with:
+      #          path: ~/.npm
+      #          key: ${{ runner.os }}-npm-semantic-${{ hashFiles('.github/workflows/version.yml') }}
+      #          restore-keys: |
+      #            ${{ runner.os }}-npm-semantic-
+      #            ${{ runner.os }}-npm-
 
       - name: Install semantic-release
         run: |
