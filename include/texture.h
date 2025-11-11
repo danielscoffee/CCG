@@ -68,15 +68,27 @@
         SDL_Surface* pSDLSurface = SDL_CreateRGBSurface( 0, 800, 800, 8, 0, 0, 0, 0 );
         pSDLSurface =  pSDL_SRFC_LoadImage( pszImgPath );
         pstWrkTxtr->pSDL_Texture = SDL_CreateTextureFromSurface( renderer, pSDLSurface );
+        if ( pstWrkTxtr->pSDL_Texture ){  
+          vTraceVarArgsFn("SDL Error: %s\n", SDL_GetError());
+          return NULL;
+        }
         pstWrkTxtr->pszImgPath = pszImgPath;
       }
       else if ( pSDL_Rect != NULL ) {    // Rect type Txtr
         pstWrkTxtr->pSDL_Texture = SDL_CreateTexture( renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, pSDL_Rect->w, pSDL_Rect->h );
+        if ( pstWrkTxtr->pSDL_Texture ){  
+          vTraceVarArgsFn("SDL Error: %s\n", SDL_GetError());
+          return NULL;
+        }
       }
       else if ( iSurface ) { // Surface type Txtr
         SDL_Surface* surface = SDL_CreateRGBSurface( 0, 800, 800, 8, 0, 0, 0, 0 );
         SDL_SetSurfaceBlendMode( surface, SDL_BLENDMODE_BLEND );
         pstWrkTxtr->pSDL_Texture = SDL_CreateTextureFromSurface( renderer, surface );
+        if ( pstWrkTxtr->pSDL_Texture ){  
+          vTraceVarArgsFn("SDL Error: %s\n", SDL_GetError());
+          return NULL;
+        }
         SDL_SetTextureBlendMode( pstWrkTxtr->pSDL_Texture, SDL_BLENDMODE_BLEND );
         SDL_FreeSurface( surface );
       }

@@ -43,11 +43,11 @@ void vInitPlayer(PSTRUCT_DECK pstGameDeck, int bReadName){
   gstPlayer.iHP = PLAYER_HP_MAX;
   gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
   gstPlayer.iBlock = 0;
-  gstPlayer.iGold = 30;
+  gstPlayer.iGold = 99;
 
   if ( bReadName )
     vReadPlayerName(gstPlayer.szPlayerName, PLAYER_NAME_SIZE);
- 
+
   gstPlayer.pstPlayerCards = pstGameDeck;
 }
 

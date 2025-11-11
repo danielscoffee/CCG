@@ -55,6 +55,7 @@
                     int iMonsterCt);
     void vSDL_DrawHUD(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer);
     int iDlgMaybeFollowTail(int iVisibleCount);
+    void vSDL_DrawRectShadow(SDL_Renderer *pSDL_Renderer, SDL_Rect *pstRect, int iOffX, int iOffY, Uint8 uAlpha);
     typedef struct { Uint32 type; const char *name; } SDLEventName;
     static const SDLEventName gEventNames[] = {
         { SDL_FIRSTEVENT, "SDL_FIRSTEVENT" },

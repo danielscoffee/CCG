@@ -27,6 +27,20 @@ char *pszTargetableDesc[] ={
   NULL
 };
 
+int iGetMinimumEnergy(PSTRUCT_DECK pstDeck){
+  int ii;
+  int iMinCost = CARD_MAX_COST;
+
+  if ( pstDeck->iHandCount <= 0 )
+    return -1;
+  
+  for (ii = 0; ii < pstDeck->iHandCount; ii++){
+    if ( iMinCost > pstDeck->astHand[ii].iCost )
+      iMinCost = pstDeck->astHand[ii].iCost;
+  }
+
+  return iMinCost;
+}
 void vTraceCardList(STRUCT_CARD astCardList[], int iListCt){
   int ii;
 
@@ -94,7 +108,8 @@ void vDiscardCard(PSTRUCT_DECK pstDeck, int iIndex)
 
   if (iIndex < 0 || iIndex >= pstDeck->iHandCount) return;
 
-  pstDeck->astDiscard[pstDeck->iDiscardCount++] = pstDeck->astHand[iIndex];
+  
+  memcpy(&pstDeck->astDiscard[pstDeck->iDiscardCount++], &pstDeck->astHand[iIndex], sizeof(STRUCT_CARD));
   vTraceVarArgsFn("Removed %s from hand -> added to discard pile.", pstDeck->astHand[iIndex].szName);
   vTraceVarArgsFn("Discard pile %d cards", pstDeck->iDiscardCount);
   memset(&pstDeck->astHand[iIndex], 0, sizeof(STRUCT_CARD));
@@ -107,7 +122,7 @@ void vDiscardCard(PSTRUCT_DECK pstDeck, int iIndex)
 void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard)
 {
   if (pstDeck->iDiscardCount < MAX_DECK)
-    pstDeck->astDiscard[pstDeck->iDiscardCount++] = stCard;
+    memcpy(&pstDeck->astDiscard[pstDeck->iDiscardCount++], &stCard, sizeof(STRUCT_CARD));
 }
 
 /* procura por nome nas zonas (mao -> draw -> discard) e aplica upgrade */
@@ -214,6 +229,9 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
   STRUCT_CARD stCard;
   char szMsg[_MAX_EXT];
 
+  
+  vTraceVarArgsFn("Cartas Hand:%d Compra:%d Descarte:%d", pstDeck->iHandCount, pstDeck->iDrawCount, pstDeck->iDiscardCount);
+
   if (pstDeck->iHandCount >= MAX_HAND) {
     vTraceVarArgsFn("Mao cheia, nao pode comprar.");
     return 0;
@@ -261,9 +279,10 @@ int iDrawCard(PSTRUCT_DECK pstDeck)
 }
 void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck){
   int ii;
-  for (ii = pstDeck->iDiscardCount; ii >= 0; ii--)  {
-    pstDeck->astDraw[ii] = pstDeck->astDiscard[pstDeck->iDiscardCount--];
-  }
+  
+  for (ii = 0; ii < pstDeck->iDiscardCount; ii++)  
+    memcpy(&pstDeck->astDraw[pstDeck->iDrawCount++] , &pstDeck->astDiscard[ii], sizeof(STRUCT_CARD));
+    
   memset(pstDeck->astDiscard, 0, MAX_DECK*sizeof(STRUCT_CARD));
   pstDeck->iDiscardCount = 0;
 }
@@ -271,10 +290,20 @@ void vDiscardHand(PSTRUCT_DECK pstDeck)
 {
   int ii;
   for (ii = 0; ii < pstDeck->iHandCount; ii++)
-    pstDeck->astDiscard[pstDeck->iDiscardCount++] = pstDeck->astHand[ii];
+    memcpy(&pstDeck->astDiscard[pstDeck->iDiscardCount++], &pstDeck->astHand[ii], sizeof(STRUCT_CARD));
   
   memset(pstDeck->astHand, 0, MAX_HAND*sizeof(STRUCT_CARD));
   pstDeck->iHandCount = 0;
+}
+
+void vDiscardDraw(PSTRUCT_DECK pstDeck)
+{
+  int ii;
+  for (ii = 0; ii < pstDeck->iDrawCount; ii++)
+    memcpy(&pstDeck->astDiscard[pstDeck->iDiscardCount++], &pstDeck->astDraw[ii], sizeof(STRUCT_CARD));  
+    
+  memset(pstDeck->astDraw, 0, MAX_DECK*sizeof(STRUCT_CARD));
+  pstDeck->iDrawCount = 0;
 }
 
 void vShowDeck(PSTRUCT_DECK pstDeck) {

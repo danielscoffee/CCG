@@ -17,15 +17,6 @@
   #include <sdl_api.h>
   #include <math.h>
 
-  /* Duração padrão do flip (mais lento p/ leitura) */
-  #ifndef FLIP_DURATION_S
-    #define FLIP_DURATION_S 1.4
-  #endif
-
-  /* Largura mínima durante o “squeeze” p/ evitar alias/linha zero */
-  #ifndef FLIP_MIN_SCALE_X
-    #define FLIP_MIN_SCALE_X 0.04
-  #endif
 
   STRUCT_ANIMATE_FLIP gastCardFlip[MAX_HAND];
 
@@ -247,12 +238,10 @@
           char szLine1[64];
           char szLine2[64];
           SDL_Color stBlack;
-          // SDL_Color stWhite;
           int iTx;
           int iTy;
 
           stBlack = (SDL_Color){0, 0, 0, 255};
-          // stWhite = (SDL_Color){255, 255, 255, 255};
           iTx = gCardRects[ii].x + 8;
           iTy = gCardRects[ii].y + 8;
 

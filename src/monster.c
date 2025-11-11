@@ -79,6 +79,7 @@ void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
 
 }
 
+
 void vTraceDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
   int ii;
   PSTRUCT_DEBUFF pstWrkDbf;
@@ -177,19 +178,29 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
     for ( jj = 0; jj < pastMonster[ii].iDebuffCt; jj++ ){
       pstDebuff = &pastMonster[ii].astDebuff[jj];
       if (pstDebuff->iType == DEBUFF_TYPE_POISON && pstDebuff->iRounds > 0){
-        pastMonster[ii].iHP -= pstDebuff->iDamage;
-        
-        if (pastMonster[ii].iHP <= 0) break;
+        int iDamage = pstDebuff->iDamage;
+        if (pastMonster[ii].iBlock > 0) {
+          pastMonster[ii].iBlock -= iDamage;
+          if (pastMonster[ii].iBlock < 0) {
+            pastMonster[ii].iHP -= (pastMonster[ii].iBlock)*-1;
+            pastMonster[ii].iBlock = 0;
+          }
+        } else {
+          pastMonster[ii].iHP -= iDamage;
+        }        
 
         pstDebuff->iRounds--;
+
         snprintf(szLine, sizeof(szLine),
       "%s recebe %d de dano do veneno.",
           pastMonster[ii].szName,
           pstDebuff->iDamage
         );
         vPrintLine(szLine, INSERT_NEW_LINE);
+
+        if (pastMonster[ii].iHP <= 0) break;
       }
-      if (pstDebuff->iType == DEBUFF_TYPE_PARALYZE && pstDebuff->iRounds > 0){
+      if (pstDebuff->iType == DEBUFF_TYPE_PARALYZE && pstDebuff->iRounds > 0 && !bIsParalized){
         pstDebuff->iRounds--;
         snprintf(szLine, sizeof(szLine),
           "%s esta paralizado.",
@@ -203,7 +214,7 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
     vFixDebuffs(&pastMonster[ii]);
 
     if (bIsParalized || pastMonster[ii].iHP <= 0){
-      vSleepSeconds(3);
+      vSleepSeconds(1);
       continue;
     }
 
@@ -246,7 +257,7 @@ void vDoEnemyActions(PSTRUCT_MONSTER pastMonster, int iMonsterCount) {
       vPrintLine(szLine, INSERT_NEW_LINE);
     }
     
-    vSleepSeconds(2);
+    vSleepSeconds(1);
   }
   
   vTraceMonsters(pastMonster, iMonsterCount);
@@ -287,6 +298,8 @@ int iAliveMonsterQty(PSTRUCT_MONSTER pastMonster, int iCount) {
       iCt++;
   }
   
+  vTraceVarArgsFn("Alive Monsters=%d", iCt);
+
   return iCt;
 }
 
@@ -315,6 +328,8 @@ void vInitMonstersForLevel(PSTRUCT_MONSTER pastMonster, int iLevel, int *piOutCo
     giMaxMonsterHP = (iLevel-1) *MONSTER_HP_SCALING_RATE * MONSTER_INITAL_HP_MAX;
     giMaxMonsterHP += MONSTER_INITAL_HP_MAX;
     pastMonster[ii].iHP = giMaxMonsterHP;
+    //////////
+    pastMonster[ii].iHP = 10;
     iAtkBase = 3 + ii + (iLevel - 1);
     pastMonster[ii].iAttack            = iAtkBase;
     pastMonster[ii].iBlock             = 0;

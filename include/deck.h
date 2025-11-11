@@ -25,7 +25,9 @@
   #define CARD_PARALIZE         6
   #define CARD_CURSE_BLOCK      7
   #define CARD_NULL            -1
- 
+  
+  #define CARD_MAX_COST        10
+
   #define DEBUFF_POISON_CYCS    3
   #define DEBUFF_PARALISE_CYCS  3
 
@@ -83,11 +85,12 @@
   void vInitBasicDeck(PSTRUCT_DECK pstDeck);
   void vDiscardHand(PSTRUCT_DECK pstDeck);
   void vShowDeck(PSTRUCT_DECK pstDeck);
+  void vDiscardDraw(PSTRUCT_DECK pstDeck);
   void vSortHandByName(PSTRUCT_DECK pstDeck);
   void vDiscardCard(PSTRUCT_DECK pstDeck, int iCardIx);
   void vAddCardToDiscard(PSTRUCT_DECK pstDeck, STRUCT_CARD stCard);
   void vAddDiscardPile2Deck(PSTRUCT_DECK pstDeck);
   void vTraceDeck(PSTRUCT_DECK pstDeck, int iTraceLevel);
   STRUCT_CARD stMakeCard(int iType, const char *pszName, int iCost, int iValue, int iTarget);
-  
+  int iGetMinimumEnergy(PSTRUCT_DECK pstDeck);
 #endif

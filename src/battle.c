@@ -78,8 +78,13 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
   int iTarget = 0;
   int ii = 0;
   int bUsed = FALSE;
+  int iAliveCt = 0;
 
-  vTraceVarArgsFn("CType=%d", pstCard->iType);
+  vTraceVarArgsFn("Card Type=%d", pstCard->iType);
+  
+  if ( (iAliveCt = iAliveMonsterQty(pastMonsters, iMonsterCt)) == 0 ){
+    return CARD_NONE;
+  }
 
   switch ( pstCard->iType ){
     case CARD_STRIKE:
@@ -91,7 +96,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       char* pszRoundStr = "rodadas";
       time_t lTime;
 
-      if ( iAliveMonsterQty(pastMonsters, iMonsterCt) == 1 ){
+      if ( iAliveCt == 1 ){
         iTarget = iGetFirstAliveMonster(pastMonsters, iMonsterCt);
       }
       else if ( pstCard->iTarget != CARD_TARGET_MULTIPLE && iMonsterCt > 1 ){
@@ -122,7 +127,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       for ( ; ii <= iTarget; ii++ ) {
         char szLine[1024];
         if ( iTarget < iMonsterCt ) ii = iTarget;
-        if ( pstCard->iTarget == CARD_TARGET_MULTIPLE && ii == iTarget ) break;
+        if ( pstCard->iTarget == CARD_TARGET_MULTIPLE && ii == iTarget && bUsed ) break;
         if ( pastMonsters[ii].iHP <= 0 ) continue;
 
         if ( pstCard->iType == CARD_PARALIZE ){
@@ -171,8 +176,8 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
           if ( iTarget < iMonsterCt ) ii++;
         }
       }
+      break;
     }
-    break;
     case CARD_DEFEND:
     {
       char szLine[128];
@@ -183,6 +188,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       break;
     }
     case CARD_HEAL:
+    {
       char szLine[128];
       gstPlayer.iHP += pstCard->iValue;
       if ( gstPlayer.iHP >= PLAYER_HP_MAX )
@@ -192,6 +198,7 @@ int iHandlePlayerActionByCard(PSTRUCT_CARD pstCard, PSTRUCT_MONSTER pastMonsters
       vPrintLine(szLine, INSERT_NEW_LINE);
       bUsed = TRUE;
       break;
+    }
     default:
       return CARD_NONE;
   }

@@ -4,6 +4,7 @@
 #include <player.h>
 #include <terminal_utils.h>
 #include <input.h>
+#include <trace.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -120,6 +121,8 @@ int iPortableGetchar() {
  * @param iSeconds - tempo em segundos
  */
 void vSleepSeconds(int iSeconds) {
+  
+  vTraceVarArgsFn("Sleeping %d seconds", iSeconds);
 #ifdef _WIN32
   Sleep(iSeconds * 1000);
 #else

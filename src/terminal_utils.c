@@ -37,14 +37,15 @@ void vPrintLine(char *pszLine, int bNewLine) {
     if ( bNewLine )
       printf("\n");
   #endif
+  
   if ( bNewLine ) {
     char *pszWrkMsg;
     pszWrkMsg = (char *) malloc(strlen(pszLine) + 8);
     memset(pszWrkMsg,0,strlen(pszLine)+8);
     strcat(pszWrkMsg, pszLine);
-  #ifndef USE_SDL2
+    #ifndef USE_SDL2
     strcat(pszWrkMsg, "\n");
-  #endif 
+    #endif 
     iAddMsgToDialog(pszWrkMsg, strlen(pszWrkMsg));
     free(pszWrkMsg);
     return;
@@ -79,6 +80,7 @@ void vPrintHighlitedLine(char *pszLine, int bNewLine) {
     free(pszWrkMsg);
     return;
   }
+
   iAddMsgToDialog(pszLine, strlen(pszLine));
 }
 

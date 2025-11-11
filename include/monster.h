@@ -2,7 +2,7 @@
   #define MONSTER_H
   #include <card_game.h>
 
-  #define MAX_MONSTERS             6
+  #define MAX_MONSTERS             20
   #define MONSTER_INITAL_HP_MAX    50
   #define MONSTER_HP_SCALING_RATE  0.05
   #define MONSTER_HEAL_VALUE       5
@@ -18,7 +18,8 @@
     int iDebuffCt;
     STRUCT_DEBUFF astDebuff[MONSTER_MAX_DEBUFFS]; 
   } STRUCT_MONSTER, *PSTRUCT_MONSTER;
-
+  int iGetDebuffLeftCycles(PSTRUCT_MONSTER pstMonster, int iDebuffType);
+  int iGetDebuffValue(PSTRUCT_MONSTER pstMonster, int iDebuffType);
   void vInitMonsters(PSTRUCT_MONSTER paMonsters, int iCount);
   void vShowMonsters(PSTRUCT_MONSTER paMonsters, int iCount);
   void vDoEnemyActions(PSTRUCT_MONSTER paMonsters, int iMonsterCount);
