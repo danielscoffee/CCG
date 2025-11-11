@@ -9,6 +9,9 @@
 
 #ifndef _IMAGE_H_
   #define _IMAGE_H_
+  #ifdef USE_SDL2
+    #include <SDL2/SDL.h>
+  #endif
   
   #define ASSERT_IMG_PATH(ndx, ppConfigPath, ppDefaultPath) \
             bFileExist(ppConfigPath[ndx])\
@@ -43,33 +46,26 @@
     "img/gear.png"
   };
 
-  char *ppszMenuOpt[MAX_MENU_OPTIONS] = {
-    "option 1",
-    "option 2",
-    "option 3",
-    "option 4",
-    "option 5",
-    "Sair"
-  };
-  
-  SDL_Surface *pSDL_SRFC_LoadImage( char *pszImgPath ) {
-    // Load the image
-    SDL_Surface *SDL_SRFC_Img = IMG_Load(pszImgPath);
+  #ifdef USE_SDL2
+    SDL_Surface *pSDL_SRFC_LoadImage( char *pszImgPath ) {
+      // Load the image
+      SDL_Surface *SDL_SRFC_Img = IMG_Load(pszImgPath);
+      
+      if ( DEBUG_MSGS ) vTraceBegin();
     
-    if ( DEBUG_MSGS ) vTraceBegin();
-  
-    if ( SDL_SRFC_Img == NULL ) {
-      printf("Error loading image: %s\n", IMG_GetError());
-  
-      if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("%s - end return NULL", __func__);
-  
-      return NULL;
-    }
-  
-    vTraceEnd();
-  
-    return SDL_SRFC_Img;
-  } /* pSDL_SRFC_LoadImage */
+      if ( SDL_SRFC_Img == NULL ) {
+        printf("Error loading image: %s\n", IMG_GetError());
+    
+        if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("%s - end return NULL", __func__);
+    
+        return NULL;
+      }
+    
+      vTraceEnd();
+    
+      return SDL_SRFC_Img;
+    } /* pSDL_SRFC_LoadImage */
+  #endif
 
 #endif /* _IMAGE_H */
   
