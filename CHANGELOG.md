@@ -1,3 +1,9 @@
+## [8.2.1](https://github.com/LampiaoTechTeam/CCG/compare/v8.2.0...v8.2.1) (2025-11-11)
+
+### Bug Fixes
+
+* image.h deps and sdl compat ([ec6be83](https://github.com/LampiaoTechTeam/CCG/commit/ec6be833b0ce40f731b02a864862c910874c95d3))
+
 ## [8.2.0](https://github.com/LampiaoTechTeam/CCG/compare/v8.1.0...v8.2.0) (2025-11-11)
 
 ### Features
