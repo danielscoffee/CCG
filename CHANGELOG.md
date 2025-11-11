@@ -1,3 +1,9 @@
+## [8.2.0](https://github.com/LampiaoTechTeam/CCG/compare/v8.1.0...v8.2.0) (2025-11-11)
+
+### Features
+
+* added shop, levels and more ([6c5410f](https://github.com/LampiaoTechTeam/CCG/commit/6c5410f0851d56565c89368fd15934e99ca6722a))
+
 ## [8.1.0](https://github.com/LampiaoTechTeam/CCG/compare/v8.0.1...v8.1.0) (2025-11-08)
 
 ### Features
