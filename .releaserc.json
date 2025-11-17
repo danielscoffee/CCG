@@ -33,12 +33,12 @@
           },
           {
             "path": "dist/card_game-windows-amd64.exe",
-            "name": "card_game-windows-amd64.exe",
+            "name": "card_game-windows-amd64",
             "label": "Windows Binary (x64)"
           },
           {
             "path": "dist/card_game-windows-sdl2-amd64.exe",
-            "name": "card_game-windows-sdl2-amd64.exe",
+            "name": "card_game-windows-sdl2-amd64",
             "label": "Windows Binary with SDL2 (x64)"
           },
           {
