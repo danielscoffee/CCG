@@ -172,7 +172,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: card_game-windows-sdl2-amd64
-          path: dist/
+          path: dist/card_game-windows-sdl2-amd64
 
       - name: Download Linux binary with SDL2
         uses: actions/download-artifact@v4
